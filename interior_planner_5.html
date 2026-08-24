@@ -1056,27 +1056,42 @@
     var doorsNearRoom = state.doors.filter(function (door) {
       return door.x >= box.minX - 0.5 && door.x <= box.maxX + 0.5 && door.y >= box.minY - 0.5 && door.y <= box.maxY + 0.5;
     });
-    roomItems.slice().sort(function (a, b) { return b.w * b.d - a.w * a.d; }).forEach(function (item) {
-      var halfW = item.w / 24, halfD = item.d / 24, chosen = null;
-      for (var y = box.minY + clearance + halfD; y <= box.maxY - clearance - halfD && !chosen; y += gridStep) {
-        for (var x = box.minX + clearance + halfW; x <= box.maxX - clearance - halfW && !chosen; x += gridStep) {
-          var corners = [[x-halfW,y-halfD],[x+halfW,y-halfD],[x+halfW,y+halfD],[x-halfW,y+halfD]];
-          if (!corners.every(function (corner) { return pointInPoly(corner, room.poly); })) continue;
-          var blocksDoor = doorsNearRoom.some(function (door) { return Math.hypot(x-door.x, y-door.y) < Math.max(halfW, halfD) + door.w + 0.35; });
-          if (blocksDoor) continue;
-          var hitsPlaced = placed.some(function (other) { return Math.abs(x-other.x) < halfW + other.halfW + clearance && Math.abs(y-other.y) < halfD + other.halfD + clearance; });
-          if (hitsPlaced) continue;
-          chosen = { x: x, y: y, halfW: halfW, halfD: halfD };
+    function footprint(item) {
+      var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
+      return { halfW: (catalogItem.reclinedW || item.w) / 24, halfD: (catalogItem.reclinedD || item.d) / 24 };
+    }
+    function validPosition(x, y, fp) {
+      var corners = [[x-fp.halfW,y-fp.halfD],[x+fp.halfW,y-fp.halfD],[x+fp.halfW,y+fp.halfD],[x-fp.halfW,y+fp.halfD]];
+      if (!corners.every(function (corner) { return pointInPoly(corner, room.poly); })) return false;
+      if (doorsNearRoom.some(function (door) { return Math.hypot(x-door.x, y-door.y) < Math.max(fp.halfW, fp.halfD) + door.w + clearance; })) return false;
+      return !placed.some(function (other) { return Math.abs(x-other.x) < fp.halfW + other.halfW + clearance && Math.abs(y-other.y) < fp.halfD + other.halfD + clearance; });
+    }
+    var poles = roomItems.filter(function (item) { return item.shape === "iv-pole"; });
+    var furniture = roomItems.filter(function (item) { return item.shape !== "iv-pole"; }).sort(function (a, b) { var af = footprint(a), bf = footprint(b); return (bf.halfW * bf.halfD) - (af.halfW * af.halfD); });
+    furniture.concat(poles).forEach(function (item) {
+      var fp = footprint(item), chosen = null;
+      var isPole = item.shape === "iv-pole";
+      if (isPole) {
+        var recliners = placed.filter(function (entry) { return entry.item && entry.item.shape === "recliner"; });
+        var anchor = recliners[poles.indexOf(item) % Math.max(1, recliners.length)];
+        if (anchor) {
+          var leftOfRecliner = { x: anchor.x - anchor.halfW - fp.halfW - clearance, y: anchor.y };
+          if (validPosition(leftOfRecliner.x, leftOfRecliner.y, fp)) chosen = leftOfRecliner;
+        }
+      }
+      for (var y = box.minY + clearance + fp.halfD; y <= box.maxY - clearance - fp.halfD && !chosen; y += gridStep) {
+        for (var x = box.minX + clearance + fp.halfW; x <= box.maxX - clearance - fp.halfW && !chosen; x += gridStep) {
+          if (validPosition(x, y, fp)) chosen = { x: x, y: y };
         }
       }
       if (chosen) {
         item.x = chosen.x; item.y = chosen.y; item.rot = 0;
-        placed.push(chosen);
+        placed.push({ item: item, x: chosen.x, y: chosen.y, halfW: fp.halfW, halfD: fp.halfD });
       } else notPlaced++;
     });
     scheduleSave();
     renderAll();
-    return notPlaced ? ("Arranged " + (roomItems.length - notPlaced) + " item(s); " + notPlaced + " could not fit with the current clearance.") : ("Arranged " + roomItems.length + " item(s) with wall and door buffer.");
+    return notPlaced ? ("Arranged " + (roomItems.length - notPlaced) + " item(s) using virtual footprints; " + notPlaced + " could not fit with the current clearance.") : ("Arranged " + roomItems.length + " item(s) using their full virtual planning footprints, wall buffer, and door buffer.");
   }
 
   var STORAGE_KEY = "suite203-planner-v6"; // bumped: rooms renamed (Kitchen/Storage/Bathroom/Infusion) and all 10 doors repositioned from the traced overlay
@@ -1963,7 +1978,7 @@
       var procurementMarkup = '<details class="product-spec-panel room-readiness"><summary>Procurement &amp; inventory next steps</summary><ul class="room-suggestions"><li>Confirm the final equipment and fixture list, then use each inventory item\'s purchase link/specification sheet where available.</li><li>Set a par level, reorder point, unit of measure, vendor, lead time, and storage location for consumables and replacement parts.</li><li>For future monitoring, track on-hand count, lot/expiration, temperature logs for medical refrigeration, and reorder status in an inventory register.</li><li>Do not purchase or install equipment until utilities, door clearance, load capacity, infection-control needs, and local code requirements have been verified.</li></ul></details>';
       var roomPhotos = selectedRoomReference ? [{ name: selectedRoomReference.name, src: selectedRoomReference.src }].concat(selectedRoomReference.extraPhotos || []) : [];
       var roomPhotoMarkup = roomPhotos.length ? '<div class="room-photo-stack">' + roomPhotos.map(function (photo, photoIndex) { return '<button type="button" class="product-photo-inline view-room-reference" data-room-photo-index="' + photoIndex + '" title="Click to enlarge room reference"><img src="' + escapeAttr(photo.src) + '" alt="' + escapeAttr(photo.name) + '" /></button>'; }).join("") + '</div><p class="empty-inspector">' + escapeHtml(selectedRoomReference.detail) + '</p>' : '<p class="empty-inspector">No reference photo has been assigned. Open References to load room photos.</p>';
-      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeRoom">Auto arrange items in this room</button></div><p class="empty-inspector" id="autoArrangeStatus">Uses a clearance-aware grid and keeps items away from nearby door positions. Review the result before finalizing.</p>';
+      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeRoom">Auto arrange items in this room</button></div><p class="empty-inspector" id="autoArrangeStatus">Uses each item\'s full virtual planning footprint, keeps items away from nearby door positions, and places IV poles beside recliners when space permits. Review the result before finalizing.</p>';
       inspectorEl.innerHTML = '<p class="panel-title">Selected room</p><div class="insp-room">' + escapeHtml(selectedRoom.name.toUpperCase()) + '</div>' +
         '<p class="empty-inspector"><strong>' + fmtFt(selectedRoomBox.w) + ' × ' + fmtFt(selectedRoomBox.h) + '</strong><br/>' + Math.round(polyArea(selectedRoom.poly)) + ' sq ft</p>' +
         arrangeMarkup + roomPhotoMarkup + layoutAwareMarkup + roomSuggestionMarkup + doorReviewMarkup + readinessMarkup + procurementMarkup;
