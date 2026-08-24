@@ -885,7 +885,7 @@
   var CATALOG = [
     { id: "ritter-204-011", name: "Ritter 204-011 · seamless top", cat: "Exam Tables & Chairs", w: 59.5, d: 28.5, shape: "table-flat", price: "$2,000–$2,600 each", detail: "Manufacturer category: Manual Examination Table · 500-lb capacity · 33.13 in H · manual air-spring back · no heater or pelvic tilt", link: "https://www.midmark.com/medical/products/manual-examination-tables/detail/ritter-204-manual-examination-table", photo: "https://www.midmark.com/images/default-source/webp/medical/products/manual-examination-tables/ritter-204-manual-examination-table/1.webp?sfvrsn=728ec1d9_1" },
     { id: "ritter-228-001", name: "Ritter 228-001 · Barrier-Free", cat: "Exam Tables & Chairs", w: 60, d: 28, shape: "table-flat", price: "$6,500–$8,000", detail: "Manufacturer category: Barrier-Free Examination Chair (not a manual exam table) · 500-lb capacity · powered 17–37 in height · add seamless upholstery + bilateral support rails", specs: "28 in W × 60 in L seamless upholstery; 76 in L with 16 in footrest extended · 17–37 in height range · 500 lb capacity · 115 VAC / 60 Hz / 9 A (228-001)", link: "https://www.midmark.com/medical/products/barrier-free-examination-chairs/detail/ritter-228-barrier-free-examination-chair", photo: "https://www.midmark.com/images/default-source/webp/medical/products/examination-chairs/ritter-228-229-examination-chairs/228-01.webp?sfvrsn=7238e757_3" },
-    { id: "winco-6740", name: "Winco 6740 Swing-Away Arm CareCliner", cat: "Recommended Package", w: 34, d: 41, reclinedW: 55, reclinedD: 70, reclinedLabel: "RECLINED + TABLES UP", shape: "recliner", price: "$1,743 quoted", detail: "350-lb capacity · 46.5 in H · 34 in W × 41 in upright L · 70 in fully reclined L · 5 in casters · dual flip-side tables", specs: "Virtual fit box shows the worst-case reclined footprint with both side tables raised: 55 in W × 70 in L = 26.7 sq ft (before caregiver/transfer clearance). Chair body alone is 34 in W; with side tables down, allow 36 in W. Confirm final option dimensions and required care/transfer clearance before purchase.", link: "https://www.medproshop.com/products/winco-6740-swing-away-arm-designer-care-cliner-recliner", photo: "winco-6740-product.jpg" },
+    { id: "winco-6740", name: "Winco 6740 Swing-Away Arm CareCliner", cat: "Recommended Package", w: 34, d: 41, reclinedW: 55, reclinedD: 70, reclinedLabel: "RECLINED + TABLES UP", shape: "recliner", price: "$1,743 quoted", detail: "350-lb capacity · 46.5 in H · 34 in W × 41 in upright L · 70 in fully reclined L · 5 in casters · dual flip-side tables", specs: "Virtual fit options, all at 70 in reclined length: tables closed = 36 in W; one table open + one closed = 45.5 in W (default); both tables open = 55 in W. Confirm final option dimensions and required care/transfer clearance before purchase.", link: "https://www.medproshop.com/products/winco-6740-swing-away-arm-designer-care-cliner-recliner", photo: "winco-6740-product.jpg" },
     { id: "winaz-nurse-mobile-station", name: "WINAZ Nurse Mobile Station with Drawers", cat: "Recommended Package", w: 31.5, d: 18.9, shape: "desk", price: "Price to confirm", detail: "Adjustable work height 27.9–41.3 in · 2 fabric drawers · lower shelf · side storage bag · 4 locking casters", photo: "winaz-nurse-mobile-station.jpg" },
     { id: "accucold-ars23mllh", name: "AccuCold ARS23MLLH Medical Refrigerator", cat: "Recommended Package", w: 27.5, d: 31, shape: "fridge", doorHinge: "left", price: "$3,166.30 quoted", detail: "84 in H · 23 cu ft · full solid left-hand door · reach-in medical refrigerator", specs: "27.5 in W × 31 in D × 84 in H · 150 lb · 115 V / 60 Hz / 1 phase · R290 hydrocarbon refrigerant · one section / one solid full door · door lock · casters supplied uninstalled · general-purpose use · 2-year parts & labor warranty; 5-year compressor-parts warranty", link: "https://www.katom.com/162-ARS23MLLH.html?utm_id=627377896&msclkid=c4f7601bc8fc11897cf40a9004c812ce&utm_source=bing&utm_medium=cpc&utm_campaign=%5BROI%5D%20Shopping%20-%20PMax%20-%20Commercial%20Refrigeration&utm_term=2332888796697635&utm_content=PMax%20-%20Commercial%20Refrigerators", specSheet: "https://res.katom.com/products/498/162-ARS23MLLH/162-ARS23MLLH.pdf", photo: "accucold-ars23mllh-product.jpg" },
     { id: "hamilton-beach-hbf1152", name: "Hamilton Beach HBF1152-SS Top-Freezer Refrigerator", cat: "Recommended Package", w: 23.6, d: 26.2, shape: "fridge", doorHinge: "right", price: "$649 quoted", detail: "72.4 in H · 11.5 cu ft total · frost-free stainless refrigerator · reversible door", specs: "23.6 in W × 26.2 in D × 72.4 in H · 26 in D less door · 30 in depth with door open 90° · 7.79 cu ft refrigerator + 3.72 cu ft freezer · auto/cycle defrost · garage ready · counter depth · no ice maker or water dispenser · adjustable leveling legs · reversible door", link: "https://www.homedepot.com/p/336857383", photo: "hamilton-beach-hbf1152-product.jpg" },
@@ -1027,6 +1027,17 @@
     consult: ["Apply here: monitor privacy, automatic screen lock, lockable PHI storage, confidential conversation/door sightline, and clear visitor route.", "Also coordinate with: Admin for secure records and office workflow; Reception/Corridor for privacy outside the door."]
   };
 
+  function planningFootprint(item) {
+    var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
+    if (catalogItem.id === "winco-6740") {
+      var tableState = item.sideTableState || "one";
+      if (tableState === "closed") return { w: 36, d: 70, label: "RECLINED · TABLES CLOSED" };
+      if (tableState === "both") return { w: 55, d: 70, label: "RECLINED · BOTH TABLES OPEN" };
+      return { w: 45.5, d: 70, label: "RECLINED · 1 TABLE OPEN" };
+    }
+    return { w: catalogItem.reclinedW || item.w, d: catalogItem.reclinedD || item.d, label: catalogItem.reclinedLabel || "RECLINED" };
+  }
+
   function roomLayoutAwareChecks(room) {
     var allPlaced = state.items.map(function (item) {
       var itemRoom = roomForPoint(item.x, item.y);
@@ -1068,8 +1079,8 @@
       return door.x >= box.minX - 0.5 && door.x <= box.maxX + 0.5 && door.y >= box.minY - 0.5 && door.y <= box.maxY + 0.5;
     });
     function footprint(item) {
-      var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
-      return { halfW: (catalogItem.reclinedW || item.w) / 24, halfD: (catalogItem.reclinedD || item.d) / 24 };
+      var plan = planningFootprint(item);
+      return { halfW: plan.w / 24, halfD: plan.d / 24 };
     }
     function validPosition(x, y, fp) {
       var corners = [[x-fp.halfW,y-fp.halfD],[x+fp.halfW,y-fp.halfD],[x+fp.halfW,y+fp.halfD],[x-fp.halfW,y+fp.halfD]];
@@ -1384,9 +1395,9 @@
   }
 
   function rectCorners(item, includeVirtualFootprint) {
-    var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
-    var width = includeVirtualFootprint ? (catalogItem.reclinedW || item.w) : item.w;
-    var depth = includeVirtualFootprint ? (catalogItem.reclinedD || item.d) : item.d;
+    var plan = planningFootprint(item);
+    var width = includeVirtualFootprint ? plan.w : item.w;
+    var depth = includeVirtualFootprint ? plan.d : item.d;
     var hw = (width / 12) / 2, hd = (depth / 12) / 2;
     var rad = (item.rot || 0) * Math.PI / 180;
     var cos = Math.cos(rad), sin = Math.sin(rad);
@@ -1905,8 +1916,9 @@
       var f = flip(it.x, it.y);
       var wFt = it.w / 12, dFt = it.d / 12;
       var catalogItem = CATALOG_BY_ID[it.catalogId] || {};
-      var virtualWFt = (catalogItem.reclinedW || it.w) / 12;
-      var virtualDFt = (catalogItem.reclinedD || it.d) / 12;
+      var itemPlan = planningFootprint(it);
+      var virtualWFt = itemPlan.w / 12;
+      var virtualDFt = itemPlan.d / 12;
       var hasReclinedFootprint = !!catalogItem.reclinedD;
       var cls = "item item-" + it.shape;
       if (it.uid === state.selectedUid) cls += " item-selected";
@@ -1915,7 +1927,7 @@
       out += '<g class="' + cls + '" data-uid="' + it.uid + '" transform="translate(' + f[0] + ',' + f[1] + ') rotate(' + (it.rot || 0) + ')">' +
         (showFootprintBoxes && shapedFootprints.indexOf(it.shape) !== -1
           ? '<rect class="virtual-footprint" x="' + (-virtualWFt / 2) + '" y="' + (-virtualDFt / 2) + '" width="' + virtualWFt + '" height="' + virtualDFt + '" rx=".04" />' +
-            (hasReclinedFootprint ? '<text class="virtual-footprint-label" x="0" y="' + (-virtualDFt / 2 - 0.12) + '" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + (catalogItem.reclinedLabel || "RECLINED") + ' · ' + fmtIn(catalogItem.reclinedW) + ' × ' + fmtIn(catalogItem.reclinedD) + '</text>' : '')
+            (hasReclinedFootprint ? '<text class="virtual-footprint-label" x="0" y="' + (-virtualDFt / 2 - 0.12) + '" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + itemPlan.label + ' · ' + fmtIn(itemPlan.w) + ' × ' + fmtIn(itemPlan.d) + '</text>' : '')
           : '') +
         shapeMarkup(it.shape, wFt, dFt, Object.assign({}, catalogItem, { doorHinge: it.doorHinge || catalogItem.doorHinge }));
       if (showLabel) {
@@ -1973,9 +1985,9 @@
     if (minWall < radius) return { blocked: true, message: "Blocked — less than 36 in staff working zone at wall" };
     for (var i = 0; i < state.items.length; i++) {
       var item = state.items[i];
-      var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
-      var halfW = (catalogItem.reclinedW || item.w) / 24;
-      var halfD = (catalogItem.reclinedD || item.d) / 24;
+      var itemPlan = planningFootprint(item);
+      var halfW = itemPlan.w / 24;
+      var halfD = itemPlan.d / 24;
       var angle = -((item.rot || 0) * Math.PI / 180);
       var dx = x - item.x, dy = y - item.y;
       var lx = dx * Math.cos(angle) - dy * Math.sin(angle);
@@ -2089,6 +2101,10 @@
     var fridgeDoorControl = it.shape === "fridge"
       ? '<div class="insp-actions" style="margin-top:8px"><button type="button" class="ghost-btn" id="fridgeDoorBtn">Door hinge: ' + ((it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "LEFT" : "RIGHT") + ' · flip direction</button></div>'
       : '';
+    var sideTableState = it.sideTableState || "one";
+    var sideTableControl = catalogEntry.id === "winco-6740"
+      ? '<div class="insp-actions" style="margin-top:8px"><button type="button" class="ghost-btn" id="sideTableBtn">Side tables: ' + (sideTableState === "closed" ? "BOTH CLOSED" : sideTableState === "both" ? "BOTH OPEN" : "1 OPEN · 1 CLOSED") + ' · change</button></div>'
+      : '';
     inspectorEl.innerHTML =
       '<p class="panel-title">Selected item</p>' +
       '<input class="insp-name" id="fName" value="' + escapeAttr(it.name) + '" />' +
@@ -2115,7 +2131,7 @@
       '<div class="insp-actions" style="margin-top:8px">' +
       '<button type="button" class="ghost-btn" id="toPaletteBtn" title="Add this piece, at its current name and size, to My Items">Save to palette</button>' +
       '</div>' +
-      '<div class="footprint-note">Footprint: ' + sqft + ' sq ft</div>' + fridgeDoorControl + productSpecs + imageCropControl + productPhoto;
+      '<div class="footprint-note">Footprint: ' + sqft + ' sq ft</div>' + fridgeDoorControl + sideTableControl + productSpecs + imageCropControl + productPhoto;
 
     document.getElementById("fName").addEventListener("change", function (e) { it.name = e.target.value || it.name; scheduleSave(); renderPlan(); renderSchedule(); });
     bindLen("fW", parseInches, function (v) { it.w = Math.max(2, round2(v)); });
@@ -2128,6 +2144,12 @@
     var fridgeDoorBtn = document.getElementById("fridgeDoorBtn");
     if (fridgeDoorBtn) fridgeDoorBtn.addEventListener("click", function () {
       it.doorHinge = (it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "right" : "left";
+      scheduleSave(); renderAll();
+    });
+    var sideTableBtn = document.getElementById("sideTableBtn");
+    if (sideTableBtn) sideTableBtn.addEventListener("click", function () {
+      var currentState = it.sideTableState || "one";
+      it.sideTableState = currentState === "closed" ? "one" : currentState === "one" ? "both" : "closed";
       scheduleSave(); renderAll();
     });
     var viewProductPhoto = document.getElementById("viewProductPhoto");
