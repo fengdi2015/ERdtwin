@@ -1100,6 +1100,8 @@
       return itemRoom && itemRoom.id === room.id;
     });
     if (!roomItems.length) return "No items are placed in this room yet.";
+    var hadUndoSnapshot = !!autoArrangeUndoItems;
+    var originalRoomItems = deepClone(roomItems);
     if (!autoArrangeUndoItems) autoArrangeUndoItems = deepClone(state.items);
     var box = polyBBox(room.poly), placed = [], notPlaced = 0;
     var comfortPlan = strategy === "comfort";
@@ -1112,6 +1114,12 @@
       var hard = operatingFootprint(item), soft = planningFootprint(item);
       return { halfW: hard.w / 24, halfD: hard.d / 24, softHalfW: soft.w / 24, softHalfD: soft.d / 24 };
     }
+    // Furniture outside the selected room is fixed during this attempt. This
+    // prevents an arrangement from creating a hard collision across a room edge.
+    state.items.filter(function (item) { return roomItems.indexOf(item) === -1; }).forEach(function (item) {
+      var staticFp = footprint(item);
+      placed.push({ item: item, x: item.x, y: item.y, halfW: staticFp.halfW, halfD: staticFp.halfD, softHalfW: staticFp.softHalfW, softHalfD: staticFp.softHalfD, external: true });
+    });
     function validPosition(x, y, fp) {
       var corners = [[x-fp.softHalfW,y-fp.softHalfD],[x+fp.softHalfW,y-fp.softHalfD],[x+fp.softHalfW,y+fp.softHalfD],[x-fp.softHalfW,y+fp.softHalfD]];
       if (!corners.every(function (corner) { return pointInPoly(corner, room.poly); })) return false;
@@ -1145,7 +1153,7 @@
       var fp = footprint(item), chosen = null;
       var isPole = item.shape === "iv-pole";
       if (isPole) {
-        var recliners = placed.filter(function (entry) { return entry.item && entry.item.shape === "recliner"; });
+        var recliners = placed.filter(function (entry) { return !entry.external && entry.item && entry.item.shape === "recliner"; });
         var anchor = recliners[poles.indexOf(item) % Math.max(1, recliners.length)];
         if (anchor) {
           var leftOfRecliner = { x: anchor.x - anchor.softHalfW - fp.softHalfW - clearance, y: anchor.y };
@@ -1169,15 +1177,25 @@
         placed.push({ item: item, x: chosen.x, y: chosen.y, halfW: fp.halfW, halfD: fp.halfD, softHalfW: fp.softHalfW, softHalfD: fp.softHalfD });
       } else notPlaced++;
     });
+    var planName = comfortPlan ? "Plan A — Comfort" : (compactPlan ? "Plan C — Compact" : "Plan B — Efficient");
+    if (notPlaced) {
+      originalRoomItems.forEach(function (original) {
+        var current = state.items.find(function (item) { return item.uid === original.uid; });
+        if (current) { current.x = original.x; current.y = original.y; current.rot = original.rot; }
+      });
+      if (!hadUndoSnapshot) autoArrangeUndoItems = null;
+      renderAll();
+      return planName + ": no clean complete layout was applied. " + notPlaced + " item(s) cannot fit without overlapping a patient-use box, fixed sink, nearby item, wall, or door clearance. Try another attempt or remove/move an item first.";
+    }
     scheduleSave();
     renderAll();
-    var planName = comfortPlan ? "Plan A — Comfort" : (compactPlan ? "Plan C — Compact" : "Plan B — Efficient");
     var softPairs = 0;
-    placed.forEach(function (entry, i) { placed.slice(i + 1).forEach(function (other) {
+    var localPlaced = placed.filter(function (entry) { return !entry.external; });
+    localPlaced.forEach(function (entry, i) { localPlaced.slice(i + 1).forEach(function (other) {
       if (Math.abs(entry.x - other.x) < entry.softHalfW + other.softHalfW && Math.abs(entry.y - other.y) < entry.softHalfD + other.softHalfD) softPairs++;
     }); });
     var result = planName + ": arranged " + (movableItems.length - notPlaced) + " movable item(s)" + (fixedItems.length ? " around " + fixedItems.length + " fixed sink" + (fixedItems.length === 1 ? "" : "s") : "") + ". Inner patient-use boxes do not overlap; outer cleaning zones were minimized" + (softPairs ? " (" + softPairs + " soft clearance overlap" + (softPairs === 1 ? " remains)." : "s remain).") : ".");
-    return notPlaced ? result + " " + notPlaced + " could not fit with the selected wall and door clearance." : result;
+    return result;
   }
 
   function undoAutoArrange() {
