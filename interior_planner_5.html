@@ -1,0 +1,3055 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<title>Suite 203 Layout Planner</title>
+<style>
+  :root {
+    --paper: #F3F6F9;
+    --panel: #FFFFFF;
+    --panel-2: #E9EFF5;
+    --ink: #17233A;
+    --ink-soft: #52627A;
+    --ink-faint: #8C99AD;
+    --line: #2B5FA3;
+    --line-soft: #DCE7F5;
+    --line-strong: #163E73;
+    --amber: #A8631E;
+    --amber-soft: #F3E1C8;
+    --danger: #A63636;
+    --danger-soft: #F6DADA;
+    --ok: #2F7A54;
+    --ok-soft: #DCEEE4;
+    --border: #D2DCE7;
+    --grid-minor: #CBD8E5;
+    --grid-major: #B7C7DA;
+    --shadow: rgba(23, 35, 58, 0.10);
+    --font-display: 'Archivo', 'Arial Narrow', sans-serif;
+    --font-body: 'Public Sans', -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161F;
+      --panel: #161F2B;
+      --panel-2: #1C2734;
+      --ink: #E8EDF5;
+      --ink-soft: #9FB0C7;
+      --ink-faint: #6C7C93;
+      --line: #7FAEEE;
+      --line-soft: #1E3455;
+      --line-strong: #BFE0FF;
+      --amber: #E3A15B;
+      --amber-soft: #3A2C18;
+      --danger: #E38A8A;
+      --danger-soft: #3A2020;
+      --ok: #7FC7A3;
+      --ok-soft: #17332A;
+      --border: #2B3849;
+      --grid-minor: #22303F;
+      --grid-major: #2C3E52;
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #10161F;
+    --panel: #161F2B;
+    --panel-2: #1C2734;
+    --ink: #E8EDF5;
+    --ink-soft: #9FB0C7;
+    --ink-faint: #6C7C93;
+    --line: #7FAEEE;
+    --line-soft: #1E3455;
+    --line-strong: #BFE0FF;
+    --amber: #E3A15B;
+    --amber-soft: #3A2C18;
+    --danger: #E38A8A;
+    --danger-soft: #3A2020;
+    --ok: #7FC7A3;
+    --ok-soft: #17332A;
+    --border: #2B3849;
+    --grid-minor: #22303F;
+    --grid-major: #2C3E52;
+    --shadow: rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input { font-family: inherit; color: inherit; }
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--line);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    flex: 0 0 auto;
+  }
+  .brand { display: flex; flex-direction: column; line-height: 1.15; }
+  .brand h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .brand .sub {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+  .topbar-spacer { flex: 1 1 auto; }
+  .toolgroup { display: flex; align-items: center; gap: 6px; }
+  .toolgroup + .toolgroup { padding-left: 14px; border-left: 1px solid var(--border); }
+  .icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .icon-btn:hover { border-color: var(--line); color: var(--line); }
+  .toggle-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 30px; padding: 0 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .toggle-btn[aria-pressed="true"] {
+    border-color: var(--line);
+    color: var(--line);
+    background: var(--line-soft);
+  }
+  .save-status {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .save-status .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ok); margin-right: 6px; position: relative; top: -1px;
+  }
+  .clear-btn {
+    height: 30px; padding: 0 12px;
+    border-radius: 7px;
+    border: 1px solid var(--danger);
+    background: transparent;
+    color: var(--danger);
+    font-size: 12.5px; font-weight: 600;
+    cursor: pointer;
+  }
+  .clear-btn.confirming { background: var(--danger); color: var(--panel); }
+
+  /* ---------- workspace ---------- */
+  .workspace {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    min-height: 0;
+  }
+
+  .palette {
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    overflow-y: auto;
+    padding: 14px 12px 40px;
+  }
+  .palette-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 2px 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .cat-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    margin: 18px 4px 8px;
+  }
+  .cat-title:first-of-type { margin-top: 0; }
+  .item-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 9px;
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--panel-2);
+    cursor: pointer;
+    text-align: left;
+  }
+  .item-card:hover { border-color: var(--line); background: var(--line-soft); }
+  .item-card.pending-add { border: 2px solid var(--amber); background: var(--amber-soft); }
+  .item-add-confirm { display: flex; gap: 7px; align-items: center; padding: 7px 8px; margin: -2px 3px 7px; border: 1px solid var(--amber); border-top: 0; border-radius: 0 0 7px 7px; background: var(--amber-soft); }
+  .item-add-confirm span { flex: 1 1 auto; font-size: 11px; font-weight: 800; }
+  .item-add-confirm button { flex: 0 0 auto; padding: 5px 7px; border: 1px solid var(--amber); border-radius: 5px; background: #fff; color: #694100; font-size: 10.5px; font-weight: 800; cursor: pointer; }
+  .item-card .thumb {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .item-card .thumb svg { display: block; }
+  .item-card .thumb .product-photo { width: 100%; height: 100%; object-fit: contain; border-radius: 5px; }
+  .item-card .meta { min-width: 0; }
+  .item-card .name {
+    font-size: 12.5px; font-weight: 600;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    white-space: normal; overflow: hidden; line-height: 1.2;
+  }
+  .item-card .dims {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .item-card .product-detail {
+    display: block;
+    margin-top: 3px;
+    color: var(--ink-soft);
+    font-size: 10px;
+    line-height: 1.28;
+  }
+
+  .canvas-wrap {
+    position: relative;
+    min-width: 0;
+    background: var(--paper);
+  }
+  .canvas-wrap svg { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .empty-hint {
+    position: absolute;
+    left: 50%; top: 18px; transform: translateX(-50%);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    box-shadow: 0 4px 14px var(--shadow);
+    pointer-events: none;
+  }
+  .warn-pill {
+    position: absolute;
+    right: 14px; top: 14px;
+    display: flex; align-items: center; gap: 6px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: 999px;
+    padding: 5px 11px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  .rightcol {
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .inspector {
+    flex: 0 0 auto;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .product-spec-panel { margin-top: 12px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 7px; background: #fffdf7; }
+  .product-spec-panel summary { color: #111; font-size: 13px; font-weight: 800; cursor: pointer; }
+  .product-spec-panel p { margin: 7px 0 0; color: #111; font-size: 12px; line-height: 1.4; font-weight: 600; }
+  .product-spec-panel .product-specs { font-size: 11.5px; }
+  .product-photo-inline { display: block; width: 100%; margin-top: 10px; padding: 0; border: 1px solid var(--border); border-radius: 7px; background: #fff; cursor: zoom-in; overflow: hidden; }
+  .product-photo-inline:hover { border: 2px solid var(--line); }
+  .product-photo-inline img { display: block; width: 100%; height: 145px; object-fit: contain; }
+  .advanced-image { margin-top: 10px; }
+  .advanced-image .crop-controls { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 9px; }
+  .advanced-image label { display: grid; grid-template-columns: 62px 1fr 38px; gap: 7px; align-items: center; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+  .advanced-image input[type="range"] { width: 100%; accent-color: var(--line); }
+  .advanced-image output { color: #111; font-family: var(--font-mono); font-size: 10px; text-align: right; }
+  .crop-reset { margin-top: 8px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .photo-modal { display: none; position: fixed; z-index: 200; inset: 0; align-items: center; justify-content: center; padding: 28px; background: #0c131ae8; }
+  .photo-modal.open { display: flex; }
+  .photo-modal img { display: block; max-width: min(92vw, 900px); max-height: 88vh; object-fit: contain; background: #fff; box-shadow: 0 12px 40px #0008; }
+  .photo-modal button { position: fixed; top: 16px; right: 20px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: #fff; color: #111; font-size: 28px; line-height: 1; cursor: pointer; }
+  .reference-modal { display: none; position: fixed; z-index: 210; inset: 0; padding: 28px; overflow: auto; background: #0c131aae; }
+  .reference-modal.open { display: block; }
+  .reference-dialog { position: relative; width: min(100%, 1000px); margin: 20px auto; padding: 22px; border-radius: 12px; background: #fffdf7; box-shadow: 0 16px 48px #0008; }
+  .reference-close { position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--panel-2); color: #111; font-size: 24px; cursor: pointer; }
+  .reference-actions { margin: 10px 0 15px; }
+  .reference-upload { display: inline-block; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: #0b5e9a; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .reference-upload input { display: none; }
+  .reference-layout { display: grid; grid-template-columns: 180px 1fr; gap: 16px; }
+  .reference-gallery { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; }
+  .reference-thumb { padding: 4px; border: 2px solid transparent; border-radius: 7px; background: #fff; cursor: pointer; text-align: left; }
+  .reference-thumb.active { border-color: var(--line); }
+  .reference-thumb img { display: block; width: 100%; height: 95px; object-fit: cover; border-radius: 4px; }
+  .reference-thumb span { display: block; margin: 4px 2px 0; font-size: 11px; font-weight: 700; }
+  .reference-preview { min-height: 260px; border: 1px solid var(--border); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .reference-preview img { display: block; max-width: 100%; max-height: 60vh; object-fit: contain; }
+  .clinic-guidance { margin-top: 16px; padding: 12px 14px; border-left: 4px solid var(--line); border-radius: 5px; background: #eff7fa; color: #16252e; }
+  .clinic-guidance strong { font-size: 14px; }
+  .clinic-guidance ul { margin: 7px 0 0 18px; padding: 0; font-size: 12px; line-height: 1.42; }
+  .marketing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .marketing-card { padding: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); color: var(--ink); }
+  .marketing-card strong { display: block; font-size: 14px; color: #0b536f; }
+  .marketing-card ul { margin: 7px 0 0 18px; padding: 0; font-size: 12px; line-height: 1.48; }
+  .marketing-card li + li { margin-top: 5px; }
+  .marketing-note { margin-top: 12px; font-size: 12px; line-height: 1.48; }
+  .room-photo-stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 8px 0; }
+  .room-photo-stack .product-photo-inline { margin: 0; }
+  @media (max-width: 420px) { .room-photo-stack { grid-template-columns: 1fr; } }
+  .placement-plan { margin-top: 16px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .placement-plan h3 { margin: 0; padding: 11px 13px; font-size: 14px; color: #0b536f; background: #eff7fa; }
+  .placement-row { display: grid; grid-template-columns: 125px 1.1fr 1.4fr; gap: 10px; padding: 10px 13px; border-top: 1px solid var(--border); font-size: 12px; line-height: 1.4; }
+  .placement-row strong { color: var(--ink); }
+  .placement-row em { color: #245444; font-style: normal; font-weight: 650; }
+  @media (max-width: 700px) { .placement-row { grid-template-columns: 1fr; gap: 3px; } }
+  @media (max-width: 700px) { .reference-modal { padding: 10px; } .reference-dialog { padding: 16px; } .reference-layout, .marketing-grid { grid-template-columns: 1fr; } .reference-gallery { flex-direction: row; max-height: none; overflow-x: auto; } .reference-thumb { min-width: 126px; } }
+  .panel-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+  .empty-inspector {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .insp-name {
+    width: 100%;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 3px 5px;
+    margin: 0 0 2px -5px;
+    background: transparent;
+  }
+  .insp-name:hover, .insp-name:focus { border-color: var(--border); background: var(--panel-2); }
+  .insp-room {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--line);
+    margin-bottom: 12px;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .field label {
+    display: block;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-bottom: 3px;
+  }
+  .field input[type="number"],
+  .field input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 7px;
+    background: var(--panel-2);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .field input:focus { outline: none; border-color: var(--line); }
+  .rot-row { display: flex; align-items: center; gap: 6px; margin: 10px 0 12px; }
+  .rot-row .field { flex: 1 1 auto; }
+  .rot-btn {
+    width: 30px; height: 30px; margin-top: 15px;
+    border-radius: 6px; border: 1px solid var(--border); background: var(--panel-2);
+    cursor: pointer; font-size: 13px;
+  }
+  .rot-btn:hover { border-color: var(--line); color: var(--line); }
+  .insp-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .insp-actions button {
+    flex: 1 1 auto;
+    padding: 7px 0;
+    border-radius: 7px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .dup-btn, .ghost-btn { border: 1px solid var(--border); background: var(--panel-2); color: var(--ink); }
+  .ghost-btn:hover { border-color: var(--line); color: var(--line); }
+  .dup-btn:hover { border-color: var(--line); color: var(--line); }
+  .del-btn { border: 1px solid var(--danger); background: transparent; color: var(--danger); }
+  .del-btn:hover { background: var(--danger-soft); }
+  .footprint-note {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .advanced-position { margin: 10px 0 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--panel-2); }
+  .advanced-position summary { cursor: pointer; color: var(--ink-soft); font-size: 12px; font-weight: 800; }
+  .advanced-position .field-row { margin-top: 8px; }
+  .room-suggestions { margin: 7px 0 0 18px; padding: 0; color: #16252e; font-size: 12px; line-height: 1.4; }
+  .room-readiness { margin-top: 10px; }
+  .room-readiness p { margin: 7px 0 0; color: var(--ink-soft); font-size: 11.5px; line-height: 1.4; }
+
+  .schedule { flex: 1 1 auto; overflow-y: auto; padding: 16px; }
+  .schedule-summary {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .schedule-summary .count {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-soft);
+  }
+  .room-block { margin-bottom: 16px; }
+  .room-block .rb-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .room-block .rb-name { font-weight: 700; font-size: 12.5px; }
+  .room-block .rb-area {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .meter {
+    height: 4px; border-radius: 3px; background: var(--panel-2);
+    overflow: hidden; margin-bottom: 8px;
+  }
+  .meter > span { display: block; height: 100%; border-radius: 3px; }
+  table.sched-table { width: 100%; border-collapse: collapse; }
+  table.sched-table td {
+    font-size: 12px; padding: 3px 0;
+    border-bottom: 1px dotted var(--border);
+  }
+  table.sched-table td.q {
+    font-family: var(--font-mono); text-align: right; color: var(--ink-soft);
+    width: 26px; font-variant-numeric: tabular-nums;
+  }
+  table.sched-table tr[data-schedule-uids] { cursor: pointer; }
+  table.sched-table tr.sched-selected td { background: #fff1cc; color: #111; font-weight: 800; }
+  table.sched-table td.dm {
+    font-family: var(--font-mono); text-align: right; color: var(--ink-faint);
+    font-size: 10.5px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .empty-room-note {
+    font-size: 11.5px; color: var(--ink-faint); font-style: italic;
+  }
+  .unassigned-note {
+    font-size: 11px; color: var(--ink-faint); margin-top: 4px; line-height: 1.5;
+  }
+  .text-export {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .text-export summary {
+    cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
+  }
+  .text-export textarea {
+    width: 100%; height: 130px; margin-top: 8px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    border: 1px solid var(--border); border-radius: 7px;
+    background: var(--panel-2); color: var(--ink);
+    padding: 8px; resize: vertical;
+  }
+
+  /* SVG element styles */
+  .room-poly { fill: #fbfcfc; stroke: #c7ced1; fill-opacity: 0.9; cursor: pointer; }
+  .room-label { font-family: var(--font-display); font-weight: 700; fill: var(--line-strong); }
+  .room-dim-label { font-family: var(--font-mono); fill: #111; font-weight: 800; letter-spacing: .02em; }
+  .overall-dimension { font-family: var(--font-mono); fill: #111; font-weight: 800; letter-spacing: .03em; }
+  .overall-dimension line { stroke: #111; stroke-width: 0.04; }
+  .room-area-label { font-family: var(--font-mono); fill: #111; font-weight: 700; }
+  .wall-dim-label { font-family: var(--font-mono); fill: #111; font-weight: 800; paint-order: stroke; stroke: var(--paper); stroke-width: 0.06; stroke-linejoin: round; }
+  .tape-measure line { stroke: #c77400; stroke-dasharray: .18 .12; }
+  .tape-measure circle { fill: #fff; stroke: #c77400; stroke-width: .06; }
+  .tape-measure rect { fill: #fff6df; stroke: #c77400; stroke-width: .035; }
+  .tape-measure text { fill: #5c3900; font-family: var(--font-mono); font-weight: 800; }
+  .map-item-popover rect { fill: #fffdf7; stroke: var(--line); stroke-width: .045; }
+  .map-item-popover .map-pop-title { fill: #111; font-family: var(--font-display); font-weight: 800; }
+  .map-item-popover .map-pop-detail { fill: #111; font-family: var(--font-mono); font-weight: 700; }
+  .map-hover-panel { display: none; padding: 14px 16px; border-bottom: 2px solid var(--line); background: #fffdf7; }
+  .map-hover-content { display: flex; gap: 12px; align-items: flex-start; }
+  .map-hover-content img { width: 84px; height: 84px; object-fit: contain; border: 1px solid var(--border); border-radius: 7px; background: #fff; }
+  .map-hover-content div { min-width: 0; flex: 1; }
+  .map-hover-content strong { display: block; color: #111; font-size: 17px; line-height: 1.2; }
+  .map-hover-content b { display: block; margin-top: 5px; color: #111; font-family: var(--font-mono); font-size: 14px; }
+  .map-hover-content p { margin: 6px 0; color: #222; font-size: 13px; line-height: 1.35; font-weight: 600; }
+  .map-hover-specs, .product-specs { margin: 7px 0; color: #111; font-family: var(--font-mono); font-size: 12px; line-height: 1.4; font-weight: 700; }
+  .map-hover-content em { color: #235f58; font-size: 15px; font-style: normal; font-weight: 800; }
+  .door-arc { fill: none; stroke: var(--ink-faint); }
+  .door-leaf { stroke: var(--ink-faint); }
+  .item { filter: drop-shadow(0.035px 0.055px 0.045px #27333f33); }
+  .item-shape { fill: #fffdf8; stroke: #27333f; stroke-width: 0.045; stroke-linejoin: round; }
+  .item-shape-detail { stroke: #4b5d68; fill: none; stroke-width: 0.028; stroke-linecap: round; stroke-linejoin: round; }
+  .item-table-flat .item-shape { fill: #dceef9; stroke: #336e91; }
+  .item-table-round .item-shape { fill: #e7f0d8; stroke: #5d8040; }
+  .item-chair .item-shape, .item-sofa .item-shape, .item-recliner .item-shape { fill: #f6e6cf; stroke: #8b5a2b; }
+  .item-desk .item-shape, .item-lshape .item-shape { fill: #ede0ca; stroke: #765130; }
+  .item-fridge .item-shape, .item-appliance .item-shape { fill: #e5f0f5; stroke: #48778b; }
+  .item-sink .item-shape, .item-toilet .item-shape { fill: #e9f5f7; stroke: #3d7f8e; }
+  .item-counter .item-shape, .item-rect-drawers .item-shape, .item-cabinet-upper .item-shape { fill: #eee6d6; stroke: #786a50; }
+  .item-shelf .item-shape { fill: #e9e4dc; stroke: #6b6258; }
+  .item-range .item-shape { fill: #f3e4e1; stroke: #9a564b; }
+  .item-stool .item-shape, .item-bin .item-shape { fill: #ece8ef; stroke: #685d75; }
+  .item-plant .item-shape { fill: #e1f0df; stroke: #4c854b; }
+  .fridge-door { fill: none; stroke: #0b5e9a; stroke-width: 0.045; }
+  .fridge-door-arc { fill: none; stroke: #0b5e9a; stroke-width: 0.028; stroke-dasharray: 0.10 0.07; }
+  .item-label { font-family: var(--font-mono); fill: var(--ink-soft); }
+  .item-size-label { font-family: var(--font-mono); fill: #111; font-weight: 800; }
+  .virtual-footprint { fill: #4e9dc20f; stroke: #267aa5; stroke-width: 0.04; stroke-dasharray: 0.16 0.1; pointer-events: none; }
+  .wheelchair-footprint { fill: #4e9dc22; stroke: #245f92; stroke-width: 0.07; stroke-dasharray: 0.16 0.09; pointer-events: none; }
+  .wheelchair-footprint.blocked { fill: #c84a4528; stroke: #b53632; }
+  .wheelchair-label { fill: #173f61; font-family: var(--font-mono); font-weight: 900; pointer-events: none; }
+  .wheelchair-status { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); z-index: 5; padding: 7px 12px; border: 1px solid #245f92; border-radius: 999px; background: #eaf5ff; color: #173f61; font-size: 12px; font-weight: 800; pointer-events: none; }
+  .wheelchair-status.blocked { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+  .item-selected .item-shape { stroke: var(--amber); fill: var(--amber-soft); stroke-width: 0.06; }
+  .item-selected .item-shape-detail { stroke: var(--amber); stroke-width: 0.04; }
+  .item-selected .item-label, .item-selected .item-size-label { fill: var(--amber); font-weight: 900; }
+  .item-overlap .item-shape { stroke: var(--danger); stroke-dasharray: 0.12 0.1; }
+
+  /* ---------- edit mode: walls / doors / room corners ---------- */
+  .room-poly.room-selected { stroke: var(--amber); stroke-width: 0.11; }
+  .wall-custom { stroke: var(--ink); stroke-linecap: square; cursor: pointer; }
+  .wall-custom.selected { stroke: var(--amber); }
+  .wall-preview { stroke: var(--line); stroke-dasharray: 0.16 0.1; fill: none; }
+  .vertex-handle { fill: var(--panel); stroke: var(--amber); cursor: grab; }
+  .vertex-handle:hover { fill: var(--amber-soft); }
+  .wall-handle { fill: var(--panel); stroke: var(--amber); cursor: grab; }
+  .wall-handle:hover { fill: var(--amber-soft); }
+  .door-hit { fill: transparent; pointer-events: all; cursor: pointer; }
+  .door-selected-ring { fill: none; stroke: var(--amber); stroke-dasharray: 0.07 0.06; }
+  .door-leaf.door-sel, .door-arc.door-sel { stroke: var(--amber); }
+  .plan-svg-edit { cursor: crosshair; }
+
+  .structure-panel { display: none; }
+  .structure-panel.active { display: block; }
+  .struct-section-title {
+    font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint);
+    margin: 18px 4px 8px;
+  }
+  .struct-section-title:first-child { margin-top: 0; }
+  .struct-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    padding: 6px 9px; margin-bottom: 4px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--panel-2); cursor: pointer; font-size: 12px;
+  }
+  .struct-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .struct-row:hover { border-color: var(--line); }
+  .struct-row.active { border-color: var(--amber); background: var(--amber-soft); color: var(--amber); }
+  .struct-row .sr-del {
+    flex: 0 0 auto; width: 18px; height: 18px; border-radius: 4px; border: none;
+    background: transparent; color: var(--danger); font-size: 13px; line-height: 1; cursor: pointer;
+  }
+  .struct-row .sr-del:hover { background: var(--danger-soft); }
+
+  /* ---- versions ---- */
+  .versions {
+    border-top: 1px solid var(--border);
+    padding: 14px 16px 16px;
+    background: var(--panel);
+    max-height: 34vh;
+    overflow-y: auto;
+  }
+  .ver-save-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  .ver-save-row button {
+    flex: 1 1 auto; padding: 7px 0; border-radius: 7px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--ink);
+  }
+  .ver-save-row button:hover { border-color: var(--line); color: var(--line); }
+  .ver-save-row button.primary { border-color: var(--line); color: var(--line); }
+  .ver-name-input {
+    width: 100%; border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 7px; margin-bottom: 6px;
+    background: var(--panel-2); font-family: var(--font-mono); font-size: 12.5px;
+  }
+  .ver-name-input:focus { outline: none; }
+  .ver-row {
+    display: flex; align-items: baseline; gap: 6px;
+    padding: 6px 8px; margin-bottom: 4px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--panel-2); font-size: 12px;
+  }
+  .ver-row .ver-label { flex: 1 1 auto; min-width: 0; }
+  .ver-row .ver-nm { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ver-row .ver-meta {
+    display: block; font-family: var(--font-mono); font-size: 10px;
+    color: var(--ink-faint); letter-spacing: 0.04em; margin-top: 1px;
+  }
+  .ver-row .ver-btn {
+    flex: 0 0 auto; border: 1px solid var(--border); background: transparent;
+    color: var(--ink-soft); border-radius: 5px; padding: 3px 7px;
+    font-size: 11px; cursor: pointer;
+  }
+  .ver-row .ver-btn:hover { border-color: var(--line); color: var(--line); }
+  .ver-row .ver-del {
+    flex: 0 0 auto; width: 18px; height: 18px; border-radius: 4px; border: none;
+    background: transparent; color: var(--danger); font-size: 13px; line-height: 1; cursor: pointer;
+  }
+  .ver-row .ver-del:hover { background: var(--danger-soft); }
+  .ver-empty { font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+
+  /* ---- palette: new-item builder + custom cards ---- */
+  .palette-tools { margin-bottom: 12px; }
+  .new-item-btn {
+    width: 100%; padding: 8px 0; cursor: pointer;
+    border: 1px dashed var(--line); border-radius: 8px;
+    background: transparent; color: var(--line);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  }
+  .new-item-btn:hover { background: var(--panel-2); }
+  .builder {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; background: var(--panel-2);
+  }
+  .builder input, .builder select {
+    width: 100%; border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 6px; background: var(--panel);
+    font-family: var(--font-mono); font-size: 12px; color: var(--ink);
+  }
+  .builder input:focus, .builder select:focus { outline: none; border-color: var(--line); }
+  .builder .b-name { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; margin-bottom: 8px; }
+  .builder .b-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .builder label, .builder .b-full {
+    display: block; font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--ink-faint); margin-bottom: 8px;
+  }
+  .builder label input, .builder label select { margin-top: 3px; text-transform: none; letter-spacing: 0; }
+  .builder .b-actions { display: flex; gap: 6px; margin-top: 2px; }
+  .builder .b-actions button {
+    flex: 1 1 auto; padding: 6px 0; border-radius: 6px; cursor: pointer;
+    font-size: 11.5px; font-weight: 600;
+    border: 1px solid var(--border); background: var(--panel); color: var(--ink);
+  }
+  .builder .b-actions button:hover { border-color: var(--line); color: var(--line); }
+  .builder .b-actions .b-primary { border-color: var(--line); color: var(--line); }
+  .item-card-wrap { position: relative; }
+  .item-card-wrap.pending-add-wrap:hover .product-popover { display: none; }
+  .product-popover { display: none; position: absolute; z-index: 30; left: 4px; right: 4px; top: calc(100% - 8px); padding: 11px 12px; border: 2px solid var(--line); border-radius: 8px; background: #fffdf7; box-shadow: 0 8px 20px #24313333; color: #111; pointer-events: auto; }
+  .item-card-wrap:hover .product-popover, .item-card:focus + .product-popover { display: block; }
+  .product-popover strong { display: block; font-size: 15px; line-height: 1.25; }
+  .product-popover p { margin: 6px 0; font-size: 13px; line-height: 1.35; font-weight: 650; }
+  .product-popover em { display: block; font-size: 14px; font-style: normal; color: #235f58; font-weight: 800; }
+  .product-link { display: inline-block; margin-top: 8px; color: #0b5e9a; font-weight: 800; text-decoration: underline; }
+  .item-card-wrap .card-del {
+    position: absolute; top: 4px; right: 4px;
+    width: 17px; height: 17px; border-radius: 4px; border: none;
+    background: transparent; color: var(--danger);
+    font-size: 12px; line-height: 1; cursor: pointer; opacity: 0;
+  }
+  .item-card-wrap:hover .card-del { opacity: 1; }
+  .item-card-wrap .card-del:hover { background: var(--danger-soft); }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1>Suite 203 Layout Planner</h1>
+      <span class="sub">40 DALE ROAD &middot; SUITE 203 &middot; <span id="suiteArea"></span></span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="toolgroup">
+      <button class="toggle-btn" id="modeLayout" aria-pressed="true">Layout</button>
+      <button class="toggle-btn" id="modeEdit" aria-pressed="false">Edit Plan</button>
+    </div>
+    <div class="toolgroup" id="editToolGroup" style="display:none">
+      <button class="toggle-btn" id="toolSelect" aria-pressed="true" title="Select a room, wall, or door">Select</button>
+      <button class="toggle-btn" id="toolWall" aria-pressed="false" title="Drag on the plan to draw a new wall">Wall</button>
+      <button class="toggle-btn" id="toolDoor" aria-pressed="false" title="Click on a wall to insert a door">Door</button>
+      <button class="icon-btn" id="resetPlan" title="Reset rooms/walls/doors to the original digitized plan" aria-label="Reset floor plan">&#8635;</button>
+    </div>
+    <div class="toolgroup">
+      <button class="toggle-btn" id="unitToggle" aria-pressed="false" title="Switch all dimensions between feet-inches and inches">Feet</button>
+      <button class="toggle-btn" id="snapToggle" aria-pressed="true" title="Snap to 3&quot; grid">Snap</button>
+      <button class="toggle-btn" id="measureAxisToggle" aria-pressed="false" title="Measure horizontally or vertically only">Tape H/V</button>
+      <button class="toggle-btn" id="measureFreeToggle" aria-pressed="false" title="Measure freely between any two points">Tape Free</button>
+      <button class="toggle-btn" id="footprintToggle" aria-pressed="true" title="Show virtual fit boxes for shaped items">Fit Boxes</button>
+      <button class="toggle-btn" id="wheelchairToggle" aria-pressed="false" title="Simulate a 30 inch wheelchair footprint">Wheelchair</button>
+      <button class="toggle-btn" id="referencesBtn" title="Open clinical reference photos and planning guidance">References</button>
+      <button class="toggle-btn" id="marketingBtn" title="Open the clinic marketing and promotion strategy">Marketing</button>
+      <button class="icon-btn" id="zoomOut" title="Zoom out" aria-label="Zoom out">&#8722;</button>
+      <button class="icon-btn" id="zoomFit" title="Fit to plan" aria-label="Fit to plan">&#8862;</button>
+      <button class="icon-btn" id="zoomIn" title="Zoom in" aria-label="Zoom in">&#43;</button>
+    </div>
+    <div class="toolgroup">
+      <span class="save-status" id="saveStatus"><span class="dot"></span>Saved</span>
+      <button class="clear-btn" id="clearAll">Clear layout</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="palette" id="palette">
+      <p class="palette-hint" id="furnitureHint">Click a piece to drop it on the plan, then drag to place it. Use the panel on the right to resize, rotate, or fine-tune position.</p>
+      <div id="paletteList"></div>
+      <div class="structure-panel" id="structurePanel">
+        <p class="palette-hint"><strong>Select</strong> &mdash; click a room to drag its corners; click a wall or door to move/delete it.<br/><br/><strong>Wall</strong> &mdash; drag on the plan to draw a new wall.<br/><br/><strong>Door</strong> &mdash; click anywhere on a wall to insert a door.</p>
+        <div id="structureLists"></div>
+      </div>
+    </aside>
+
+    <main class="canvas-wrap" id="canvasWrap">
+      <svg id="plan" viewBox="0 0 40 30" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="empty-hint" id="emptyHint">The plan is empty &mdash; click any item on the left to add it.</div>
+      <div class="warn-pill" id="warnPill" style="display:none"></div>
+      <div class="wheelchair-status" id="wheelchairStatus" style="display:none"></div>
+    </main>
+
+    <aside class="rightcol">
+      <section class="map-hover-panel" id="mapHoverPanel"></section>
+      <section class="inspector" id="inspector"></section>
+      <section class="versions" id="versionsPanel"></section>
+      <section class="schedule" id="schedule"></section>
+    </aside>
+  </div>
+</div>
+<div class="photo-modal" id="photoModal" role="dialog" aria-modal="true" aria-label="Product photo">
+  <button type="button" id="photoModalClose" aria-label="Close product photo">&times;</button>
+  <img id="photoModalImage" alt="" />
+</div>
+<div class="reference-modal" id="referenceModal" role="dialog" aria-modal="true" aria-label="Clinical reference photos">
+  <section class="reference-dialog">
+    <button type="button" class="reference-close" id="referenceClose" aria-label="Close references">&times;</button>
+    <p class="panel-title">Clinical reference photos</p>
+    <div class="reference-actions"><label class="reference-upload">+ Load reference photo<input type="file" id="referenceUpload" accept="image/*" multiple /></label></div>
+    <div class="reference-layout"><div class="reference-gallery" id="referenceGallery"></div><div class="reference-preview" id="referencePreview"></div></div>
+    <section class="clinic-guidance"><strong>Clinic planning guidance</strong><ul><li>Keep the floor clear for wheelchair turning and transfer approach; verify required clearances against local code and the current accessibility standard.</li><li>Confirm grab-bar locations, toilet centerline, accessible sink knee/toe clearance, and door maneuvering clearance before construction.</li><li>Use cleanable, durable finishes and protect clear access to handwashing, waste, outlets, and dispensers.</li><li>Measure the actual room and fixture locations before final equipment placement; this reference photo is not a scaled drawing.</li></ul></section>
+  </section>
+</div>
+<div class="reference-modal" id="marketingModal" role="dialog" aria-modal="true" aria-label="Clinic marketing and promotion strategy">
+  <section class="reference-dialog">
+    <button type="button" class="reference-close" id="marketingClose" aria-label="Close marketing strategy">&times;</button>
+    <p class="panel-title">Clinic marketing &amp; promotion strategy</p>
+    <p class="marketing-note">A practical launch plan for a rheumatology-focused clinic. Set an owner and due date for each action, then track results monthly.</p>
+    <div class="marketing-grid">
+      <section class="marketing-card"><strong>1. Foundation &amp; patient access</strong><ul><li>Publish a fast, accessible website with services, clinician bios, insurance participation, location, parking, accessibility information, and contact options.</li><li>Keep the Google Business Profile accurate: hours, phone, entrance photos, map pin, holiday changes, and appointment link.</li><li>Offer a clear new-patient path: referral instructions, what to bring, records process, cancellation policy, and a secure scheduling or contact route.</li></ul></section>
+      <section class="marketing-card"><strong>2. Referral-network growth</strong><ul><li>Create a one-page referral kit for primary care, orthopedics, dermatology, nephrology, and other relevant partners: accepted plans, referral criteria, urgent-path instructions, fax/e-referral route, and expected response time.</li><li>Schedule concise outreach with nearby practices and hospital discharge teams; provide a named referral contact.</li><li>Report referral-to-appointment turnaround, no-show rate, and closed-loop referral feedback to improve partner confidence.</li></ul></section>
+      <section class="marketing-card"><strong>3. Patient education &amp; community</strong><ul><li>Use clinician-reviewed, plain-language content on arthritis symptoms, infusion preparation, medication safety, mobility, and visit preparation. Avoid diagnosis or individualized care in public posts.</li><li>Promote educational events, local support resources, and accessibility features without using patient stories or photos unless properly authorized.</li><li>Ask for honest public reviews only through a neutral, voluntary process; never expose patient information in a response.</li></ul></section>
+      <section class="marketing-card"><strong>4. Campaigns, measurement &amp; operations</strong><ul><li>Use a small set of campaigns: local search, referral outreach, new-patient education, and reactivation of appropriately contacted former patients.</li><li>Measure source, inquiry-to-booking conversion, time to appointment, show rate, capacity by service, cost per booked patient, and patient experience.</li><li>Connect campaigns to operations: ensure room, staffing, infusion capacity, supplies, and front-desk scripts can support the volume before scaling.</li></ul></section>
+      <section class="marketing-card"><strong>5. Pharmaceutical-representative visits</strong><ul><li>Use appointment-only visits, coordinated through one staff owner; do not allow drop-ins to interrupt patient care or waiting areas.</li><li>Meet in the Admin room or a designated non-patient space, not exam, infusion, storage, or reception areas. Keep patient records, screens, and conversations out of sight and earshot.</li><li>Maintain a visitor log with organization, representative name, date, staff host, purpose, and materials received. Require visible visitor identification and follow the clinic's sign-in and escort policy.</li><li>Set a written policy for samples, meals, gifts, educational items, and product discussions; route all materials through clinical leadership and applicable organizational or legal review.</li></ul></section>
+    </div>
+    <section class="placement-plan"><h3>Room-based photo, poster &amp; information placement plan</h3>
+      <div class="placement-row"><strong>Reception</strong><em>Primary promotion zone</em><span>Place one large, calming clinic or community photo behind/near check-in, plus a single services poster at adult eye level. Use a neat brochure holder for new-patient, referral, accessibility, and event information. Keep the desk front, circulation path, and any PHI screens clear.</span></div>
+      <div class="placement-row"><strong>Corridor</strong><em>Wayfinding only</em><span>Use small, consistent room signs and one narrow health-education frame only where it does not narrow the route. Avoid freestanding displays, floor stands, or anything that reduces wheelchair travel width.</span></div>
+      <div class="placement-row"><strong>Exam rooms</strong><em>Patient education</em><span>Use one wipeable framed poster or digital display on the wall visible from the exam table: arthritis self-management, visit preparation, hand hygiene, or medication safety. Do not place materials behind the door swing, over a sink, or where they conflict with clinical equipment.</span></div>
+      <div class="placement-row"><strong>Infusion</strong><em>Comfort &amp; safety</em><span>Use calming artwork or a quiet digital information screen in the patient sightline. First map and test every outlet; reserve accessible power for recliners/pumps and equipment, with no cords crossing travel paths. Keep emergency equipment, staff sightlines, outlets, infusion equipment, and cleanable surfaces unobstructed. Avoid promotional materials implying a specific treatment outcome.</span></div>
+      <div class="placement-row"><strong>Consult / physician office</strong><em>Professional credibility</em><span>Display credentials, affiliations, or a neutral clinic mission piece behind the clinician—not visible on an unsecured screen or through an open door. Keep patient-facing education in a small holder, separate from protected documents.</span></div>
+      <div class="placement-row"><strong>Admin &amp; Storage</strong><em>Staff-only support</em><span>Use internal campaign calendars, referral workflow sheets, rep-visit policy, and inventory/reorder notices. Do not place patient-facing promotional signs here; keep storage shelving, exits, and work surfaces usable.</span></div>
+      <div class="placement-row"><strong>Bathroom &amp; Kitchen</strong><em>Minimal / no promotion</em><span>Bathroom: only hygiene, accessibility, and emergency/contact notices using cleanable, securely mounted material. Kitchen: staff notices only. Do not use either room for patient promotions or product marketing.</span></div>
+    </section>
+    <section class="clinic-guidance"><strong>Privacy, compliance &amp; brand safeguards</strong><ul><li>Use only approved systems and vendors for any patient data. Do not put PHI into public forms, ad platforms, pixels, chat widgets, or marketing tools unless your privacy and security review permits it.</li><li>Do not use patient photos, testimonials, or identifiable stories without the appropriate written authorization. Marketing rules can vary by communication and payment arrangement.</li><li>Have a privacy official or health-care counsel review campaigns, representative-visit policy, consent language, claims, accessibility, and vendor agreements before launch. See <a href="https://www.hhs.gov/hipaa/for-professionals/faq/authorizations/index.html" target="_blank" rel="noopener">HHS HIPAA authorization guidance</a>.</li></ul></section>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================== DATA =========================== */
+
+  // Coordinate system (matches the corrected DXF): x=0 at Exam 1's west
+  // wall, increasing east. y=0 at the front (entry) exterior wall,
+  // increasing toward the back of the suite (the exam-room wing). This is
+  // used directly as the SVG's coordinate space (north/up = low y =
+  // Reception/Bathroom/Nurse Station; south/down = high y = the exam wing),
+  // matching Attachment A's own orientation.
+  var ROOM_MAXY = 29.9792;
+  // Nominal finished interior partition: 3.5 in stud + 0.5 in drywall each side.
+  var WALL_THICKNESS = 4.5 / 12;
+
+  // v6 geometry. Room NAMES and every DOOR position come from the user's
+  // second hand-traced overlay (clinmic_wall.pptx), which labelled the rooms
+  // and re-marked all ten doors in orange. Key corrections vs v5:
+  //   * the front band is Reception | Kitchen | Storage-over-Bathroom |
+  //     Infusion -- not "Bathroom + Nurse Station"
+  //   * every door sits hard against a room divider, not mid-wall
+  //   * Consult shares the south exterior wall with Exam 1/2/3 and extends
+  //     further NORTH instead of stepping further south
+  //   * the entry door is in the short wall of the south-west notch
+  // Room widths and the 12'-1" / 12'-11 3/4" / 11'-11 3/4" / 13'-0 1/2" /
+  // 8'-6" depths are printed dimensions off Attachment A. The storage /
+  // bathroom split, admin-nook depth, corridor depth, SW notch and NE chamfer
+  // are traced only. See build_floorplan.py for the same numbers.
+  var ROOMS_DEFAULT = [
+    { id: "reception", name: "Reception", poly: [[-9.9385,0],[9.6865,0],[9.6865,11.15],[0,11.15],[0,12.9792],[-6.66,12.9792],[-6.66,7.92],[-9.9385,7.92]] },
+    { id: "kitchen", name: "Kitchen", poly: [[9.6865,0],[18.1865,0],[18.1865,12.0833],[9.6865,12.0833]] },
+    { id: "storage", name: "Storage", poly: [[18.1865,0],[25.7073,0],[25.7073,5.1667],[18.1865,5.1667]] },
+    { id: "bathroom", name: "Bathroom", poly: [[18.1865,5.1667],[25.7073,5.1667],[25.7073,12.0833],[18.1865,12.0833]] },
+    { id: "infusion", name: "Infusion", poly: [[25.7073,0],[45.4573,0],[45.4573,8.60],[41.5273,12.0833],[25.7073,12.0833]] },
+    { id: "admin", name: "Admin", poly: [[0,11.15],[9.6865,11.15],[9.6865,18],[0,18]] },
+    { id: "corridor", name: "Corridor", poly: [[9.6865,12.0833],[33.7292,12.0833],[33.7292,16.9375],[24.4167,16.9375],[24.4167,18],[9.6865,18]] },
+    { id: "exam1", name: "Exam 1", poly: [[0,18],[8.0417,18],[8.0417,29.9792],[0,29.9792]] },
+    { id: "exam2", name: "Exam 2", poly: [[8.0417,18],[16.0833,18],[16.0833,29.9792],[8.0417,29.9792]] },
+    { id: "exam3", name: "Exam 3", poly: [[16.0833,18],[24.4167,18],[24.4167,29.9792],[16.0833,29.9792]] },
+    { id: "consult", name: "Consult", poly: [[24.4167,16.9375],[33.7292,16.9375],[33.7292,29.9792],[24.4167,29.9792]] }
+  ];
+
+  // A door is a hinge point (x,y), the direction `angle` its OPENING runs in
+  // from that hinge (0 = east, 90 = south, since y increases south here), the
+  // opening width w, and `swing` = +1 / -1 for which side of the wall the leaf
+  // opens into (+1 = 90 degrees clockwise from `angle`). All ten below are
+  // placed from the orange door markers on the traced overlay.
+  var STANDARD_DOOR_WIDTH = 34 / 12; // 34 inches
+  var DOORS_DEFAULT = [
+    { id: "d-entry",   x: -6.66,   y: 12.9792, w: STANDARD_DOOR_WIDTH, angle: 270, swing:  1, custom: false }, // entry -> reception
+    { id: "d-recept",  x: 6.90,    y: 11.15,   w: STANDARD_DOOR_WIDTH, angle: 0,   swing: -1, custom: false }, // swings outward from Admin into Reception
+    { id: "d-kitchen", x: 15.1865, y: 12.0833, w: STANDARD_DOOR_WIDTH, angle: 0,   swing: -1, custom: false }, // kitchen -> corridor
+    { id: "d-storage", x: 25.7073, y: 3.40,    w: STANDARD_DOOR_WIDTH, angle: 270, swing: -1, custom: false }, // storage -> infusion
+    { id: "d-bath",    x: 25.7073, y: 12.0833, w: STANDARD_DOOR_WIDTH, angle: 180, swing:  1, custom: false }, // bathroom -> corridor
+    { id: "d-infus",   x: 25.7073, y: 12.0833, w: STANDARD_DOOR_WIDTH, angle: 0,   swing: -1, custom: false }, // infusion -> corridor
+    { id: "d-exam1",   x: 8.0417,  y: 18,      w: STANDARD_DOOR_WIDTH, angle: 180, swing: -1, custom: false }, // exam 1 -> corridor
+    { id: "d-exam2",   x: 8.0417,  y: 18,      w: STANDARD_DOOR_WIDTH, angle: 0,   swing:  1, custom: false }, // exam 2 -> corridor
+    { id: "d-exam3",   x: 16.0833, y: 18,      w: STANDARD_DOOR_WIDTH, angle: 0,   swing:  1, custom: false }, // exam 3 -> corridor
+    { id: "d-consult", x: 24.4167, y: 16.9375, w: STANDARD_DOOR_WIDTH, angle: 0,   swing:  1, custom: false }  // consult -> corridor
+  ];
+  var HALF_WALLS_DEFAULT = [
+    { x: 1.0, y: 11.15, w: 5.2292, axis: "h" }   // Admin/Reception half-wall, 5'-2 3/4" opening
+  ];
+
+  var CATALOG = [
+    { id: "ritter-204-011", name: "Ritter 204-011 · seamless top", cat: "Exam Tables & Chairs", w: 59.5, d: 28.5, shape: "table-flat", price: "$2,000–$2,600 each", detail: "Manufacturer category: Manual Examination Table · 500-lb capacity · 33.13 in H · manual air-spring back · no heater or pelvic tilt", link: "https://www.midmark.com/medical/products/manual-examination-tables/detail/ritter-204-manual-examination-table", photo: "https://www.midmark.com/images/default-source/webp/medical/products/manual-examination-tables/ritter-204-manual-examination-table/1.webp?sfvrsn=728ec1d9_1" },
+    { id: "ritter-228-001", name: "Ritter 228-001 · Barrier-Free", cat: "Exam Tables & Chairs", w: 60, d: 28, shape: "table-flat", price: "$6,500–$8,000", detail: "Manufacturer category: Barrier-Free Examination Chair (not a manual exam table) · 500-lb capacity · powered 17–37 in height · add seamless upholstery + bilateral support rails", specs: "28 in W × 60 in L seamless upholstery; 76 in L with 16 in footrest extended · 17–37 in height range · 500 lb capacity · 115 VAC / 60 Hz / 9 A (228-001)", link: "https://www.midmark.com/medical/products/barrier-free-examination-chairs/detail/ritter-228-barrier-free-examination-chair", photo: "https://www.midmark.com/images/default-source/webp/medical/products/examination-chairs/ritter-228-229-examination-chairs/228-01.webp?sfvrsn=7238e757_3" },
+    { id: "winco-6740", name: "Winco 6740 Swing-Away Arm CareCliner", cat: "Recommended Package", w: 41, d: 34, shape: "recliner", price: "$1,743 quoted", detail: "350-lb capacity · 46.5 in H · 70 in reclined clearance · 5 in casters · dual flip-side tables", link: "https://www.medproshop.com/products/winco-6740-swing-away-arm-designer-care-cliner-recliner", photo: "winco-6740-product.jpg" },
+    { id: "winaz-nurse-mobile-station", name: "WINAZ Nurse Mobile Station with Drawers", cat: "Recommended Package", w: 31.5, d: 18.9, shape: "desk", price: "Price to confirm", detail: "Adjustable work height 27.9–41.3 in · 2 fabric drawers · lower shelf · side storage bag · 4 locking casters", photo: "winaz-nurse-mobile-station.jpg" },
+    { id: "accucold-ars23mllh", name: "AccuCold ARS23MLLH Medical Refrigerator", cat: "Recommended Package", w: 27.5, d: 31, shape: "fridge", doorHinge: "left", price: "$3,166.30 quoted", detail: "84 in H · 23 cu ft · full solid left-hand door · reach-in medical refrigerator", specs: "27.5 in W × 31 in D × 84 in H · 150 lb · 115 V / 60 Hz / 1 phase · R290 hydrocarbon refrigerant · one section / one solid full door · door lock · casters supplied uninstalled · general-purpose use · 2-year parts & labor warranty; 5-year compressor-parts warranty", link: "https://www.katom.com/162-ARS23MLLH.html?utm_id=627377896&msclkid=c4f7601bc8fc11897cf40a9004c812ce&utm_source=bing&utm_medium=cpc&utm_campaign=%5BROI%5D%20Shopping%20-%20PMax%20-%20Commercial%20Refrigeration&utm_term=2332888796697635&utm_content=PMax%20-%20Commercial%20Refrigerators", specSheet: "https://res.katom.com/products/498/162-ARS23MLLH/162-ARS23MLLH.pdf", photo: "accucold-ars23mllh-product.jpg" },
+    { id: "hamilton-beach-hbf1152", name: "Hamilton Beach HBF1152-SS Top-Freezer Refrigerator", cat: "Recommended Package", w: 23.6, d: 26.2, shape: "fridge", doorHinge: "right", price: "$649 quoted", detail: "72.4 in H · 11.5 cu ft total · frost-free stainless refrigerator · reversible door", specs: "23.6 in W × 26.2 in D × 72.4 in H · 26 in D less door · 30 in depth with door open 90° · 7.79 cu ft refrigerator + 3.72 cu ft freezer · auto/cycle defrost · garage ready · counter depth · no ice maker or water dispenser · adjustable leveling legs · reversible door", link: "https://www.homedepot.com/p/336857383", photo: "hamilton-beach-hbf1152-product.jpg" },
+    { id: "deskshow-55x24", name: "DeskShow Electric Standing Desk", cat: "Recommended Package", w: 55, d: 24, shape: "desk", price: "Price to confirm", detail: "Electric 55 × 24 in sit-stand desk · 0.8 in tabletop · 3 memory presets · cable management", specs: "55 in W × 24 in D planning footprint · 0.8 in tabletop · electric adjustable-height frame · 3 programmable memory positions · cable management · verify the exact height range, load rating, color, price, and warranty with the seller before ordering", link: "https://www.ubuy.co.in/product/U7MYPPLKK-electric-standing-desk-adjustable-55-x-24-inch-sit-stand-up-desk-with-0-8-inch-thick-tabletop-adjustable-height-table-with-3-memory-preset-cable", photo: "deskshow-55x24-product.jpg" },
+    { id: "existing-guest-chair", name: "Existing upholstered guest chair", cat: "Recommended Package", w: 24, d: 24, shape: "chair", price: "Free · existing", detail: "24 × 24 in planning footprint (estimate from photo; measure onsite before final placement)", photo: "existing-guest-chair-product.jpg" },
+    { id: "avalon-b8wht", name: "Avalon B8WHT Countertop Bottleless Water Cooler", cat: "Recommended Package", w: 12, d: 14.75, shape: "appliance", price: "$163.75 quoted", detail: "19 in H · hot/cold bottleless dispenser · requires countertop space and water connection", photo: "small-items-product-list.jpg" },
+    { id: "simplehouseware-slim-cart", name: "Simple Houseware 3-Tier Slim Rolling Cart", cat: "Recommended Package", w: 5.5, d: 16.5, shape: "rect-drawers", price: "$21.87 quoted", detail: "26.5 in H · narrow 3-tier cart with handle and casters", photo: "small-items-product-list.jpg" },
+    { id: "rubbermaid-slim-jim-13", name: "Rubbermaid Slim Jim 13-Gal Under-Counter Trash Bin", cat: "Recommended Package", w: 11.17, d: 22.23, shape: "bin", price: "$66.22 quoted", detail: "26.09 in H · gray 13-gal under-counter container · confirm the selected capacity before ordering", photo: "small-items-product-list.jpg" },
+    { id: "exam-table", name: "Exam Table", cat: "Exam Room", w: 27, d: 54, shape: "table-flat" },
+    { id: "rolling-stool", name: "Rolling Stool", cat: "Exam Room", w: 15, d: 15, shape: "stool" },
+    { id: "guest-chair-1", name: "Guest Chair", cat: "Exam Room", w: 22, d: 24, shape: "chair" },
+    { id: "wall-counter", name: "Counter / Millwork", cat: "Exam Room", w: 24, d: 18, shape: "rect" },
+    { id: "supply-cart", name: "Supply Cart", cat: "Exam Room", w: 18, d: 24, shape: "rect-drawers" },
+    { id: "sharps-bin", name: "Sharps / Trash", cat: "Exam Room", w: 12, d: 12, shape: "bin" },
+
+    { id: "office-desk", name: "Desk", cat: "Admin & Office", w: 60, d: 30, shape: "desk" },
+    { id: "office-chair", name: "Office Chair", cat: "Admin & Office", w: 24, d: 24, shape: "chair" },
+    { id: "filing-cabinet", name: "Filing Cabinet", cat: "Admin & Office", w: 18, d: 24, shape: "rect-drawers" },
+    { id: "bookshelf", name: "Bookshelf", cat: "Admin & Office", w: 36, d: 12, shape: "rect-drawers" },
+    { id: "small-counter", name: "Admin Counter", cat: "Admin & Office", w: 48, d: 18, shape: "rect" },
+
+    { id: "reception-desk", name: "Reception Desk (L)", cat: "Reception & Waiting", w: 66, d: 30, shape: "lshape" },
+    { id: "waiting-chair", name: "Waiting Chair", cat: "Reception & Waiting", w: 24, d: 28, shape: "chair" },
+    { id: "loveseat", name: "Loveseat", cat: "Reception & Waiting", w: 54, d: 30, shape: "sofa" },
+    { id: "side-table", name: "Side Table", cat: "Reception & Waiting", w: 20, d: 20, shape: "table-round" },
+    { id: "coat-rack", name: "Coat Rack", cat: "Reception & Waiting", w: 16, d: 16, shape: "stool" },
+
+    { id: "sink-cabinet", name: "Sink & Base Cabinet", cat: "Bathroom", w: 24, d: 20, shape: "sink" },
+    { id: "toilet", name: "Toilet", cat: "Bathroom", w: 20, d: 28, shape: "toilet" },
+    { id: "trash-bin", name: "Trash Bin", cat: "Bathroom", w: 12, d: 12, shape: "bin" },
+
+    { id: "consult-table", name: "Consult Table (Round)", cat: "Consult", w: 42, d: 42, shape: "table-round" },
+    { id: "consult-chair", name: "Consult Chair", cat: "Consult", w: 22, d: 24, shape: "chair" },
+    { id: "credenza", name: "Credenza", cat: "Consult", w: 48, d: 18, shape: "rect-drawers" },
+
+    { id: "kit-fridge", name: "Refrigerator", cat: "Kitchen & Break", w: 30, d: 32, shape: "fridge" },
+    { id: "kit-fridge-sm", name: "Under-counter Fridge", cat: "Kitchen & Break", w: 24, d: 24, shape: "fridge" },
+    { id: "kit-sink", name: "Kitchen Sink & Base", cat: "Kitchen & Break", w: 30, d: 24, shape: "sink" },
+    { id: "kit-counter", name: "Counter Top Run", cat: "Kitchen & Break", w: 72, d: 25, shape: "counter" },
+    { id: "kit-base-cab", name: "Base Cabinet", cat: "Kitchen & Break", w: 36, d: 24, shape: "rect-drawers" },
+    { id: "kit-upper-cab", name: "Upper Cabinets", cat: "Kitchen & Break", w: 72, d: 13, shape: "cabinet-upper" },
+    { id: "kit-range", name: "Range / Cooktop", cat: "Kitchen & Break", w: 30, d: 25, shape: "range" },
+    { id: "kit-dishwasher", name: "Dishwasher", cat: "Kitchen & Break", w: 24, d: 24, shape: "appliance" },
+    { id: "kit-microwave", name: "Microwave", cat: "Kitchen & Break", w: 22, d: 16, shape: "appliance" },
+    { id: "kit-coffee", name: "Coffee Station", cat: "Kitchen & Break", w: 24, d: 20, shape: "rect" },
+    { id: "kit-table", name: "Break Table", cat: "Kitchen & Break", w: 36, d: 36, shape: "table-round" },
+    { id: "kit-chair", name: "Break Chair", cat: "Kitchen & Break", w: 20, d: 20, shape: "chair" },
+
+    { id: "sto-shelving", name: "Shelving Unit", cat: "Storage", w: 48, d: 18, shape: "shelf" },
+    { id: "sto-cabinet", name: "Storage Cabinet", cat: "Storage", w: 36, d: 24, shape: "rect-drawers" },
+    { id: "sto-rack", name: "Supply Rack", cat: "Storage", w: 36, d: 18, shape: "shelf" },
+    { id: "sto-boxes", name: "Stacked Bins", cat: "Storage", w: 24, d: 18, shape: "rect" },
+
+    { id: "inf-recliner", name: "Infusion Recliner", cat: "Infusion", w: 32, d: 60, shape: "recliner" },
+    { id: "inf-ivpole", name: "IV Pole", cat: "Infusion", w: 12, d: 12, shape: "iv-pole" },
+    { id: "inf-nurse-counter", name: "Nurse Station Counter", cat: "Infusion", w: 96, d: 30, shape: "counter" },
+    { id: "inf-sink-base", name: "Sink & Base Cabinet", cat: "Infusion", w: 30, d: 24, shape: "sink" },
+    { id: "inf-upper", name: "Upper Cabinets", cat: "Infusion", w: 60, d: 13, shape: "cabinet-upper" },
+    { id: "inf-side-table", name: "Side Table", cat: "Infusion", w: 18, d: 18, shape: "table-round" },
+
+    { id: "bath-vanity", name: "Vanity Counter Top", cat: "Bathroom", w: 48, d: 22, shape: "counter" },
+    { id: "bath-mirror", name: "Mirror", cat: "Bathroom", w: 36, d: 4, shape: "rect" },
+    { id: "bath-shelf", name: "Shelves", cat: "Bathroom", w: 30, d: 12, shape: "shelf" },
+
+    { id: "gen-counter", name: "Counter Top", cat: "General", w: 48, d: 25, shape: "counter" },
+    { id: "gen-printer", name: "Printer / Copier", cat: "General", w: 24, d: 22, shape: "appliance" },
+    { id: "gen-water", name: "Water Cooler", cat: "General", w: 14, d: 14, shape: "appliance" },
+    { id: "plant", name: "Plant", cat: "General", w: 14, d: 14, shape: "plant" }
+  ];
+
+  // Every shape the "New item" builder offers, with a human label.
+  var SHAPE_CHOICES = [
+    ["rect", "Box / generic"], ["counter", "Counter top"], ["rect-drawers", "Cabinet w/ drawers"],
+    ["cabinet-upper", "Upper cabinet (dashed)"], ["shelf", "Shelving"], ["sink", "Sink"],
+    ["toilet", "Toilet"], ["fridge", "Fridge"], ["range", "Range / cooktop"],
+    ["appliance", "Appliance"], ["desk", "Desk"], ["lshape", "L-shaped desk"],
+    ["table-flat", "Exam / flat table"], ["table-round", "Round table"], ["chair", "Chair"],
+    ["recliner", "Recliner"], ["sofa", "Sofa"], ["stool", "Stool"], ["bin", "Bin"],
+    ["iv-pole", "IV pole"], ["plant", "Plant"]
+  ];
+
+  var CATALOG_BY_ID = {};   // rebuilt by reindexCatalog() once custom items load
+  CATALOG.forEach(function (c) { CATALOG_BY_ID[c.id] = c; });
+
+  var CATS = ["Recommended Package", "Exam Tables & Chairs", "My Items", "Exam Room", "Kitchen & Break", "Storage", "Infusion", "Bathroom", "Admin & Office", "Reception & Waiting", "Consult", "General"];
+  var ROOM_REFERENCE_PHOTOS = {
+    bathroom: { name: "Medical bathroom", src: "medical-bathroom-reference.jpg", detail: "Existing bathroom reference photo. Use it to verify fixture locations and access clearances onsite." },
+    storage: { name: "Medical storage room", src: "medical-storage-reference.jpg", detail: "Existing storage-room reference photo. Use it to verify door swing, wall condition, and usable shelving depth onsite." },
+    infusion: { name: "Infusion room", src: "infusion-room-reference.jpg", detail: "Existing infusion-room reference photo. Visible unfinished electrical openings and outlets should be field-verified before selecting the final recliner, refrigerator, or nurse-station locations." },
+    kitchen: { name: "Kitchen — 10 second video frame", src: "kitchen-room-reference-10s.jpg", extraPhotos: [{ name: "Kitchen sink and cabinet", src: "kitchen-room-reference.jpg" }], detail: "Two kitchen frames show the sink, cabinet edge, open wall, and several outlets; field-measure the open wall and door swing before assigning refrigerator or waste locations." }
+  };
+  var ROOM_SUGGESTIONS = {
+    reception: ["Place alcohol hand sanitizer at the entry or check-in point; keep it clear of door swing and waiting circulation.", "Use a lidded general-waste bin behind the desk, not in the accessible approach; do not keep sharps or clinical consumables in public waiting space.", "Provide a low, accessible transaction surface and position paperwork/screens so patients and visitors cannot see protected health information (PHI)."],
+    kitchen: ["Photo-informed: the sink/counter, base cabinets, upper cabinets, and multiple backsplash outlets are present. Measure the open floor/wall zone from cabinet edge to door arc before assigning appliances; do not block sink use, outlets, or cabinet doors.", "Fit any refrigerator from actual exterior dimensions plus ventilation and service clearance—not only the 2D footprint. Confirm its door hinge/swing, plug reach, dedicated-circuit needs, and the correct food-versus-clinical use policy in the room where it is actually placed.", "Place a narrow lidded general-waste bin beside the counter only if it stays outside the sink approach, appliance doors, and egress. Keep regulated waste and sharps out of the kitchen; stage bulk clinical waste/consumables in Storage.", "Keep food/break supplies separate from clinical consumables, sharps, and regulated waste; place water/coffee equipment where spills will not affect clinical circulation."],
+    storage: ["Photo-informed: the room appears narrow with a projecting door; keep the entry zone empty and use wall shelving only beyond the door arc.", "Store clean clinical consumables in labeled, closed shelving at reachable heights; set par/reorder labels and expiry/lot rotation by shelf.", "Keep environmental cleaning products in a dedicated, secured section; separate regulated waste/returns from clean supplies and do not store boxes on the floor."],
+    bathroom: ["Photo-informed: the existing toilet, grab bars, and wall-mounted sink are visible; verify heights, centerlines, fastening, and clear floor space onsite.", "Keep soap, paper towel, and general waste at the handwashing/toilet zone without obstructing the sink approach, grab bars, turning space, or door maneuvering area.", "Do not stage clinical sharps, clean patient-care supplies, or environmental-cleaning carts in this bathroom; keep cleaning chemicals secured in Storage."],
+    infusion: ["Photo-informed: identify and label every existing outlet/open electrical box shown in the room. Have a licensed electrician verify cover plates, condition, voltage, circuit capacity, grounding, and whether each outlet remains accessible after cabinetry or recliners are installed.", "Make an outlet plan before placement: mark one accessible outlet per recliner/infusion pump position, a separate verified location for refrigerator or medical equipment, and a protected route for cords—never across the patient path, transfer zone, door swing, or wet area.", "Place hand sanitizer at room entry and at each patient-care station; locate a sharps container within staff reach but outside patient transfer paths.", "Use closed mobile or wall storage for infusion consumables; keep emergency equipment, regulated waste, and refrigerator door swing accessible and separate from clean supplies.", "Provide line-of-sight supervision, patient-call/emergency response planning, and dedicated power/data locations before final furniture placement."],
+    admin: ["Place the desk to avoid blocking the outward-swinging door and retain a guest approach zone.", "Use enclosed storage for patient information; keep general office supplies here, not clinical consumables, sharps, or regulated waste.", "Allow clearance for the standing desk at its full height range and orient computer screens away from public sightlines."],
+    corridor: ["Keep this route free of carts, chairs, waste bins, and temporary storage; it is the clinic's primary circulation path.", "Wall-mount only shallow approved items such as sanitizer where they will not project into required width or door swings."],
+    exam1: ["Place hand hygiene at the sink or just inside the entry; position a sharps container and regulated waste at point of care, clear of the patient transfer side.", "Use upper/closed millwork or a narrow cart for exam consumables; keep cleaning products and bulk stock in Storage, not on the floor.", "Keep approach space on the transfer side of the exam table and preserve a clinician work zone near sink/millwork."],
+    exam2: ["Place hand hygiene at the sink or just inside the entry; position a sharps container and regulated waste at point of care, clear of the patient transfer side.", "Use upper/closed millwork or a narrow cart for exam consumables; keep cleaning products and bulk stock in Storage, not on the floor.", "Keep approach space on the transfer side of the exam table and preserve a clinician work zone near sink/millwork."],
+    exam3: ["Place hand hygiene at the sink or just inside the entry; position a sharps container and regulated waste at point of care, clear of the patient transfer side.", "Use upper/closed millwork or a narrow cart for exam consumables; keep cleaning products and bulk stock in Storage, not on the floor.", "Keep approach space on the transfer side of the exam table and preserve a clinician work zone near sink/millwork."],
+    consult: ["Use this as the physician office: place the desk and monitor so the screen is not visible from the doorway, corridor, or guest chairs; use an automatic screen lock and privacy filter if sightlines remain possible.", "Use closed, lockable storage for PHI and records; do not stage clinical sharps, regulated waste, or bulk patient-care consumables here.", "Place a small visitor chair/table outside the door swing and retain a wheelchair-friendly route for private physician-patient or staff consultations." ]
+  };
+  var ROOM_DOOR_NOTES = {
+    reception: "Keep reception seating and the check-in desk outside every entry/admin door arc. The Admin–Reception door is set to swing outward from Admin into Reception.",
+    kitchen: "Verify that refrigerator and room-door swings do not conflict; do not place a cart or bin in either arc.",
+    storage: "The reference photo shows a narrow entry condition. Keep shelving, refrigerator depth, and supply carts beyond the door swing and measure the clear opening onsite.",
+    bathroom: "Keep the bathroom door maneuvering area, sink approach, toilet transfer space, and grab-bar zone clear of movable items.",
+    infusion: "Lay out recliners, the mobile station, and refrigerator so their use and door swings do not block the room door or staff path.",
+    admin: "The Admin–Reception door is set to open outward into Reception. Keep the desk, guest chair, and files clear of that arc.",
+    corridor: "No equipment, waste bin, or cart should occupy a door swing or reduce the corridor clear path.",
+    exam1: "Keep the room door arc and the exam-table transfer side free; park carts only after confirming they do not project into the door path.",
+    exam2: "Keep the room door arc and the exam-table transfer side free; park carts only after confirming they do not project into the door path.",
+    exam3: "Keep the room door arc and the exam-table transfer side free; park carts only after confirming they do not project into the door path.",
+    consult: "For the physician office, keep the desk, visitor seating, and computer screen outside the door sightline and door arc; verify confidential screen visibility from the hall before finalizing placement."
+  };
+  var CLINIC_READINESS_CHECKS = [
+    "Electrical: map and test every outlet; confirm dedicated circuits, GFCI protection near water, and emergency-power needs with a licensed electrician.",
+    "Lighting: verify adequate task/exam lighting, low glare, backup/emergency lighting, and accessible switching.",
+    "Alarm & monitoring: confirm fire alarm/strobe coverage, security requirements, and any patient-call, refrigerator-temperature, or remote-monitoring needs.",
+    "HVAC & utilities: verify comfort, ventilation, temperature/humidity expectations, plumbing, drainage, and required utility connections before equipment is fixed.",
+    "Infection control: use cleanable finishes; locate hand hygiene, waste, sharps, and environmental cleaning supplies without blocking circulation.",
+    "Accessibility & egress: protect door swing, turning/transfer space, clear routes, and emergency egress; verify against the applicable local code and accessibility standard.",
+    "Consumables: define labeled clean-supply storage, point-of-use par levels, expiration/lot checks, and separate return/waste locations."
+  ];
+  var ROOM_READINESS_SUMMARY = {
+    reception: ["Apply here: accessible check-in, protected reception-screen sightlines, waiting-area lighting, and clear entry/egress.", "Also coordinate with: Corridor for unobstructed arrival route; Admin for secure paperwork and records."],
+    kitchen: ["Apply here: appliance outlet/circuit check, sink-area GFCI review, refrigerator ventilation/door swing, and lidded general waste.", "Also coordinate with: Storage for clinical supplies and regulated waste; do not use Kitchen for sharps or bulk patient-care stock."],
+    storage: ["Apply here: closed clean-supply shelving, expiry/lot rotation, secured cleaning products, and an empty door/egress zone.", "Also coordinate with: Exam rooms and Infusion for point-of-use par levels; Kitchen for separated food and clinical storage."],
+    bathroom: ["Apply here: accessible fixture/turning clearances, grab bars, handwashing supplies, cleanable surfaces, and general waste only.", "Also coordinate with: Storage for secured cleaning chemicals; do not stage clinical supplies or sharps in Bathroom."],
+    infusion: ["Apply here: mapped/tested outlets, equipment circuit and cord routing, patient-call/emergency plan, hand hygiene, sharps/waste, and staff visibility.", "Also coordinate with: Storage for infusion par stock; Corridor and Reception for clear emergency/arrival travel; Kitchen only if a non-clinical refrigerator is planned there."],
+    admin: ["Apply here: protected computer sightlines, automatic screen lock, lockable PHI storage, and door-swing/guest clearance.", "Also coordinate with: Reception for check-in privacy and referral paperwork; Consult for clinician office confidentiality."],
+    corridor: ["Apply here: continuous accessible travel width, emergency egress, door arcs, approved lighting, and no parked carts/bins.", "Also coordinate with: every room that opens onto this route."],
+    exam1: ["Apply here: hand hygiene, exam-table transfer side, sink/sharps/waste access, cleanable equipment, and task lighting.", "Also coordinate with: Storage for clean supply par levels and cleaning products; Corridor for door clearance."],
+    exam2: ["Apply here: hand hygiene, exam-table transfer side, sink/sharps/waste access, cleanable equipment, and task lighting.", "Also coordinate with: Storage for clean supply par levels and cleaning products; Corridor for door clearance."],
+    exam3: ["Apply here: hand hygiene, exam-table transfer side, sink/sharps/waste access, cleanable equipment, and task lighting.", "Also coordinate with: Storage for clean supply par levels and cleaning products; Corridor for door clearance."],
+    consult: ["Apply here: monitor privacy, automatic screen lock, lockable PHI storage, confidential conversation/door sightline, and clear visitor route.", "Also coordinate with: Admin for secure records and office workflow; Reception/Corridor for privacy outside the door."]
+  };
+
+  function roomLayoutAwareChecks(room) {
+    var allPlaced = state.items.map(function (item) {
+      var itemRoom = roomForPoint(item.x, item.y);
+      return { item: item, room: itemRoom };
+    });
+    var here = allPlaced.filter(function (entry) { return entry.room && entry.room.id === room.id; });
+    var labels = here.map(function (entry) { return entry.item.name; });
+    var fridges = allPlaced.filter(function (entry) { return entry.item.shape === "fridge"; });
+    var checks = [];
+
+    checks.push(labels.length ? "Current plan in this room: " + labels.join(", ") + "." : "Current plan: no inventory items are placed in this room yet.");
+    if (fridges.length) checks.push("Planned refrigerator locations: " + fridges.map(function (entry) { return entry.item.name + " — " + (entry.room ? entry.room.name : "outside a named room"); }).join("; ") + ". Verify power, ventilation, service clearance, and door swing in each listed room.");
+
+    var shapes = here.map(function (entry) { return entry.item.shape; });
+    var has = function (shape) { return shapes.indexOf(shape) !== -1; };
+    if (room.id === "kitchen" && !has("fridge")) checks.push("No refrigerator is currently placed in Kitchen. Do not reserve the shown cabinet/sink wall for a refrigerator unless you intentionally move or add one here.");
+    if (room.id === "infusion") {
+      if (!has("recliner")) checks.push("No infusion recliner is currently placed. Before adding one, mark the recliner footprint, transfer side, outlet/pump reach, staff path, and emergency access.");
+      if (!has("iv-pole")) checks.push("No IV pole is currently placed. Reserve a clear mobile-equipment parking location that does not cross the door arc or patient route.");
+    }
+    if (/^exam/.test(room.id) && !has("exam-table")) checks.push("No exam table is currently placed. Add the actual table footprint, then keep a transfer side, sink access, sharps access, and door clearance clear.");
+    if (room.id === "storage" && !here.length) checks.push("No storage equipment is placed. Plan labeled clean-supply shelving first, then confirm door clearance and reserve segregated space for cleaning products, returns, and waste.");
+    if (room.id === "reception" && !has("desk") && !has("counter")) checks.push("No reception desk/counter is currently placed. Reserve an accessible check-in position without blocking the Admin door arc or waiting circulation.");
+    if (room.id === "bathroom" && !has("toilet") && !has("sink")) checks.push("Bathroom fixtures are not represented as movable items in this plan. Use the reference photo and field measurements to protect the existing sink, toilet, grab-bar, and turning zones.");
+    return checks;
+  }
+
+  var STORAGE_KEY = "suite203-planner-v6"; // bumped: rooms renamed (Kitchen/Storage/Bathroom/Infusion) and all 10 doors repositioned from the traced overlay
+
+  /* =========================== STATE =========================== */
+
+  function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  var state = {
+    items: [],
+    selectedUid: null,
+    view: { x: -15, y: -4, w: 64, h: 38.5 },
+    snap: true,
+    units: "ft",             // "ft" (feet-inches) | "in" (all dimensions in inches)
+    mode: "layout",          // "layout" (furniture) | "edit" (walls/doors/room corners)
+    editTool: "select",      // "select" | "wall" | "door"
+    rooms: deepClone(ROOMS_DEFAULT),
+    doors: deepClone(DOORS_DEFAULT),
+    customWalls: [],         // [{id, x1, y1, x2, y2}] -- new walls drawn by the user
+    selectedRoomId: null,
+    selectedWallId: null,
+    selectedDoorId: null,
+    wallDraw: null           // transient in-progress wall drag preview
+  };
+
+  var DEFAULT_VIEW = { x: -15, y: -4, w: 64, h: 38.5 };
+
+  /* =========================== DOM REFS =========================== */
+
+  var svg = document.getElementById("plan");
+  var paletteList = document.getElementById("paletteList");
+  var inspectorEl = document.getElementById("inspector");
+  var mapHoverPanel = document.getElementById("mapHoverPanel");
+  var scheduleEl = document.getElementById("schedule");
+  var photoModal = document.getElementById("photoModal");
+  var photoModalImage = document.getElementById("photoModalImage");
+  var referenceModal = document.getElementById("referenceModal");
+  var marketingModal = document.getElementById("marketingModal");
+  var referenceGallery = document.getElementById("referenceGallery");
+  var referencePreview = document.getElementById("referencePreview");
+  var emptyHint = document.getElementById("emptyHint");
+  var warnPill = document.getElementById("warnPill");
+  var saveStatus = document.getElementById("saveStatus");
+  var snapToggle = document.getElementById("snapToggle");
+  var unitToggle = document.getElementById("unitToggle");
+  var measureAxisToggle = document.getElementById("measureAxisToggle");
+  var measureFreeToggle = document.getElementById("measureFreeToggle");
+  var footprintToggle = document.getElementById("footprintToggle");
+  var wheelchairToggle = document.getElementById("wheelchairToggle");
+  var wheelchairStatusEl = document.getElementById("wheelchairStatus");
+  var versionsPanel = document.getElementById("versionsPanel");
+  var clearAllBtn = document.getElementById("clearAll");
+  var suiteAreaEl = document.getElementById("suiteArea");
+  var modeLayoutBtn = document.getElementById("modeLayout");
+  var modeEditBtn = document.getElementById("modeEdit");
+  var editToolGroup = document.getElementById("editToolGroup");
+  var toolSelectBtn = document.getElementById("toolSelect");
+  var toolWallBtn = document.getElementById("toolWall");
+  var toolDoorBtn = document.getElementById("toolDoor");
+  var resetPlanBtn = document.getElementById("resetPlan");
+  var structurePanel = document.getElementById("structurePanel");
+  var structureListsEl = document.getElementById("structureLists");
+  var furnitureHint = document.getElementById("furnitureHint");
+
+  function openProductPhoto(src, alt) {
+    if (!src) return;
+    photoModalImage.src = src;
+    photoModalImage.alt = alt || "Product photo";
+    photoModal.classList.add("open");
+  }
+  function closeProductPhoto() { photoModal.classList.remove("open"); photoModalImage.src = ""; }
+  document.getElementById("photoModalClose").addEventListener("click", closeProductPhoto);
+  photoModal.addEventListener("click", function (e) { if (e.target === photoModal) closeProductPhoto(); });
+
+  var referencePhotos = [{ name: "Medical bathroom", src: "medical-bathroom-reference.jpg" }, { name: "Medical storage room", src: "medical-storage-reference.jpg" }, { name: "Infusion room", src: "infusion-room-reference.jpg" }, { name: "Kitchen sink and cabinet", src: "kitchen-room-reference.jpg" }, { name: "Kitchen — video frame at 10 seconds", src: "kitchen-room-reference-10s.jpg" }];
+  var activeReferenceIndex = 0;
+  function renderReferences() {
+    referenceGallery.innerHTML = referencePhotos.map(function (ref, index) {
+      return '<button type="button" class="reference-thumb' + (index === activeReferenceIndex ? ' active' : '') + '" data-reference-index="' + index + '"><img src="' + escapeAttr(ref.src) + '" alt="' + escapeAttr(ref.name) + '" /><span>' + escapeHtml(ref.name) + '</span></button>';
+    }).join("");
+    var active = referencePhotos[activeReferenceIndex];
+    referencePreview.innerHTML = active ? '<img src="' + escapeAttr(active.src) + '" alt="' + escapeAttr(active.name) + '" />' : '';
+    referenceGallery.querySelectorAll("[data-reference-index]").forEach(function (button) {
+      button.addEventListener("click", function () { activeReferenceIndex = parseInt(button.getAttribute("data-reference-index"), 10); renderReferences(); });
+    });
+  }
+  function openReferences() { renderReferences(); referenceModal.classList.add("open"); }
+  function closeReferences() { referenceModal.classList.remove("open"); }
+  document.getElementById("referencesBtn").addEventListener("click", openReferences);
+  document.getElementById("referenceClose").addEventListener("click", closeReferences);
+  referenceModal.addEventListener("click", function (e) { if (e.target === referenceModal) closeReferences(); });
+  function openMarketing() { marketingModal.classList.add("open"); }
+  function closeMarketing() { marketingModal.classList.remove("open"); }
+  document.getElementById("marketingBtn").addEventListener("click", openMarketing);
+  document.getElementById("marketingClose").addEventListener("click", closeMarketing);
+  marketingModal.addEventListener("click", function (e) { if (e.target === marketingModal) closeMarketing(); });
+  document.getElementById("referenceUpload").addEventListener("change", function (e) {
+    Array.prototype.forEach.call(e.target.files || [], function (file) {
+      if (!file.type || file.type.indexOf("image/") !== 0) return;
+      var reader = new FileReader();
+      reader.onload = function () { referencePhotos.push({ name: file.name, src: reader.result }); activeReferenceIndex = referencePhotos.length - 1; renderReferences(); };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  });
+
+  /* =========================== GEOMETRY HELPERS =========================== */
+
+  // No-op today: kept as a hook so the low-level draw routines have a single
+  // place that maps logical (x,y) to SVG (x,y). Logical y already increases
+  // south, matching SVG's downward y axis and Attachment A's own layout.
+  function flip(x, y) { return [x, y]; }
+
+  function polyArea(poly) {
+    var a = 0;
+    for (var i = 0; i < poly.length; i++) {
+      var p1 = poly[i], p2 = poly[(i + 1) % poly.length];
+      a += p1[0] * p2[1] - p2[0] * p1[1];
+    }
+    return Math.abs(a) / 2;
+  }
+
+  function polyCentroid(poly) {
+    var sx = 0, sy = 0;
+    poly.forEach(function (p) { sx += p[0]; sy += p[1]; });
+    return [sx / poly.length, sy / poly.length];
+  }
+
+  function pointInPoly(pt, poly) {
+    var x = pt[0], y = pt[1], inside = false;
+    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      var xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      var intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  function roomForPoint(x, y) {
+    for (var i = 0; i < state.rooms.length; i++) {
+      if (pointInPoly([x, y], state.rooms[i].poly)) return state.rooms[i];
+    }
+    return null;
+  }
+
+  // Accepts plain decimal feet ("12.5"), feet-inches ("12'6\"", "12' 6",
+  // "12-6"), or bare inches with a quote ("30\""). Returns NaN if unusable.
+  function parseFeet(raw) {
+    if (raw === null || raw === undefined) return NaN;
+    var t = String(raw).trim().replace(/\u2019/g, "'").replace(/\u201d/g, '"');
+    if (!t) return NaN;
+    if (/^-?\d*\.?\d+$/.test(t)) return parseFloat(t);
+    var m = t.match(/^(-?\d*\.?\d*)\s*'\s*(?:(\d*\.?\d+)\s*(?:(\d+)\s*\/\s*(\d+))?\s*"?)?$/);
+    if (m) {
+      var ft = m[1] === "" ? 0 : parseFloat(m[1]);
+      var inch = m[2] ? parseFloat(m[2]) : 0;
+      if (m[3] && m[4]) inch += parseFloat(m[3]) / parseFloat(m[4]);
+      return ft + inch / 12;
+    }
+    m = t.match(/^(-?\d*\.?\d+)\s*-\s*(\d*\.?\d+)$/);         // 12-6
+    if (m) return parseFloat(m[1]) + parseFloat(m[2]) / 12;
+    m = t.match(/^(\d*\.?\d+)\s*"$/);                            // 30"
+    if (m) return parseFloat(m[1]) / 12;
+    return NaN;
+  }
+
+  function polyBBox(poly) {
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    poly.forEach(function (p) {
+      if (p[0] < minX) minX = p[0];
+      if (p[0] > maxX) maxX = p[0];
+      if (p[1] < minY) minY = p[1];
+      if (p[1] > maxY) maxY = p[1];
+    });
+    return { minX: minX, minY: minY, maxX: maxX, maxY: maxY, w: maxX - minX, h: maxY - minY };
+  }
+
+  // Resize a room to an exact width (east-west) and length (north-south),
+  // scaling every corner about the room's north-west corner so non-rectangular
+  // rooms (the chamfered Infusion, the notched Reception) keep their shape.
+  function resizeRoom(room, newW, newL) {
+    var b = polyBBox(room.poly);
+    var sx = (b.w > 0.0001 && newW > 0) ? newW / b.w : 1;
+    var sy = (b.h > 0.0001 && newL > 0) ? newL / b.h : 1;
+    room.poly = room.poly.map(function (p) {
+      return [b.minX + (p[0] - b.minX) * sx, b.minY + (p[1] - b.minY) * sy];
+    });
+  }
+
+  function feetInches(ft) {
+    var totalIn = Math.round(ft * 12);
+    var neg = totalIn < 0; totalIn = Math.abs(totalIn);
+    var f = Math.floor(totalIn / 12), i = totalIn % 12;
+    return (neg ? "-" : "") + f + "'-" + i + '"';
+  }
+
+  /* ---- unit handling -------------------------------------------------
+     Everything is stored internally in feet (room corners, wall ends, door
+     widths) or inches (furniture w/d, which come from the catalog that way).
+     The Feet/Inches toggle only changes how values are SHOWN and how a bare
+     number typed into a field is READ. An explicit unit in the text -- 30",
+     8'6", 8' 6 1/2" -- always wins over the toggle. */
+  function unitsAreInches() { return state.units === "in"; }
+
+  // format a length given in FEET
+  function fmtFt(ft) {
+    if (unitsAreInches()) return round2(ft * 12) + '"';
+    return feetInches(ft);
+  }
+  // format a length given in INCHES
+  function fmtIn(inches) {
+    if (unitsAreInches()) return round2(inches) + '"';
+    return feetInches(inches / 12);
+  }
+  function unitSuffix() { return unitsAreInches() ? " (in)" : " (ft)"; }
+  function unitHint() {
+    return unitsAreInches()
+      ? 'Inches. Type 174, or 14\' 6" to use feet-inches.'
+      : 'Feet. Type 14.5, 14\' 6", or 174" to use inches.';
+  }
+  // parse a typed length, returning FEET. Bare numbers follow the toggle.
+  function parseLenFt(raw) {
+    var t = String(raw === null || raw === undefined ? "" : raw).trim();
+    if (/^-?\d*\.?\d+$/.test(t)) return unitsAreInches() ? parseFloat(t) / 12 : parseFloat(t);
+    return parseFeet(t);
+  }
+  // Parse a typed FURNITURE size, returning INCHES. Furniture is always
+  // specified in inches (a bare 33 is 33 inches, never 33 feet) but an
+  // explicit 2' 9" is still understood.
+  function parseInches(raw) {
+    var t = String(raw === null || raw === undefined ? "" : raw).trim();
+    if (/^-?\d*\.?\d+$/.test(t)) return parseFloat(t);
+    var v = parseFeet(t);
+    return isNaN(v) ? NaN : v * 12;
+  }
+  function inchHint() { return 'Inches. Type 33, or 2\' 9" to use feet-inches.'; }
+
+  function closestPointOnSegment(px, py, x1, y1, x2, y2) {
+    var dx = x2 - x1, dy = y2 - y1;
+    var len2 = dx * dx + dy * dy;
+    var t = len2 > 0 ? ((px - x1) * dx + (py - y1) * dy) / len2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    var cx = x1 + t * dx, cy = y1 + t * dy;
+    return { x: cx, y: cy, dist: Math.hypot(px - cx, py - cy), angle: Math.atan2(dy, dx) * 180 / Math.PI };
+  }
+
+  // Finds the nearest point lying on any room-boundary edge or user-drawn
+  // wall, for snapping a newly placed door into an actual wall line.
+  function findNearestWallPoint(px, py) {
+    var best = null;
+    function consider(x1, y1, x2, y2) {
+      var c = closestPointOnSegment(px, py, x1, y1, x2, y2);
+      if (!best || c.dist < best.dist) best = c;
+    }
+    state.rooms.forEach(function (r) {
+      var poly = r.poly;
+      for (var i = 0; i < poly.length; i++) {
+        var a = poly[i], b = poly[(i + 1) % poly.length];
+        consider(a[0], a[1], b[0], b[1]);
+      }
+    });
+    state.customWalls.forEach(function (w) { consider(w.x1, w.y1, w.x2, w.y2); });
+    if (!best || best.dist > 2.5) return null;
+    return { x: best.x, y: best.y, angle: Math.round(best.angle) };
+  }
+
+  function rectCorners(item) {
+    var hw = (item.w / 12) / 2, hd = (item.d / 12) / 2;
+    var rad = (item.rot || 0) * Math.PI / 180;
+    var cos = Math.cos(rad), sin = Math.sin(rad);
+    var local = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
+    return local.map(function (p) {
+      return [item.x + p[0] * cos - p[1] * sin, item.y + p[0] * sin + p[1] * cos];
+    });
+  }
+
+  function rectsOverlap(a, b) {
+    var ca = rectCorners(a), cb = rectCorners(b);
+    var polys = [ca, cb];
+    for (var pi = 0; pi < polys.length; pi++) {
+      var poly = polys[pi];
+      for (var i = 0; i < 4; i++) {
+        var p1 = poly[i], p2 = poly[(i + 1) % 4];
+        var nx = -(p2[1] - p1[1]), ny = p2[0] - p1[0];
+        var minA = Infinity, maxA = -Infinity, minB = Infinity, maxB = -Infinity;
+        for (var j = 0; j < 4; j++) {
+          var da = ca[j][0] * nx + ca[j][1] * ny;
+          minA = Math.min(minA, da); maxA = Math.max(maxA, da);
+          var db = cb[j][0] * nx + cb[j][1] * ny;
+          minB = Math.min(minB, db); maxB = Math.max(maxB, db);
+        }
+        if (maxA < minB || maxB < minA) return false;
+      }
+    }
+    return true;
+  }
+
+  function computeOverlaps() {
+    var bad = {};
+    for (var i = 0; i < state.items.length; i++) {
+      for (var j = i + 1; j < state.items.length; j++) {
+        if (rectsOverlap(state.items[i], state.items[j])) {
+          bad[state.items[i].uid] = true;
+          bad[state.items[j].uid] = true;
+        }
+      }
+    }
+    return bad;
+  }
+
+  /* =========================== SHAPE GLYPHS =========================== */
+  // All shapes drawn in a local box centered at (0,0), extents [-w/2,w/2] x [-d/2,d/2] (feet).
+
+  function shapeMarkup(shape, w, d, options) {
+    var hw = w / 2, hd = d / 2;
+    switch (shape) {
+      case "stool":
+      case "bin":
+        return '<circle class="item-shape" cx="0" cy="0" r="' + hw + '" />';
+      case "table-round":
+        return '<circle class="item-shape" cx="0" cy="0" r="' + hw + '" />' +
+               '<line class="item-shape-detail" x1="' + (-hw*0.5) + '" y1="0" x2="' + (hw*0.5) + '" y2="0" />' +
+               '<line class="item-shape-detail" x1="0" y1="' + (-hd*0.5) + '" x2="0" y2="' + (hd*0.5) + '" />';
+      case "chair":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.06" />' +
+               '<path class="item-shape-detail" d="M ' + (-hw*0.8) + ' ' + (-hd*0.65) + ' A ' + (hw*0.8) + ' ' + (hw*0.8) + ' 0 0 1 ' + (hw*0.8) + ' ' + (-hd*0.65) + '" />';
+      case "sofa":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.08" />' +
+               '<rect class="item-shape-detail" x="' + (-hw+0.08) + '" y="' + (-hd+0.08) + '" width="' + (w-0.16) + '" height="' + (d*0.28) + '" />' +
+               '<rect class="item-shape-detail" x="' + (-hw+0.08) + '" y="' + (-hd+0.08) + '" width="' + (w*0.16) + '" height="' + (d-0.16) + '" />' +
+               '<rect class="item-shape-detail" x="' + (hw-0.24) + '" y="' + (-hd+0.08) + '" width="' + (w*0.16) + '" height="' + (d-0.16) + '" />';
+      case "desk":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.05" />' +
+               '<rect class="item-shape-detail" x="' + (hw-w*0.22) + '" y="' + (-hd+0.06) + '" width="' + (w*0.2) + '" height="' + (d-0.12) + '" />' +
+               '<line class="item-shape-detail" x1="' + (hw-w*0.22) + '" y1="' + (-hd*0.33) + '" x2="' + (hw-0.06) + '" y2="' + (-hd*0.33) + '" />' +
+               '<line class="item-shape-detail" x1="' + (hw-w*0.22) + '" y1="' + (hd*0.33) + '" x2="' + (hw-0.06) + '" y2="' + (hd*0.33) + '" />';
+      case "rect-drawers":
+        var n = 3, out = '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.04" />';
+        for (var k = 1; k < n; k++) {
+          var yy = -hd + (d / n) * k;
+          out += '<line class="item-shape-detail" x1="' + (-hw+0.05) + '" y1="' + yy + '" x2="' + (hw-0.05) + '" y2="' + yy + '" />';
+        }
+        return out;
+      case "lshape":
+        var armW = w * 0.34;
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + (d*0.55) + '" rx="0.05" />' +
+               '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd+d*0.55) + '" width="' + armW + '" height="' + (d*0.45) + '" rx="0.05" />';
+      case "toilet":
+        return '<rect class="item-shape" x="' + (-hw*0.7) + '" y="' + (-hd) + '" width="' + (w*0.7) + '" height="' + (d*0.34) + '" rx="0.05" />' +
+               '<ellipse class="item-shape" cx="0" cy="' + (hd*0.28) + '" rx="' + hw + '" ry="' + (hd*0.62) + '" />';
+      case "sink":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.05" />' +
+               '<ellipse class="item-shape-detail" cx="0" cy="' + (-hd*0.15) + '" rx="' + (hw*0.55) + '" ry="' + (hd*0.4) + '" />';
+      case "plant":
+        return '<circle class="item-shape" cx="0" cy="0" r="' + hw + '" />' +
+               '<circle class="item-shape-detail" cx="0" cy="0" r="' + (hw*0.55) + '" />' +
+               '<circle class="item-shape-detail" cx="0" cy="0" r="0.02" />';
+      case "table-flat":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="' + (hw*0.5) + '" />' +
+               '<line class="item-shape-detail" x1="0" y1="' + (-hd+0.15) + '" x2="0" y2="' + (hd-0.15) + '" />';
+      case "fridge":
+        var isLeftHinged = options && options.doorHinge === "left";
+        var isRightHinged = options && options.doorHinge === "right";
+        var hingeX = isLeftHinged ? -hw : hw;
+        var handleX = isLeftHinged ? hw - 0.12 : -hw + 0.12;
+        var oppositeX = isLeftHinged ? hw : -hw;
+        var openDoor = (isLeftHinged || isRightHinged)
+          ? '<line class="fridge-door" x1="' + hingeX + '" y1="' + (-hd) + '" x2="' + hingeX + '" y2="' + (-hd - w) + '" />' +
+            '<path class="fridge-door-arc" d="M ' + oppositeX + ' ' + (-hd) + ' A ' + w + ' ' + w + ' 0 0 0 ' + hingeX + ' ' + (-hd - w) + '" />' +
+            '<circle cx="' + hingeX + '" cy="' + (-hd) + '" r="0.055" fill="#0b5e9a" />'
+          : '';
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.06" />' +
+               '<line class="fridge-door" x1="' + (-hw + 0.05) + '" y1="' + (-hd + 0.06) + '" x2="' + (hw - 0.05) + '" y2="' + (-hd + 0.06) + '" />' +
+               '<line class="item-shape-detail" x1="' + handleX + '" y1="' + (-hd + d*0.24) + '" x2="' + handleX + '" y2="' + (hd - d*0.24) + '" />' + openDoor;
+      case "counter":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.03" />' +
+               '<line class="item-shape-detail" x1="' + (-hw) + '" y1="' + (hd - d*0.16) + '" x2="' + hw + '" y2="' + (hd - d*0.16) + '" />';
+      case "cabinet-upper":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.03" stroke-dasharray="0.18 0.12" />' +
+               '<line class="item-shape-detail" x1="0" y1="' + (-hd) + '" x2="0" y2="' + hd + '" stroke-dasharray="0.12 0.1" />';
+      case "range":
+        var rout = '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.04" />';
+        [[-0.26, -0.24], [0.26, -0.24], [-0.26, 0.16], [0.26, 0.16]].forEach(function (o) {
+          rout += '<circle class="item-shape-detail" cx="' + (o[0] * w) + '" cy="' + (o[1] * d) + '" r="' + (Math.min(w, d) * 0.15) + '" />';
+        });
+        return rout;
+      case "shelf":
+        var sn = 4, sout = '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.03" />';
+        for (var q = 1; q < sn; q++) {
+          var xx = -hw + (w / sn) * q;
+          sout += '<line class="item-shape-detail" x1="' + xx + '" y1="' + (-hd + 0.04) + '" x2="' + xx + '" y2="' + (hd - 0.04) + '" />';
+        }
+        return sout;
+      case "recliner":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + (d * 0.74) + '" rx="0.12" />' +
+               '<rect class="item-shape" x="' + (-hw * 0.78) + '" y="' + (-hd + d * 0.74) + '" width="' + (w * 0.78) + '" height="' + (d * 0.26) + '" rx="0.08" />' +
+               '<path class="item-shape-detail" d="M ' + (-hw + 0.08) + ' ' + (-hd + d * 0.2) + ' A ' + (hw * 0.9) + ' ' + (hw * 0.9) + ' 0 0 1 ' + (hw - 0.08) + ' ' + (-hd + d * 0.2) + '" />';
+      case "iv-pole":
+        return '<circle class="item-shape" cx="0" cy="0" r="' + hw + '" />' +
+               '<line class="item-shape-detail" x1="' + (-hw) + '" y1="0" x2="' + hw + '" y2="0" />' +
+               '<line class="item-shape-detail" x1="0" y1="' + (-hd) + '" x2="0" y2="' + hd + '" />';
+      case "appliance":
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.05" />' +
+               '<circle class="item-shape-detail" cx="0" cy="0" r="' + (Math.min(hw, hd) * 0.62) + '" />';
+      case "rect":
+      default:
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + d + '" rx="0.04" />';
+    }
+  }
+
+  function thumbSvg(cat) {
+    if (cat.photo) {
+      return '<img class="product-photo" src="' + escapeAttr(cat.photo) + '" alt="' + escapeAttr(cat.name) + '" />';
+    }
+    var w = cat.w / 12, d = cat.d / 12;
+    var scale = 22 / Math.max(w, d);
+    var vb = 26;
+    // the group is scaled up ~20x, so the stroke has to be scaled back down or
+    // every thumbnail renders as one solid block of outline
+    return '<svg width="30" height="30" viewBox="0 0 ' + vb + ' ' + vb + '">' +
+      '<g class="item item-' + escapeAttr(cat.shape) + '" transform="translate(' + (vb/2) + ',' + (vb/2) + ') scale(' + scale + ')" ' +
+      'stroke-width="' + (1.1 / scale) + '" stroke-linejoin="round">' +
+      shapeMarkup(cat.shape, w, d, cat) +
+      '</g></svg>';
+  }
+
+  /* =========================== PALETTE =========================== */
+
+  /* ---- custom (user-defined) palette items -------------------------
+     Saved in this browser next to the layout. Anything the user builds with
+     the "New item" form, or promotes from a placed piece, lands in My Items
+     and behaves exactly like a built-in catalog entry. */
+  var CUSTOM_KEY = "suite203-planner:catalog";
+  var customCatalog = [];
+  var builderOpen = false;
+  var builderSeed = null;
+  var pendingCatalogId = null;
+
+  function loadCustomCatalog() {
+    try {
+      var raw = localStorage.getItem(CUSTOM_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      customCatalog = Array.isArray(arr) ? arr : [];
+    } catch (err) { customCatalog = []; }
+    reindexCatalog();
+  }
+  function persistCustomCatalog() {
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(customCatalog)); } catch (err) {}
+  }
+  function reindexCatalog() {
+    CATALOG_BY_ID = {};
+    CATALOG.concat(customCatalog).forEach(function (c) { CATALOG_BY_ID[c.id] = c; });
+  }
+  function allCatalog() { return customCatalog.concat(CATALOG); }
+
+  function addCustomItem(def) {
+    def.id = "my" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    def.custom = true;
+    customCatalog.unshift(def);
+    persistCustomCatalog();
+    reindexCatalog();
+    buildPalette();
+    return def;
+  }
+  function deleteCustomItem(id) {
+    customCatalog = customCatalog.filter(function (c) { return c.id !== id; });
+    persistCustomCatalog();
+    reindexCatalog();
+    buildPalette();
+  }
+
+  function builderMarkup() {
+    var seed = builderSeed || { name: "", cat: "My Items", w: 36, d: 24, shape: "rect" };
+    var catOpts = CATS.map(function (c) {
+      return '<option value="' + escapeAttr(c) + '"' + (c === seed.cat ? " selected" : "") + '>' + c + '</option>';
+    }).join("");
+    var shapeOpts = SHAPE_CHOICES.map(function (sh) {
+      return '<option value="' + sh[0] + '"' + (sh[0] === seed.shape ? " selected" : "") + '>' + sh[1] + '</option>';
+    }).join("");
+    return '<div class="builder">' +
+      '<input class="b-name" id="bName" type="text" placeholder="Name it \u2014 e.g. Break-room fridge" value="' + escapeAttr(seed.name) + '" />' +
+      '<div class="b-row">' +
+        '<label>Width (in)<input id="bW" type="text" value="' + escapeAttr(round2(seed.w)) + '" title="' + escapeAttr(inchHint()) + '" /></label>' +
+        '<label>Depth (in)<input id="bD" type="text" value="' + escapeAttr(round2(seed.d)) + '" title="' + escapeAttr(inchHint()) + '" /></label>' +
+      '</div>' +
+      '<label class="b-full">Drawn as<select id="bShape">' + shapeOpts + '</select></label>' +
+      '<label class="b-full">Group<select id="bCat">' + catOpts + '</select></label>' +
+      '<div class="b-actions">' +
+        '<button type="button" class="b-primary" id="bSave">Add to palette</button>' +
+        '<button type="button" id="bCancel">Cancel</button>' +
+      '</div></div>';
+  }
+
+  function buildPalette() {
+    var html = '<div class="palette-tools">' +
+      (builderOpen ? builderMarkup()
+                   : '<button type="button" class="new-item-btn" id="newItemBtn">&#43;&ensp;New item&hellip;</button>') +
+      '</div>';
+    var pool = allCatalog();
+    CATS.forEach(function (cat) {
+      var items = pool.filter(function (c) { return c.cat === cat; });
+      if (!items.length) return;
+      html += '<div class="cat-title">' + cat + '</div>';
+      items.forEach(function (c) {
+        html += '<div class="item-card-wrap' + (c.id === pendingCatalogId ? ' pending-add-wrap' : '') + '">' +
+          '<button type="button" class="item-card' + (c.id === pendingCatalogId ? ' pending-add' : '') + '" data-cat-id="' + c.id + '">' +
+          '<span class="thumb">' + thumbSvg(c) + '</span>' +
+          '<span class="meta"><span class="name">' + escapeHtml(c.name) + '</span><br/>' +
+          '<span class="dims">' + round2(c.w) + '&Prime; &times; ' + round2(c.d) + '&Prime;' + (c.price ? ' &middot; ' + escapeHtml(c.price) : '') + '</span>' +
+          (c.detail ? '<span class="product-detail">' + escapeHtml(c.detail) + '</span>' : '') + '</span>' +
+          '</button>' +
+          (c.id === pendingCatalogId ? '<div class="item-add-confirm"><span>Add this item?</span><button type="button" data-confirm-add="' + c.id + '">Add to plan</button><button type="button" data-cancel-add>Cancel</button></div>' : '') +
+          '<div class="product-popover"><strong>' + escapeHtml(c.name) + '</strong><p>' + escapeHtml(c.detail || (round2(c.w) + ' in W × ' + round2(c.d) + ' in D')) + '</p>' +
+          (c.specs ? '<p class="product-specs">' + escapeHtml(c.specs) + '</p>' : '') +
+          '<em>' + escapeHtml(c.price || ('Size: ' + round2(c.w) + '″ × ' + round2(c.d) + '″')) + '</em>' +
+          (c.link ? '<a class="product-link" href="' + escapeAttr(c.link) + '" target="_blank" rel="noopener noreferrer">View product listing</a>' : '') +
+          (c.specSheet ? '<a class="product-link" href="' + escapeAttr(c.specSheet) + '" target="_blank" rel="noopener noreferrer">Specification sheet (PDF)</a>' : '') + '</div>' +
+          (c.custom ? '<button type="button" class="card-del" data-del-cat="' + c.id + '" title="Remove from palette">&times;</button>' : "") +
+          '</div>';
+      });
+    });
+    paletteList.innerHTML = html;
+
+    paletteList.querySelectorAll(".item-card").forEach(function (btn) {
+      btn.addEventListener("click", function () { pendingCatalogId = btn.getAttribute("data-cat-id"); buildPalette(); });
+    });
+    paletteList.querySelectorAll("[data-confirm-add]").forEach(function (confirmAddBtn) { confirmAddBtn.addEventListener("click", function () {
+      var catId = confirmAddBtn.getAttribute("data-confirm-add");
+      pendingCatalogId = null;
+      buildPalette();
+      addItem(catId);
+    }); });
+    paletteList.querySelectorAll("[data-cancel-add]").forEach(function (cancelAddBtn) { cancelAddBtn.addEventListener("click", function () { pendingCatalogId = null; buildPalette(); }); });
+    paletteList.querySelectorAll("[data-del-cat]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) { e.stopPropagation(); deleteCustomItem(btn.getAttribute("data-del-cat")); });
+    });
+    var nb = document.getElementById("newItemBtn");
+    if (nb) nb.addEventListener("click", function () { builderOpen = true; builderSeed = null; buildPalette(); document.getElementById("bName").focus(); });
+    var bc = document.getElementById("bCancel");
+    if (bc) bc.addEventListener("click", function () { builderOpen = false; builderSeed = null; buildPalette(); });
+    var bs = document.getElementById("bSave");
+    if (bs) {
+      var commit = function () {
+        var nm = (document.getElementById("bName").value || "").trim();
+        var wv = parseInches(document.getElementById("bW").value);
+        var dv = parseInches(document.getElementById("bD").value);
+        if (!nm) { document.getElementById("bName").focus(); return; }
+        if (isNaN(wv) || wv < 2) wv = 36;
+        if (isNaN(dv) || dv < 2) dv = 24;
+        builderOpen = false; builderSeed = null;
+        addCustomItem({
+          name: nm, cat: document.getElementById("bCat").value,
+          w: round2(wv), d: round2(dv), shape: document.getElementById("bShape").value
+        });
+      };
+      bs.addEventListener("click", commit);
+      document.getElementById("bName").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); commit(); }
+      });
+    }
+  }
+
+  function addItem(catId) {
+    var cat = CATALOG_BY_ID[catId];
+    if (!cat) return;
+    var svgCx = state.view.x + state.view.w / 2;
+    var svgCy = state.view.y + state.view.h / 2;
+    var worldX = svgCx, worldY = svgCy;
+    var uid = "it" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    state.items.push({
+      uid: uid, catalogId: catId, name: cat.name, shape: cat.shape,
+      w: cat.w, d: cat.d, x: round2(worldX), y: round2(worldY), rot: 0,
+      doorHinge: cat.doorHinge || null, photoScale: 1, photoX: 0, photoY: 0
+    });
+    state.selectedUid = uid;
+    scheduleSave();
+    renderAll();
+  }
+
+  /* =========================== RENDER: PLAN =========================== */
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+  function snapVal(n) { return state.snap ? Math.round(n * 4) / 4 : n; } // snap to 0.25 ft (3")
+
+  function buildDefs() {
+    return '<defs>' +
+      '<pattern id="gridMinor" width="1" height="1" patternUnits="userSpaceOnUse">' +
+      '<path d="M 1 0 L 0 0 0 1" fill="none" stroke="var(--grid-minor)" stroke-width="0.012"/>' +
+      '</pattern>' +
+      '<pattern id="gridMajor" width="5" height="5" patternUnits="userSpaceOnUse">' +
+      '<rect width="5" height="5" fill="url(#gridMinor)"/>' +
+      '<path d="M 5 0 L 0 0 0 5" fill="none" stroke="var(--grid-major)" stroke-width="0.03"/>' +
+      '</pattern>' +
+      '</defs>';
+  }
+
+  function buildRooms() {
+    var out = "";
+    state.rooms.forEach(function (r) {
+      var pts = r.poly.map(function (p) { var f = flip(p[0], p[1]); return f[0] + "," + f[1]; }).join(" ");
+      var sel = (state.mode === "edit" && state.selectedRoomId === r.id) || (state.mode === "layout" && selectedRoomReferenceId === r.id);
+      out += '<polygon class="room-poly' + (sel ? " room-selected" : "") + '" data-room-id="' + r.id + '" points="' + pts + '" stroke-width="' + WALL_THICKNESS + '" />';
+      var c = polyCentroid(r.poly);
+      var fl = flip(c[0], c[1]);
+      var area = Math.round(polyArea(r.poly));
+      var bb = polyBBox(r.poly);
+      out += '<text class="room-label" data-room-id="' + r.id + '" x="' + fl[0] + '" y="' + (fl[1] - 0.18) + '" font-size="0.62" text-anchor="middle">' + r.name + '</text>';
+      out += '<text class="room-dim-label" data-room-id="' + r.id + '" x="' + fl[0] + '" y="' + (fl[1] + 0.24) + '" font-size="0.38" text-anchor="middle">' + fmtFt(bb.w) + ' × ' + fmtFt(bb.h) + '</text>';
+      out += '<text class="room-area-label" data-room-id="' + r.id + '" x="' + fl[0] + '" y="' + (fl[1] + 0.64) + '" font-size="0.34" text-anchor="middle">' + area + ' sq ft</text>';
+    });
+    return out;
+  }
+
+  function buildOverallDimensions() {
+    var points = [];
+    state.rooms.forEach(function (r) { points = points.concat(r.poly); });
+    if (!points.length) return "";
+    var minX = Math.min.apply(null, points.map(function (p) { return p[0]; }));
+    var maxX = Math.max.apply(null, points.map(function (p) { return p[0]; }));
+    var minY = Math.min.apply(null, points.map(function (p) { return p[1]; }));
+    var maxY = Math.max.apply(null, points.map(function (p) { return p[1]; }));
+    var top = -1.05, left = minX - 1.1;
+    return '<g class="overall-dimension">' +
+      '<line x1="' + minX + '" y1="' + top + '" x2="' + maxX + '" y2="' + top + '" />' +
+      '<text x="' + ((minX + maxX) / 2) + '" y="' + (top - .2) + '" font-size="0.44" text-anchor="middle">OVERALL ' + fmtFt(maxX - minX) + ' · WALLS 4½″ TYP.</text>' +
+      '<line x1="' + left + '" y1="' + flip(0, minY)[1] + '" x2="' + left + '" y2="' + flip(0, maxY)[1] + '" />' +
+      '<text x="' + (left - .22) + '" y="' + ((flip(0, minY)[1] + flip(0, maxY)[1]) / 2) + '" font-size="0.44" text-anchor="middle" transform="rotate(-90 ' + (left - .22) + ' ' + ((flip(0, minY)[1] + flip(0, maxY)[1]) / 2) + ')">OVERALL ' + fmtFt(maxY - minY) + '</text>' +
+      '</g>';
+  }
+
+  function buildSegmentDimensions() {
+    var seen = {}, segments = [];
+    function addSegment(a, b) {
+      var k1 = a[0].toFixed(3) + "," + a[1].toFixed(3);
+      var k2 = b[0].toFixed(3) + "," + b[1].toFixed(3);
+      var key = k1 < k2 ? k1 + "|" + k2 : k2 + "|" + k1;
+      if (seen[key]) return;
+      seen[key] = true;
+      var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len >= 1.25) segments.push({ a: a, b: b, len: len });
+    }
+    state.rooms.forEach(function (room) {
+      room.poly.forEach(function (point, index) { addSegment(point, room.poly[(index + 1) % room.poly.length]); });
+    });
+    state.customWalls.forEach(function (wall) { addSegment([wall.x1, wall.y1], [wall.x2, wall.y2]); });
+    function doorOpeningOnSegment(segment, door) {
+      var vx = segment.b[0] - segment.a[0], vy = segment.b[1] - segment.a[1];
+      var len = segment.len;
+      if (!len) return 0;
+      var ux = vx / len, uy = vy / len;
+      var end = doorEndpoints(door);
+      var points = [[end[0], end[1]], [end[2], end[3]]];
+      // Both ends of the opening must lie on this wall's line.
+      var lineDistance = points.map(function (p) { return Math.abs((p[0] - segment.a[0]) * uy - (p[1] - segment.a[1]) * ux); });
+      if (lineDistance[0] > 0.08 || lineDistance[1] > 0.08) return 0;
+      var t0 = (points[0][0] - segment.a[0]) * ux + (points[0][1] - segment.a[1]) * uy;
+      var t1 = (points[1][0] - segment.a[0]) * ux + (points[1][1] - segment.a[1]) * uy;
+      return Math.max(0, Math.min(len, Math.max(t0, t1)) - Math.max(0, Math.min(t0, t1)));
+    }
+    return segments.map(function (segment) {
+      var a = flip(segment.a[0], segment.a[1]), b = flip(segment.b[0], segment.b[1]);
+      var dx = b[0] - a[0], dy = b[1] - a[1], angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      if (angle > 90 || angle < -90) angle += 180;
+      var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      var opening = state.doors.reduce(function (sum, door) { return sum + doorOpeningOnSegment(segment, door); }, 0);
+      var clearLength = Math.max(0, segment.len - opening);
+      var label = opening > 0.01 ? fmtFt(clearLength) + ' CLEAR' : fmtFt(segment.len);
+      return '<text class="wall-dim-label" x="' + mx + '" y="' + (my - 0.16) + '" font-size="0.34" text-anchor="middle" transform="rotate(' + angle + ' ' + mx + ' ' + my + ')">' + label + '</text>';
+    }).join("");
+  }
+
+  function buildMeasure() {
+    if (!measureStart) return "";
+    var a = measureStart, b = measureEnd || measurePreview || measureStart;
+    var dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy);
+    var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    var label = measureEnd ? fmtFt(length) : 'Click second point';
+    return '<g class="tape-measure">' +
+      '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '" stroke-width="0.07" />' +
+      '<circle cx="' + a.x + '" cy="' + a.y + '" r="0.14" /><circle cx="' + b.x + '" cy="' + b.y + '" r="0.14" />' +
+      '<rect x="' + (mx - 1.55) + '" y="' + (my - .36) + '" width="3.1" height=".5" rx=".08" />' +
+      '<text x="' + mx + '" y="' + (my - .03) + '" text-anchor="middle" font-size=".26">' + label + '</text></g>';
+  }
+
+  function doorEndpoints(dr) {
+    var rad = (dr.angle || 0) * Math.PI / 180;
+    return [dr.x, dr.y, dr.x + dr.w * Math.cos(rad), dr.y + dr.w * Math.sin(rad)];
+  }
+
+  function buildDoors() {
+    var out = "";
+    state.doors.forEach(function (dr) {
+      var pts = doorEndpoints(dr);
+      var f0 = flip(pts[0], pts[1]), f1 = flip(pts[2], pts[3]);
+      var sel = state.mode === "edit" && state.selectedDoorId === dr.id;
+      // eraser: paint over the wall line at the opening (+ a click target in edit mode)
+      var midx = (f0[0] + f1[0]) / 2, midy = (f0[1] + f1[1]) / 2;
+      var len = Math.hypot(f1[0]-f0[0], f1[1]-f0[1]);
+      var ang = Math.atan2(f1[1]-f0[1], f1[0]-f0[0]) * 180 / Math.PI;
+      out += '<g transform="translate(' + midx + ',' + midy + ') rotate(' + ang + ')">' +
+        '<rect x="' + (-len/2) + '" y="-0.07" width="' + len + '" height="0.14" fill="var(--paper)" />' +
+        (state.mode === "edit" ? '<rect class="door-hit" data-door-id="' + dr.id + '" x="' + (-len/2 - 0.15) + '" y="-0.3" width="' + (len + 0.3) + '" height="0.6" />' : "") +
+        '</g>';
+      // door leaf (hinged at f0) + quarter-circle swing arc out to f1.
+      // dr.swing picks which side of the wall the leaf opens into: +1 swings
+      // 90 degrees clockwise from the opening direction, -1 anticlockwise.
+      var r = dr.w;
+      var sw = (dr.swing === -1) ? -1 : 1;
+      var leafAng = ang * Math.PI/180 + sw * Math.PI/2;
+      var leafEndX = f0[0] + r * Math.cos(leafAng);
+      var leafEndY = f0[1] + r * Math.sin(leafAng);
+      out += '<line class="door-leaf' + (sel ? " door-sel" : "") + '" x1="' + f0[0] + '" y1="' + f0[1] + '" x2="' + leafEndX + '" y2="' + leafEndY + '" stroke-width="0.035" />';
+      out += '<path class="door-arc' + (sel ? " door-sel" : "") + '" stroke-width="0.03" fill="none" d="M ' + leafEndX + ' ' + leafEndY + ' A ' + r + ' ' + r + ' 0 0 ' + (sw > 0 ? 0 : 1) + ' ' + f1[0] + ' ' + f1[1] + '" />';
+      if (sel) out += '<circle class="door-selected-ring" cx="' + f0[0] + '" cy="' + f0[1] + '" r="0.22" />';
+    });
+    return out;
+  }
+
+  function buildCustomWalls() {
+    var out = "";
+    state.customWalls.forEach(function (w) {
+      var f0 = flip(w.x1, w.y1), f1 = flip(w.x2, w.y2);
+      var sel = state.selectedWallId === w.id;
+      out += '<line class="wall-custom' + (sel ? " selected" : "") + '" data-wall-id="' + w.id + '" x1="' + f0[0] + '" y1="' + f0[1] + '" x2="' + f1[0] + '" y2="' + f1[1] + '" stroke-width="0.14" />';
+    });
+    return out;
+  }
+
+  function buildEditHandles() {
+    if (state.mode !== "edit") return "";
+    var out = "";
+    if (state.editTool === "select") {
+      if (state.selectedRoomId) {
+        var room = state.rooms.find(function (r) { return r.id === state.selectedRoomId; });
+        if (room) {
+          room.poly.forEach(function (p, vi) {
+            var f = flip(p[0], p[1]);
+            out += '<circle class="vertex-handle" data-room-id="' + room.id + '" data-vidx="' + vi + '" cx="' + f[0] + '" cy="' + f[1] + '" r="0.19" stroke-width="0.05" />';
+          });
+        }
+      }
+      if (state.selectedWallId) {
+        var w = state.customWalls.find(function (x) { return x.id === state.selectedWallId; });
+        if (w) {
+          [["x1","y1",0],["x2","y2",1]].forEach(function (e) {
+            var f = flip(w[e[0]], w[e[1]]);
+            out += '<circle class="wall-handle" data-wall-id="' + w.id + '" data-endpoint="' + e[2] + '" cx="' + f[0] + '" cy="' + f[1] + '" r="0.17" stroke-width="0.05" />';
+          });
+        }
+      }
+    }
+    if (state.wallDraw) {
+      var f0 = flip(state.wallDraw.x1, state.wallDraw.y1), f1 = flip(state.wallDraw.x2, state.wallDraw.y2);
+      out += '<line class="wall-preview" x1="' + f0[0] + '" y1="' + f0[1] + '" x2="' + f1[0] + '" y2="' + f1[1] + '" stroke-width="0.1" />';
+    }
+    return out;
+  }
+
+  function buildHalfWalls() {
+    // Low / glazed partitions: erase the plain wall line and redraw as a
+    // dashed marker so the plan shows a pass-through, not a solid wall.
+    var out = "";
+    (HALF_WALLS_DEFAULT || []).forEach(function (hw) {
+      var x0, y0, x1, y1;
+      if (hw.axis === "h") { x0 = hw.x; y0 = hw.y; x1 = hw.x + hw.w; y1 = hw.y; }
+      else { x0 = hw.x; y0 = hw.y; x1 = hw.x; y1 = hw.y + hw.w; }
+      var f0 = flip(x0, y0), f1 = flip(x1, y1);
+      var midx = (f0[0] + f1[0]) / 2, midy = (f0[1] + f1[1]) / 2;
+      var len = Math.hypot(f1[0]-f0[0], f1[1]-f0[1]);
+      var ang = Math.atan2(f1[1]-f0[1], f1[0]-f0[0]) * 180 / Math.PI;
+      out += '<g transform="translate(' + midx + ',' + midy + ') rotate(' + ang + ')">' +
+        '<rect x="' + (-len/2) + '" y="-0.07" width="' + len + '" height="0.14" fill="var(--paper)" />' +
+        '<line x1="' + (-len/2) + '" y1="0" x2="' + (len/2) + '" y2="0" class="door-arc" stroke-width="0.035" stroke-dasharray="0.18 0.1" />' +
+        '</g>';
+    });
+    return out;
+  }
+
+  function buildItems(overlaps) {
+    var out = "";
+    var shapedFootprints = ["stool", "table-round", "table-flat", "chair", "toilet", "recliner", "sofa", "iv-pole", "plant"];
+    state.items.forEach(function (it) {
+      var f = flip(it.x, it.y);
+      var wFt = it.w / 12, dFt = it.d / 12;
+      var cls = "item item-" + it.shape;
+      if (it.uid === state.selectedUid) cls += " item-selected";
+      if (overlaps[it.uid]) cls += " item-overlap";
+      var showLabel = Math.max(wFt, dFt) > (state.view.w / 34);
+      out += '<g class="' + cls + '" data-uid="' + it.uid + '" transform="translate(' + f[0] + ',' + f[1] + ') rotate(' + (it.rot || 0) + ')">' +
+        (showFootprintBoxes && shapedFootprints.indexOf(it.shape) !== -1
+          ? '<rect class="virtual-footprint" x="' + (-wFt / 2) + '" y="' + (-dFt / 2) + '" width="' + wFt + '" height="' + dFt + '" rx=".04" />'
+          : '') +
+        shapeMarkup(it.shape, wFt, dFt, Object.assign({}, CATALOG_BY_ID[it.catalogId] || {}, { doorHinge: it.doorHinge || (CATALOG_BY_ID[it.catalogId] || {}).doorHinge }));
+      if (showLabel) {
+        out += '<text class="item-label" x="0" y="' + (dFt/2 + 0.34) + '" font-size="0.28" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + it.name + '</text>';
+        out += '<text class="item-size-label" x="0" y="' + (dFt/2 + 0.64) + '" font-size="0.25" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + fmtIn(it.w) + ' × ' + fmtIn(it.d) + '</text>';
+      }
+      out += '</g>';
+    });
+    return out;
+  }
+
+  function pointSegmentDistance(px, py, ax, ay, bx, by) {
+    var dx = bx - ax, dy = by - ay;
+    var denom = dx * dx + dy * dy;
+    var t = denom ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / denom)) : 0;
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+  function wheelchairCheck(x, y) {
+    var radius = 30 / 24; // 30 in diameter footprint, in feet
+    var room = roomForPoint(x, y);
+    if (!room) return { blocked: true, message: "Blocked — outside a room boundary" };
+    var minWall = Infinity;
+    room.poly.forEach(function (point, index) {
+      var next = room.poly[(index + 1) % room.poly.length];
+      minWall = Math.min(minWall, pointSegmentDistance(x, y, point[0], point[1], next[0], next[1]));
+    });
+    if (minWall < radius) return { blocked: true, message: "Blocked — wheelchair footprint is too close to a wall" };
+    for (var i = 0; i < state.items.length; i++) {
+      var item = state.items[i];
+      var angle = -((item.rot || 0) * Math.PI / 180);
+      var dx = x - item.x, dy = y - item.y;
+      var lx = dx * Math.cos(angle) - dy * Math.sin(angle);
+      var ly = dx * Math.sin(angle) + dy * Math.cos(angle);
+      var gapX = Math.max(Math.abs(lx) - item.w / 24, 0);
+      var gapY = Math.max(Math.abs(ly) - item.d / 24, 0);
+      if (Math.hypot(gapX, gapY) < radius) return { blocked: true, message: "Blocked — overlaps " + item.name };
+    }
+    return { blocked: false, message: "Clear — 30 in wheelchair footprint in " + room.name };
+  }
+  function buildWheelchair() {
+    if (!wheelchair) return "";
+    var check = wheelchairCheck(wheelchair.x, wheelchair.y);
+    return '<g class="wheelchair-footprint' + (check.blocked ? ' blocked' : '') + '"><circle cx="' + wheelchair.x + '" cy="' + wheelchair.y + '" r="1.25" /><path d="M ' + (wheelchair.x - .38) + ' ' + wheelchair.y + ' h .76 M ' + wheelchair.x + ' ' + (wheelchair.y - .38) + ' v .76" stroke="currentColor" stroke-width=".045" fill="none" /></g>' +
+      '<text class="wheelchair-label" x="' + wheelchair.x + '" y="' + (wheelchair.y - 1.48) + '" font-size=".28" text-anchor="middle">30″ wheelchair</text>';
+  }
+
+  function renderPlan() {
+    var overlaps = computeOverlaps();
+    svg.setAttribute("viewBox", state.view.x + " " + state.view.y + " " + state.view.w + " " + state.view.h);
+    svg.classList.toggle("plan-svg-edit", state.mode === "edit" && state.editTool !== "select");
+    var bg = '<rect x="' + (state.view.x - 20) + '" y="' + (state.view.y - 20) + '" width="' + (state.view.w + 40) + '" height="' + (state.view.h + 40) + '" fill="url(#gridMajor)" />';
+    svg.innerHTML = buildDefs() + bg + buildRooms() + buildOverallDimensions() + buildSegmentDimensions() + buildDoors() + buildHalfWalls() + buildCustomWalls() + buildItems(overlaps) + buildWheelchair() + buildEditHandles() + buildMeasure();
+
+    emptyHint.hidden = state.mode !== "layout" || state.items.length > 0;
+    var overlapCount = Object.keys(overlaps).length;
+    if (overlapCount > 0) {
+      warnPill.style.display = "flex";
+      warnPill.textContent = "⚠ " + overlapCount + " piece" + (overlapCount === 1 ? "" : "s") + " overlapping";
+    } else {
+      warnPill.style.display = "none";
+    }
+    if (wheelchair) {
+      var wheelchairState = wheelchairCheck(wheelchair.x, wheelchair.y);
+      wheelchairStatusEl.textContent = wheelchairState.message;
+      wheelchairStatusEl.classList.toggle("blocked", wheelchairState.blocked);
+      wheelchairStatusEl.style.display = "";
+    } else wheelchairStatusEl.style.display = "none";
+  }
+
+  /* =========================== RENDER: INSPECTOR =========================== */
+
+  function renderInspector() {
+    if (state.mode === "edit") { renderEditInspector(); return; }
+    var it = state.items.find(function (i) { return i.uid === state.selectedUid; });
+    var selectedRoom = state.rooms.find(function (room) { return room.id === selectedRoomReferenceId; });
+    if (!it && selectedRoom) {
+      var selectedRoomBox = polyBBox(selectedRoom.poly);
+      var selectedRoomReference = ROOM_REFERENCE_PHOTOS[selectedRoom.id];
+      var roomSuggestions = ROOM_SUGGESTIONS[selectedRoom.id] || ["Confirm circulation, accessibility, infection-control, and utility needs against the room's intended clinical use."];
+      var layoutAwareChecks = roomLayoutAwareChecks(selectedRoom);
+      var roomSuggestionMarkup = '<details class="product-spec-panel" open><summary>' + (selectedRoomReference ? 'Photo-informed planning suggestions' : 'Room planning suggestions') + '</summary><ul class="room-suggestions">' + roomSuggestions.map(function (suggestion) { return '<li>' + escapeHtml(suggestion) + '</li>'; }).join("") + '</ul></details>';
+      var layoutAwareMarkup = '<details class="product-spec-panel room-readiness" open><summary>Layout-aware equipment check</summary><ul class="room-suggestions">' + layoutAwareChecks.map(function (check) { return '<li>' + escapeHtml(check) + '</li>'; }).join("") + '</ul></details>';
+      var roomItems = state.items.filter(function (item) { return roomForPoint(item.x, item.y) && roomForPoint(item.x, item.y).id === selectedRoom.id; });
+      var placedNames = roomItems.length ? roomItems.map(function (item) { return item.name; }).join(", ") : "No planned items placed yet";
+      var readinessItems = ROOM_READINESS_SUMMARY[selectedRoom.id] || ["Apply here: confirm utilities, infection-control needs, accessibility, lighting, and egress for the intended room use.", "Also coordinate with: Storage, Corridor, and the affected clinical rooms."];
+      var readinessMarkup = '<details class="product-spec-panel room-readiness" open><summary>Clinical readiness summary</summary><p><strong>Current plan:</strong> ' + escapeHtml(placedNames) + '</p><ul class="room-suggestions">' + readinessItems.map(function (check) { return '<li>' + escapeHtml(check) + '</li>'; }).join("") + '</ul></details>';
+      var doorReviewMarkup = '<details class="product-spec-panel room-readiness"><summary>Door-swing review</summary><p>' + escapeHtml(ROOM_DOOR_NOTES[selectedRoom.id] || "Keep furniture, storage, and supplies clear of the door arc and verify the final swing onsite.") + '</p></details>';
+      var procurementMarkup = '<details class="product-spec-panel room-readiness"><summary>Procurement &amp; inventory next steps</summary><ul class="room-suggestions"><li>Confirm the final equipment and fixture list, then use each inventory item\'s purchase link/specification sheet where available.</li><li>Set a par level, reorder point, unit of measure, vendor, lead time, and storage location for consumables and replacement parts.</li><li>For future monitoring, track on-hand count, lot/expiration, temperature logs for medical refrigeration, and reorder status in an inventory register.</li><li>Do not purchase or install equipment until utilities, door clearance, load capacity, infection-control needs, and local code requirements have been verified.</li></ul></details>';
+      var roomPhotos = selectedRoomReference ? [{ name: selectedRoomReference.name, src: selectedRoomReference.src }].concat(selectedRoomReference.extraPhotos || []) : [];
+      var roomPhotoMarkup = roomPhotos.length ? '<div class="room-photo-stack">' + roomPhotos.map(function (photo, photoIndex) { return '<button type="button" class="product-photo-inline view-room-reference" data-room-photo-index="' + photoIndex + '" title="Click to enlarge room reference"><img src="' + escapeAttr(photo.src) + '" alt="' + escapeAttr(photo.name) + '" /></button>'; }).join("") + '</div><p class="empty-inspector">' + escapeHtml(selectedRoomReference.detail) + '</p>' : '<p class="empty-inspector">No reference photo has been assigned. Open References to load room photos.</p>';
+      inspectorEl.innerHTML = '<p class="panel-title">Selected room</p><div class="insp-room">' + escapeHtml(selectedRoom.name.toUpperCase()) + '</div>' +
+        '<p class="empty-inspector"><strong>' + fmtFt(selectedRoomBox.w) + ' × ' + fmtFt(selectedRoomBox.h) + '</strong><br/>' + Math.round(polyArea(selectedRoom.poly)) + ' sq ft</p>' +
+        roomPhotoMarkup + layoutAwareMarkup + roomSuggestionMarkup + doorReviewMarkup + readinessMarkup + procurementMarkup;
+      inspectorEl.querySelectorAll(".view-room-reference").forEach(function (roomPhotoButton) { roomPhotoButton.addEventListener("click", function () { var photo = roomPhotos[parseInt(roomPhotoButton.getAttribute("data-room-photo-index"), 10)]; if (photo) openProductPhoto(photo.src, photo.name); }); });
+      return;
+    }
+    if (!it) {
+      inspectorEl.innerHTML =
+        '<p class="panel-title">Selected item</p>' +
+        '<p class="empty-inspector">Select an item on the plan to edit its size, rotation, or position.<br/><br/>' +
+        '<strong style="color:var(--amber)">Amber</strong> outline = selected.<br/>' +
+        '<strong style="color:var(--danger)">Red dashed</strong> outline = overlapping another piece.</p>';
+      return;
+    }
+    var room = roomForPoint(it.x, it.y);
+    var sqft = round2((it.w * it.d) / 144);
+    var catalogEntry = CATALOG_BY_ID[it.catalogId] || {};
+    var productSpecs = catalogEntry.detail || catalogEntry.specs || catalogEntry.link || catalogEntry.specSheet
+      ? '<details class="product-spec-panel" open><summary>Product details &amp; specifications</summary>' +
+        (catalogEntry.detail ? '<p>' + escapeHtml(catalogEntry.detail) + '</p>' : '') +
+        (catalogEntry.specs ? '<p class="product-specs">' + escapeHtml(catalogEntry.specs) + '</p>' : '') +
+        (catalogEntry.link ? '<a class="product-link" href="' + escapeAttr(catalogEntry.link) + '" target="_blank" rel="noopener noreferrer">View product listing</a>' : '') +
+        (catalogEntry.specSheet ? '<a class="product-link" href="' + escapeAttr(catalogEntry.specSheet) + '" target="_blank" rel="noopener noreferrer">Specification sheet (PDF)</a>' : '') +
+        '</details>' : '';
+    var photoScale = Math.min(2.5, Math.max(1, Number(it.photoScale) || 1));
+    var photoX = Math.min(50, Math.max(-50, Number(it.photoX) || 0));
+    var photoY = Math.min(50, Math.max(-50, Number(it.photoY) || 0));
+    var photoTransform = 'translate(' + photoX + '%, ' + photoY + '%) scale(' + photoScale + ')';
+    var productPhoto = catalogEntry.photo
+      ? '<button type="button" class="product-photo-inline" id="viewProductPhoto" title="Click to enlarge product photo"><img id="inlineProductPhoto" src="' + escapeAttr(catalogEntry.photo) + '" alt="' + escapeAttr(it.name) + '" style="transform:' + photoTransform + '" /></button>'
+      : '';
+    var imageCropControl = catalogEntry.photo
+      ? '<details class="advanced-position advanced-image"><summary>Advanced image crop</summary><div class="crop-controls">' +
+        '<label>Zoom<input id="photoScale" type="range" min="1" max="2.5" step="0.05" value="' + photoScale + '" /><output id="photoScaleOut">' + photoScale.toFixed(2) + '×</output></label>' +
+        '<label>Crop X<input id="photoX" type="range" min="-50" max="50" step="1" value="' + photoX + '" /><output id="photoXOut">' + photoX + '%</output></label>' +
+        '<label>Crop Y<input id="photoY" type="range" min="-50" max="50" step="1" value="' + photoY + '" /><output id="photoYOut">' + photoY + '%</output></label>' +
+        '</div><button type="button" class="crop-reset" id="photoCropReset">Reset image crop</button><button type="button" class="crop-reset" id="photoCropDownload">Save cropped PNG</button></details>' : '';
+    var fridgeDoorControl = it.shape === "fridge"
+      ? '<div class="insp-actions" style="margin-top:8px"><button type="button" class="ghost-btn" id="fridgeDoorBtn">Door hinge: ' + ((it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "LEFT" : "RIGHT") + ' · flip direction</button></div>'
+      : '';
+    inspectorEl.innerHTML =
+      '<p class="panel-title">Selected item</p>' +
+      '<input class="insp-name" id="fName" value="' + escapeAttr(it.name) + '" />' +
+      '<div class="insp-room">' + (room ? room.name.toUpperCase() : "OUTSIDE ROOM BOUNDS") + '</div>' +
+      '<div class="field-row">' +
+      textField("W (in)", "fW", round2(it.w), inchHint()) +
+      textField("D (in)", "fD", round2(it.d), inchHint()) +
+      '</div>' +
+      '<details class="advanced-position"><summary>Advanced position</summary>' +
+      '<div class="field-row">' +
+      textField("X" + unitSuffix(), "fX", fmtFt(it.x), unitHint()) +
+      textField("Y" + unitSuffix(), "fY", fmtFt(it.y), unitHint()) +
+      '</div>' +
+      '<div class="rot-row">' +
+      '<button type="button" class="rot-btn" id="rotCCW" title="Rotate -90&deg;" aria-label="Rotate left 90 degrees">&#8630;</button>' +
+      field("Rotation (°)", "fRot", it.rot || 0) +
+      '<button type="button" class="rot-btn" id="rotCW" title="Rotate +90&deg;" aria-label="Rotate right 90 degrees">&#8631;</button>' +
+      '</div>' +
+      '</details>' +
+      '<div class="insp-actions">' +
+      '<button type="button" class="dup-btn" id="dupBtn">Duplicate</button>' +
+      '<button type="button" class="del-btn" id="delBtn">Delete</button>' +
+      '</div>' +
+      '<div class="insp-actions" style="margin-top:8px">' +
+      '<button type="button" class="ghost-btn" id="toPaletteBtn" title="Add this piece, at its current name and size, to My Items">Save to palette</button>' +
+      '</div>' +
+      '<div class="footprint-note">Footprint: ' + sqft + ' sq ft</div>' + fridgeDoorControl + productSpecs + imageCropControl + productPhoto;
+
+    document.getElementById("fName").addEventListener("change", function (e) { it.name = e.target.value || it.name; scheduleSave(); renderPlan(); renderSchedule(); });
+    bindLen("fW", parseInches, function (v) { it.w = Math.max(2, round2(v)); });
+    bindLen("fD", parseInches, function (v) { it.d = Math.max(2, round2(v)); });
+    bindLen("fX", parseLenFt, function (v) { it.x = round2(v); });
+    bindLen("fY", parseLenFt, function (v) { it.y = round2(v); });
+    bindNumber("fRot", function (v) { it.rot = ((v % 360) + 360) % 360; }, true);
+    document.getElementById("rotCW").addEventListener("click", function () { it.rot = (((it.rot || 0) + 90) % 360 + 360) % 360; scheduleSave(); renderAll(); });
+    document.getElementById("rotCCW").addEventListener("click", function () { it.rot = (((it.rot || 0) - 90) % 360 + 360) % 360; scheduleSave(); renderAll(); });
+    var fridgeDoorBtn = document.getElementById("fridgeDoorBtn");
+    if (fridgeDoorBtn) fridgeDoorBtn.addEventListener("click", function () {
+      it.doorHinge = (it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "right" : "left";
+      scheduleSave(); renderAll();
+    });
+    var viewProductPhoto = document.getElementById("viewProductPhoto");
+    if (viewProductPhoto) viewProductPhoto.addEventListener("click", function () { openProductPhoto(catalogEntry.photo, it.name); });
+    function updateInlinePhotoCrop() {
+      var image = document.getElementById("inlineProductPhoto");
+      var scaleControl = document.getElementById("photoScale");
+      var xControl = document.getElementById("photoX");
+      var yControl = document.getElementById("photoY");
+      if (!scaleControl || !xControl || !yControl) return;
+      it.photoScale = Number(scaleControl.value);
+      it.photoX = Number(xControl.value);
+      it.photoY = Number(yControl.value);
+      document.getElementById("photoScaleOut").textContent = it.photoScale.toFixed(2) + "×";
+      document.getElementById("photoXOut").textContent = it.photoX + "%";
+      document.getElementById("photoYOut").textContent = it.photoY + "%";
+      if (image) image.style.transform = "translate(" + it.photoX + "%, " + it.photoY + "%) scale(" + it.photoScale + ")";
+      scheduleSave();
+    }
+    ["photoScale", "photoX", "photoY"].forEach(function (id) {
+      var control = document.getElementById(id);
+      if (control) control.addEventListener("input", updateInlinePhotoCrop);
+    });
+    var photoCropReset = document.getElementById("photoCropReset");
+    if (photoCropReset) photoCropReset.addEventListener("click", function () {
+      it.photoScale = 1; it.photoX = 0; it.photoY = 0;
+      renderInspector(); scheduleSave();
+    });
+    var photoCropDownload = document.getElementById("photoCropDownload");
+    if (photoCropDownload) photoCropDownload.addEventListener("click", function () {
+      var displayed = document.getElementById("inlineProductPhoto");
+      if (!displayed || !displayed.complete || !displayed.naturalWidth) return;
+      var frame = displayed.parentElement.getBoundingClientRect();
+      var outputW = 1200;
+      var outputH = Math.max(1, Math.round(outputW * frame.height / frame.width));
+      var canvas = document.createElement("canvas");
+      canvas.width = outputW; canvas.height = outputH;
+      var ctx = canvas.getContext("2d");
+      var base = Math.min(outputW / displayed.naturalWidth, outputH / displayed.naturalHeight);
+      var drawW = displayed.naturalWidth * base * (it.photoScale || 1);
+      var drawH = displayed.naturalHeight * base * (it.photoScale || 1);
+      var drawX = (outputW - drawW) / 2 + drawW * (it.photoX || 0) / 100;
+      var drawY = (outputH - drawH) / 2 + drawH * (it.photoY || 0) / 100;
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, outputW, outputH);
+      try {
+        ctx.drawImage(displayed, drawX, drawY, drawW, drawH);
+        var link = document.createElement("a");
+        link.download = (it.name || "product-photo").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() + "-crop.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      } catch (err) {
+        window.alert("This source image cannot be exported by the browser. Use a local reference photo or download the product image first.");
+      }
+    });
+    document.getElementById("dupBtn").addEventListener("click", function () {
+      var copy = Object.assign({}, it, { uid: "it" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36), x: round2(it.x + 1), y: round2(it.y - 1) });
+      state.items.push(copy);
+      state.selectedUid = copy.uid;
+      scheduleSave(); renderAll();
+    });
+    document.getElementById("delBtn").addEventListener("click", function () {
+      state.items = state.items.filter(function (i) { return i.uid !== it.uid; });
+      state.selectedUid = null;
+      scheduleSave(); renderAll();
+    });
+    document.getElementById("toPaletteBtn").addEventListener("click", function () {
+      // pre-fill the palette builder from this piece so the user can confirm
+      // the name and the group before it becomes a reusable item
+      builderSeed = { name: it.name, cat: "My Items", w: it.w, d: it.d, shape: it.shape };
+      builderOpen = true;
+      buildPalette();
+      var el = document.getElementById("bName");
+      if (el) { el.focus(); el.select(); }
+    });
+
+    function bindLen(id, parser, setter) {
+      var el = document.getElementById(id);
+      var apply = function () {
+        var v = parser(el.value);
+        if (isNaN(v)) { renderInspector(); return; }
+        setter(v); scheduleSave(); renderAll();
+      };
+      el.addEventListener("change", apply);
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); apply(); } });
+    }
+
+    function bindNumber(id, setter, doRerender) {
+      var el = document.getElementById(id);
+      el.addEventListener("change", function () {
+        var v = parseFloat(el.value);
+        if (!isNaN(v)) { setter(v); scheduleSave(); if (doRerender) renderAll(); }
+      });
+    }
+  }
+
+  function renderEditInspector() {
+    if (state.selectedRoomId) {
+      var room = state.rooms.find(function (r) { return r.id === state.selectedRoomId; });
+      if (!room) { state.selectedRoomId = null; renderEditInspector(); return; }
+      var area = Math.round(polyArea(room.poly));
+      var bb = polyBBox(room.poly);
+      inspectorEl.innerHTML =
+        '<p class="panel-title">Selected room</p>' +
+        '<div class="insp-name">' + escapeAttr(room.name) + '</div>' +
+        '<div class="insp-room">' + area + ' SQ FT &middot; ' + room.poly.length + ' CORNERS</div>' +
+        '<div class="field-row">' +
+          textField("Width (E-W)" + unitSuffix(), "fRoomW", fmtFt(bb.w), unitHint()) +
+          textField("Length (N-S)" + unitSuffix(), "fRoomL", fmtFt(bb.h), unitHint()) +
+        '</div>' +
+        '<p class="empty-inspector">Set an exact size above &mdash; ' + unitHint() + ' The room scales from its top-left corner. Or drag the amber circles on the plan to reshape it freehand.' + (state.snap ? " Corners snap to the 3&quot; grid." : "") + '</p>';
+      var applyRoomSize = function () {
+        var wv = parseLenFt(document.getElementById("fRoomW").value);
+        var lv = parseLenFt(document.getElementById("fRoomL").value);
+        var b2 = polyBBox(room.poly);
+        if (isNaN(wv) || wv <= 0.5) wv = b2.w;
+        if (isNaN(lv) || lv <= 0.5) lv = b2.h;
+        if (Math.abs(wv - b2.w) < 0.0005 && Math.abs(lv - b2.h) < 0.0005) { renderEditInspector(); return; }
+        resizeRoom(room, wv, lv);
+        scheduleSave(); renderAll();
+      };
+      ["fRoomW", "fRoomL"].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.addEventListener("change", applyRoomSize);
+        el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); applyRoomSize(); } });
+      });
+      return;
+    }
+    if (state.selectedWallId) {
+      var wall = state.customWalls.find(function (w) { return w.id === state.selectedWallId; });
+      if (!wall) { state.selectedWallId = null; renderEditInspector(); return; }
+      var len = Math.hypot(wall.x2 - wall.x1, wall.y2 - wall.y1);
+      inspectorEl.innerHTML =
+        '<p class="panel-title">Selected wall</p>' +
+        '<div class="insp-room">' + fmtFt(len) + ' LONG</div>' +
+        '<div class="field-row">' + textField("Length" + unitSuffix(), "fWallLen", fmtFt(len), unitHint()) + '</div>' +
+        '<p class="empty-inspector">Set an exact length above (the first end stays put), or drag the square handles on the plan to move either end.</p>' +
+        '<div class="insp-actions"><button type="button" class="del-btn" id="delWallBtn">Delete wall</button></div>';
+      var applyWallLen = function () {
+        var v = parseLenFt(document.getElementById("fWallLen").value);
+        var cur = Math.hypot(wall.x2 - wall.x1, wall.y2 - wall.y1);
+        if (isNaN(v) || v <= 0.1 || cur < 0.0001) { renderEditInspector(); return; }
+        var k = v / cur;
+        wall.x2 = wall.x1 + (wall.x2 - wall.x1) * k;
+        wall.y2 = wall.y1 + (wall.y2 - wall.y1) * k;
+        scheduleSave(); renderAll();
+      };
+      var wlEl = document.getElementById("fWallLen");
+      wlEl.addEventListener("change", applyWallLen);
+      wlEl.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); applyWallLen(); } });
+      document.getElementById("delWallBtn").addEventListener("click", function () {
+        state.customWalls = state.customWalls.filter(function (w) { return w.id !== wall.id; });
+        state.selectedWallId = null;
+        scheduleSave(); renderAll();
+      });
+      return;
+    }
+    if (state.selectedDoorId) {
+      var dr = state.doors.find(function (d) { return d.id === state.selectedDoorId; });
+      if (!dr) { state.selectedDoorId = null; renderEditInspector(); return; }
+      inspectorEl.innerHTML =
+        '<p class="panel-title">Selected door</p>' +
+        '<div class="field-row">' + textField("Width" + unitSuffix(), "fDoorW", fmtFt(dr.w), unitHint()) + field("Swing angle (°)", "fDoorAng", dr.angle || 0) + '</div>' +
+        '<div class="insp-actions"><button type="button" class="ghost-btn" id="flipDoorBtn">Flip swing side</button>' +
+        '<button type="button" class="del-btn" id="delDoorBtn">Delete door</button></div>';
+      document.getElementById("flipDoorBtn").addEventListener("click", function () {
+        dr.swing = (dr.swing === -1) ? 1 : -1;
+        scheduleSave(); renderPlanOnly();
+      });
+      var applyDoorW = function () {
+        var v = parseLenFt(document.getElementById("fDoorW").value);
+        if (!isNaN(v) && v > 0.5) { dr.w = v; scheduleSave(); renderPlanOnly(); }
+        else renderEditInspector();
+      };
+      document.getElementById("fDoorW").addEventListener("change", applyDoorW);
+      document.getElementById("fDoorW").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); applyDoorW(); }
+      });
+      document.getElementById("fDoorAng").addEventListener("change", function (e) {
+        var v = parseFloat(e.target.value);
+        if (!isNaN(v)) { dr.angle = v; scheduleSave(); renderPlanOnly(); }
+      });
+      document.getElementById("delDoorBtn").addEventListener("click", function () {
+        state.doors = state.doors.filter(function (d) { return d.id !== dr.id; });
+        state.selectedDoorId = null;
+        scheduleSave(); renderAll();
+      });
+      return;
+    }
+    inspectorEl.innerHTML =
+      '<p class="panel-title">Edit floor plan</p>' +
+      '<p class="empty-inspector">Pick a tool above, then work on the plan:<br/><br/>' +
+      '<strong>Select</strong> &mdash; click a room to drag its corners; click a wall or door to move/delete it.<br/><br/>' +
+      '<strong>Wall</strong> &mdash; drag on the plan to draw a new wall.<br/><br/>' +
+      '<strong>Door</strong> &mdash; click anywhere on a wall to insert a door.</p>';
+  }
+
+  function renderStructurePanel() {
+    if (state.mode !== "edit") return;
+    var html = '<div class="struct-section-title">Rooms</div>';
+    state.rooms.forEach(function (r) {
+      html += '<div class="struct-row' + (state.selectedRoomId === r.id ? " active" : "") + '" data-pick-room="' + r.id + '"><span>' + r.name + '</span></div>';
+    });
+    html += '<div class="struct-section-title">Walls added (' + state.customWalls.length + ')</div>';
+    if (!state.customWalls.length) {
+      html += '<p class="unassigned-note">None yet &mdash; use the Wall tool.</p>';
+    } else {
+      state.customWalls.forEach(function (w, i) {
+        html += '<div class="struct-row' + (state.selectedWallId === w.id ? " active" : "") + '" data-pick-wall="' + w.id + '"><span>Wall ' + (i + 1) + '</span><button type="button" class="sr-del" data-del-wall="' + w.id + '" title="Delete">&times;</button></div>';
+      });
+    }
+    html += '<div class="struct-section-title">Doors (' + state.doors.length + ')</div>';
+    state.doors.forEach(function (d, i) {
+      html += '<div class="struct-row' + (state.selectedDoorId === d.id ? " active" : "") + '" data-pick-door="' + d.id + '"><span>Door ' + (i + 1) + (d.custom ? " (added)" : "") + '</span><button type="button" class="sr-del" data-del-door="' + d.id + '" title="Delete">&times;</button></div>';
+    });
+    structureListsEl.innerHTML = html;
+    structureListsEl.querySelectorAll("[data-pick-room]").forEach(function (el) {
+      el.addEventListener("click", function () { state.selectedRoomId = el.getAttribute("data-pick-room"); state.selectedWallId = null; state.selectedDoorId = null; renderAll(); });
+    });
+    structureListsEl.querySelectorAll("[data-pick-wall]").forEach(function (el) {
+      el.addEventListener("click", function (e) { if (e.target.closest("[data-del-wall]")) return; state.selectedWallId = el.getAttribute("data-pick-wall"); state.selectedRoomId = null; state.selectedDoorId = null; renderAll(); });
+    });
+    structureListsEl.querySelectorAll("[data-pick-door]").forEach(function (el) {
+      el.addEventListener("click", function (e) { if (e.target.closest("[data-del-door]")) return; state.selectedDoorId = el.getAttribute("data-pick-door"); state.selectedRoomId = null; state.selectedWallId = null; renderAll(); });
+    });
+    structureListsEl.querySelectorAll("[data-del-wall]").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.stopPropagation(); var id = el.getAttribute("data-del-wall"); state.customWalls = state.customWalls.filter(function (w) { return w.id !== id; }); if (state.selectedWallId === id) state.selectedWallId = null; scheduleSave(); renderAll(); });
+    });
+    structureListsEl.querySelectorAll("[data-del-door]").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.stopPropagation(); var id = el.getAttribute("data-del-door"); state.doors = state.doors.filter(function (d) { return d.id !== id; }); if (state.selectedDoorId === id) state.selectedDoorId = null; scheduleSave(); renderAll(); });
+    });
+  }
+
+  function textField(label, id, val, hint) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label>' +
+      '<input type="text" id="' + id + '" value="' + escapeAttr(val) + '"' +
+      (hint ? ' title="' + escapeAttr(hint) + '"' : "") + ' /></div>';
+  }
+
+  function field(label, id, val) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label>' +
+      '<input type="number" id="' + id + '" value="' + val + '" step="any" /></div>';
+  }
+
+  function escapeAttr(s) { return String(s).replace(/"/g, "&quot;"); }
+
+  /* =========================== RENDER: SCHEDULE =========================== */
+
+  function renderSchedule() {
+    var totalItems = state.items.length;
+    var html = '<div class="panel-title">Furniture Schedule</div>' +
+      '<div class="schedule-summary"><span class="count">' + totalItems + ' item' + (totalItems === 1 ? "" : "s") + ' placed</span></div>';
+
+    var byRoom = {};
+    state.rooms.forEach(function (r) { byRoom[r.id] = []; });
+    var unassigned = [];
+
+    state.items.forEach(function (it) {
+      var room = roomForPoint(it.x, it.y);
+      if (room) byRoom[room.id].push(it); else unassigned.push(it);
+    });
+
+    state.rooms.forEach(function (r) {
+      var items = byRoom[r.id];
+      var roomArea = polyArea(r.poly);
+      var usedSqft = items.reduce(function (s, it) { return s + (it.w * it.d) / 144; }, 0);
+      var pct = roomArea > 0 ? Math.min(100, (usedSqft / roomArea) * 100) : 0;
+      var meterColor = pct < 35 ? "var(--ok)" : (pct < 60 ? "var(--amber)" : "var(--danger)");
+
+      html += '<div class="room-block"><div class="rb-head"><span class="rb-name">' + r.name + '</span>' +
+        '<span class="rb-area">' + Math.round(usedSqft) + ' / ' + Math.round(roomArea) + ' sq ft</span></div>' +
+        '<div class="meter"><span style="width:' + pct + '%; background:' + meterColor + '"></span></div>';
+
+      if (!items.length) {
+        html += '<div class="empty-room-note">Nothing placed yet</div>';
+      } else {
+        var groups = {};
+        var order = [];
+        items.forEach(function (it) {
+          var key = it.name + "|" + it.w + "x" + it.d;
+          if (!groups[key]) { groups[key] = { name: it.name, w: it.w, d: it.d, qty: 0, uids: [] }; order.push(key); }
+          groups[key].qty++;
+          groups[key].uids.push(it.uid);
+        });
+        html += '<table class="sched-table">';
+        order.forEach(function (key) {
+          var g = groups[key];
+          html += '<tr class="' + (g.uids.indexOf(state.selectedUid) !== -1 ? 'sched-selected' : '') + '" data-schedule-uids="' + g.uids.join(',') + '"><td>' + g.name + '</td><td class="dm">' + g.w + '″×' + g.d + '″</td><td class="q">×' + g.qty + '</td></tr>';
+        });
+        html += '</table>';
+      }
+      html += '</div>';
+    });
+
+    if (unassigned.length) {
+      html += '<div class="room-block"><div class="rb-head"><span class="rb-name">Unassigned</span></div>' +
+        '<div class="unassigned-note">' + unassigned.length + ' item(s) sitting outside a room boundary (in a hallway/vestibule area, or dragged past a wall).</div></div>';
+    }
+
+    html += '<details class="text-export"><summary>View as plain text</summary>' +
+      '<textarea readonly>' + buildTextExport(byRoom, unassigned) + '</textarea></details>';
+
+    scheduleEl.innerHTML = html;
+    scheduleEl.querySelectorAll("[data-schedule-uids]").forEach(function (row) {
+      row.addEventListener("click", function () {
+        var uid = (row.getAttribute("data-schedule-uids") || "").split(",")[0];
+        if (!uid) return;
+        state.selectedUid = uid;
+        hoveredUid = uid;
+        renderAll();
+      });
+    });
+  }
+
+  function buildTextExport(byRoom, unassigned) {
+    var lines = ["SUITE 203 - FURNITURE SCHEDULE", "40 Dale Road, Suite 203", ""];
+    state.rooms.forEach(function (r) {
+      var items = byRoom[r.id];
+      lines.push(r.name.toUpperCase() + " (" + Math.round(polyArea(r.poly)) + " sq ft)");
+      if (!items.length) { lines.push("  -- nothing placed --"); }
+      else {
+        var groups = {}, order = [];
+        items.forEach(function (it) {
+          var key = it.name + "|" + it.w + "x" + it.d;
+          if (!groups[key]) { groups[key] = { name: it.name, w: it.w, d: it.d, qty: 0 }; order.push(key); }
+          groups[key].qty++;
+        });
+        order.forEach(function (key) {
+          var g = groups[key];
+          lines.push("  x" + g.qty + "  " + g.name + "  (" + g.w + '"x' + g.d + '")');
+        });
+      }
+      lines.push("");
+    });
+    if (unassigned.length) {
+      lines.push("UNASSIGNED (" + unassigned.length + ")");
+    }
+    return lines.join("\n");
+  }
+
+  function updateSuiteAreaLabel() {
+    var totalArea = state.rooms.reduce(function (s, r) { return s + polyArea(r.poly); }, 0);
+    var roomCount = state.rooms.filter(function (r) { return r.id !== "corridor"; }).length;
+    suiteAreaEl.textContent = "≈ " + Math.round(totalArea) + " SQ FT · " + roomCount + " ROOMS";
+  }
+
+  function renderAll() {
+    updateSuiteAreaLabel();
+    renderPlan();
+    renderMapHoverPanel();
+    renderInspector();
+    scheduleEl.style.display = state.mode === "edit" ? "none" : "";
+    renderSchedule();
+    renderStructurePanel();
+  }
+
+  function renderMapHoverPanel() {
+    var item = state.items.find(function (entry) { return entry.uid === hoveredUid; });
+    if (!item) {
+      var roomReference = ROOM_REFERENCE_PHOTOS[selectedRoomReferenceId];
+      var selectedRoom = state.rooms.find(function (room) { return room.id === selectedRoomReferenceId; });
+      if (!selectedRoom) { mapHoverPanel.innerHTML = ''; mapHoverPanel.style.display = 'none'; return; }
+      var roomBox = polyBBox(selectedRoom.poly);
+      var roomInfo = fmtFt(roomBox.w) + ' × ' + fmtFt(roomBox.h) + ' · ' + Math.round(polyArea(selectedRoom.poly)) + ' sq ft';
+      mapHoverPanel.style.display = '';
+      mapHoverPanel.innerHTML = '<p class="panel-title">SELECTED ROOM</p><div class="map-hover-content">' +
+        (roomReference ? '<img src="' + escapeAttr(roomReference.src) + '" alt="' + escapeAttr(roomReference.name) + '" />' : '') +
+        '<div><strong>' + escapeHtml(selectedRoom.name) + '</strong><b>' + roomInfo + '</b><p>' +
+        escapeHtml(roomReference ? roomReference.detail : 'No reference photo has been assigned yet. Use References to load room photos.') +
+        '</p></div></div>';
+      return;
+    }
+    var catalogEntry = CATALOG_BY_ID[item.catalogId] || {};
+    mapHoverPanel.style.display = '';
+    mapHoverPanel.innerHTML = '<p class="panel-title">MAP ITEM DETAILS</p>' +
+      '<div class="map-hover-content">' +
+      (catalogEntry.photo ? '<img src="' + escapeAttr(catalogEntry.photo) + '" alt="' + escapeAttr(item.name) + '" />' : '') +
+      '<div><strong>' + escapeHtml(item.name) + '</strong><b>' + fmtIn(item.w) + ' × ' + fmtIn(item.d) + '</b>' +
+      '<p>' + escapeHtml(catalogEntry.detail || 'Placed inventory item') + '</p>' +
+      (catalogEntry.specs ? '<p class="map-hover-specs">' + escapeHtml(catalogEntry.specs) + '</p>' : '') +
+      '<em>' + escapeHtml(catalogEntry.price || 'No price saved') + '</em>' +
+      (catalogEntry.link ? '<a class="product-link" href="' + escapeAttr(catalogEntry.link) + '" target="_blank" rel="noopener noreferrer">View product listing</a>' : '') +
+      (catalogEntry.specSheet ? '<a class="product-link" href="' + escapeAttr(catalogEntry.specSheet) + '" target="_blank" rel="noopener noreferrer">Specification sheet (PDF)</a>' : '') + '</div></div>';
+  }
+
+  /* =========================== INTERACTION: DRAG / PAN / ZOOM =========================== */
+
+  var drag = null; // { uid, startWorld, startX, startY }
+  var panning = null; // { startClientX, startClientY, startViewX, startViewY }
+  var vertexDrag = null; // { roomId, vidx }
+  var wallEndpointDrag = null; // { wallId, endpoint }
+  var doorDrag = null; // { id, offX, offY }
+  var measureMode = null; // "axis" | "free" | null
+  var measureStart = null;
+  var measureEnd = null;
+  var measurePreview = null;
+  var hoveredUid = null;
+  var selectedRoomReferenceId = null;
+  var showFootprintBoxes = true;
+  var wheelchairMode = false;
+  var wheelchair = null;
+  var wheelchairDragging = false;
+
+  function selectRoomReference(roomId) {
+    selectedRoomReferenceId = roomId;
+    state.selectedUid = null;
+    hoveredUid = null;
+    renderInspector();
+    renderSchedule();
+    renderMapHoverPanel();
+    renderPlanOnly();
+  }
+
+  function screenToWorld(clientX, clientY) {
+    var pt = svg.createSVGPoint();
+    pt.x = clientX; pt.y = clientY;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    var loc = pt.matrixTransform(ctm.inverse());
+    return { svgX: loc.x, svgY: loc.y, x: loc.x, y: loc.y };
+  }
+
+  function startPan(e) {
+    panning = { startX: e.clientX, startY: e.clientY, viewX: state.view.x, viewY: state.view.y };
+    svg.setPointerCapture(e.pointerId);
+  }
+
+  function updatePan(e) {
+    var rect = svg.getBoundingClientRect();
+    var scale = state.view.w / rect.width;
+    var dx = (e.clientX - panning.startX) * scale;
+    var dy = (e.clientY - panning.startY) * scale;
+    state.view.x = panning.viewX - dx;
+    state.view.y = panning.viewY - dy;
+    renderPlanOnly();
+  }
+
+  svg.addEventListener("pointerdown", function (e) {
+    if (wheelchairMode) {
+      var wheelchairPoint = screenToWorld(e.clientX, e.clientY);
+      wheelchair = { x: snapVal(wheelchairPoint.x), y: snapVal(wheelchairPoint.y) };
+      wheelchairDragging = true;
+      svg.setPointerCapture(e.pointerId);
+      renderPlanOnly();
+      return;
+    }
+    if (measureMode) {
+      var measurePoint = screenToWorld(e.clientX, e.clientY);
+      measurePoint.x = snapVal(measurePoint.x); measurePoint.y = snapVal(measurePoint.y);
+      if (measureMode === "axis" && measureStart) {
+        var axisDx = Math.abs(measurePoint.x - measureStart.x), axisDy = Math.abs(measurePoint.y - measureStart.y);
+        if (axisDx >= axisDy) measurePoint.y = measureStart.y;
+        else measurePoint.x = measureStart.x;
+      }
+      if (!measureStart || measureEnd) {
+        measureStart = measurePoint; measureEnd = null; measurePreview = null;
+      } else {
+        measureEnd = measurePoint; measurePreview = null;
+      }
+      renderPlanOnly();
+      return;
+    }
+    if (state.mode === "edit") { onEditPointerDown(e); return; }
+    var itemEl = e.target.closest("[data-uid]");
+    if (itemEl) {
+      var uid = itemEl.getAttribute("data-uid");
+      var it = state.items.find(function (i) { return i.uid === uid; });
+      if (!it) return;
+      state.selectedUid = uid;
+      selectedRoomReferenceId = null;
+      hoveredUid = uid;
+      renderMapHoverPanel();
+      var w = screenToWorld(e.clientX, e.clientY);
+      drag = { uid: uid, offX: it.x - w.x, offY: it.y - w.y };
+      svg.setPointerCapture(e.pointerId);
+      renderInspector();
+      renderSchedule();
+      renderPlanOnly();
+    } else {
+      var roomEl = e.target.closest("[data-room-id]");
+      if (roomEl && state.mode === "layout") {
+        selectRoomReference(roomEl.getAttribute("data-room-id"));
+        return;
+      }
+      startPan(e);
+      if (state.selectedUid || selectedRoomReferenceId) { state.selectedUid = null; selectedRoomReferenceId = null; hoveredUid = null; renderInspector(); renderMapHoverPanel(); renderSchedule(); renderPlanOnly(); }
+    }
+  });
+
+  // Click fallback: room labels and room surfaces both select the room.
+  svg.addEventListener("click", function (e) {
+    if (state.mode !== "layout" || e.target.closest("[data-uid]")) return;
+    var roomEl = e.target.closest("[data-room-id]");
+    if (roomEl) selectRoomReference(roomEl.getAttribute("data-room-id"));
+  });
+
+  svg.addEventListener("pointermove", function (e) {
+    if (wheelchairMode && wheelchairDragging) {
+      var movingWheelchairPoint = screenToWorld(e.clientX, e.clientY);
+      wheelchair.x = snapVal(movingWheelchairPoint.x);
+      wheelchair.y = snapVal(movingWheelchairPoint.y);
+      renderPlanOnly();
+      return;
+    }
+    if (measureMode && measureStart && !measureEnd) {
+      var measurePoint = screenToWorld(e.clientX, e.clientY);
+      measurePreview = { x: snapVal(measurePoint.x), y: snapVal(measurePoint.y) };
+      if (measureMode === "axis") {
+        var previewDx = Math.abs(measurePreview.x - measureStart.x), previewDy = Math.abs(measurePreview.y - measureStart.y);
+        if (previewDx >= previewDy) measurePreview.y = measureStart.y;
+        else measurePreview.x = measureStart.x;
+      }
+      renderPlanOnly();
+      return;
+    }
+    if (!drag && !panning && state.mode === "layout") {
+      var hovered = e.target.closest("[data-uid]");
+      var nextHoveredUid = hovered ? hovered.getAttribute("data-uid") : null;
+      if (nextHoveredUid !== hoveredUid) {
+        hoveredUid = nextHoveredUid;
+        renderMapHoverPanel();
+        return;
+      }
+    }
+    if (state.mode === "edit") { onEditPointerMove(e); return; }
+    if (drag) {
+      var w = screenToWorld(e.clientX, e.clientY);
+      var it = state.items.find(function (i) { return i.uid === drag.uid; });
+      if (!it) return;
+      it.x = snapVal(w.x + drag.offX);
+      it.y = snapVal(w.y + drag.offY);
+      renderPlanOnly();
+    } else if (panning) {
+      updatePan(e);
+    }
+  });
+
+  function endInteraction(e) {
+    if (wheelchairDragging) { wheelchairDragging = false; return; }
+    if (state.mode === "edit") { onEditPointerUp(e); return; }
+    if (drag) { drag = null; scheduleSave(); renderInspector(); renderSchedule(); }
+    panning = null;
+  }
+  svg.addEventListener("pointerup", endInteraction);
+  svg.addEventListener("pointercancel", endInteraction);
+  svg.addEventListener("pointerover", function (e) {
+    if (state.mode !== "layout" || drag || panning) return;
+    var item = e.target.closest("[data-uid]");
+    var uid = item ? item.getAttribute("data-uid") : null;
+    if (uid && uid !== hoveredUid) { hoveredUid = uid; renderMapHoverPanel(); }
+  });
+  svg.addEventListener("pointerleave", function () {
+    if (hoveredUid && !state.selectedUid) { hoveredUid = null; renderMapHoverPanel(); }
+  });
+
+  /* -------- edit-mode pointer handling (rooms / walls / doors) -------- */
+
+  function onEditPointerDown(e) {
+    var w = screenToWorld(e.clientX, e.clientY);
+
+    if (state.editTool === "wall") {
+      var sx = snapVal(w.x), sy = snapVal(w.y);
+      state.wallDraw = { x1: sx, y1: sy, x2: sx, y2: sy };
+      svg.setPointerCapture(e.pointerId);
+      renderPlanOnly();
+      return;
+    }
+
+    if (state.editTool === "door") {
+      var hit = findNearestWallPoint(w.x, w.y);
+      if (hit) {
+        var doorW = 3;
+        var rad = hit.angle * Math.PI / 180;
+        var hx = hit.x - (doorW / 2) * Math.cos(rad);
+        var hy = hit.y - (doorW / 2) * Math.sin(rad);
+        var id = "dr" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+        state.doors.push({ id: id, x: round2(hx), y: round2(hy), w: doorW, angle: hit.angle, custom: true });
+        state.selectedDoorId = id; state.selectedRoomId = null; state.selectedWallId = null;
+        scheduleSave();
+        renderAll();
+      }
+      return;
+    }
+
+    // select tool
+    var vertexEl = e.target.closest("[data-vidx]");
+    if (vertexEl) {
+      vertexDrag = { roomId: vertexEl.getAttribute("data-room-id"), vidx: parseInt(vertexEl.getAttribute("data-vidx"), 10) };
+      svg.setPointerCapture(e.pointerId);
+      return;
+    }
+    var wallHandleEl = e.target.closest("[data-endpoint]");
+    if (wallHandleEl) {
+      wallEndpointDrag = { wallId: wallHandleEl.getAttribute("data-wall-id"), endpoint: parseInt(wallHandleEl.getAttribute("data-endpoint"), 10) };
+      svg.setPointerCapture(e.pointerId);
+      return;
+    }
+    var doorEl = e.target.closest("[data-door-id]");
+    if (doorEl) {
+      state.selectedDoorId = doorEl.getAttribute("data-door-id");
+      state.selectedRoomId = null; state.selectedWallId = null;
+      var dr = state.doors.find(function (d) { return d.id === state.selectedDoorId; });
+      doorDrag = { id: state.selectedDoorId, offX: dr ? dr.x - w.x : 0, offY: dr ? dr.y - w.y : 0 };
+      svg.setPointerCapture(e.pointerId);
+      renderAll();
+      return;
+    }
+    var wallEl = e.target.closest("[data-wall-id]");
+    if (wallEl) {
+      state.selectedWallId = wallEl.getAttribute("data-wall-id");
+      state.selectedRoomId = null; state.selectedDoorId = null;
+      svg.setPointerCapture(e.pointerId);
+      renderAll();
+      return;
+    }
+    var roomEl = e.target.closest("[data-room-id]");
+    if (roomEl) {
+      state.selectedRoomId = roomEl.getAttribute("data-room-id");
+      state.selectedWallId = null; state.selectedDoorId = null;
+      svg.setPointerCapture(e.pointerId);
+      renderAll();
+      return;
+    }
+    state.selectedRoomId = null; state.selectedWallId = null; state.selectedDoorId = null;
+    startPan(e);
+    renderAll();
+  }
+
+  function onEditPointerMove(e) {
+    var w = screenToWorld(e.clientX, e.clientY);
+    if (state.wallDraw) {
+      var ex = snapVal(w.x), ey = snapVal(w.y);
+      var dx = ex - state.wallDraw.x1, dy = ey - state.wallDraw.y1;
+      if (!e.shiftKey && (dx !== 0 || dy !== 0)) {
+        if (Math.abs(dx) > Math.abs(dy) * 1.7) ey = state.wallDraw.y1;
+        else if (Math.abs(dy) > Math.abs(dx) * 1.7) ex = state.wallDraw.x1;
+      }
+      state.wallDraw.x2 = ex; state.wallDraw.y2 = ey;
+      renderPlanOnly();
+      return;
+    }
+    if (vertexDrag) {
+      var room = state.rooms.find(function (r) { return r.id === vertexDrag.roomId; });
+      if (room) { room.poly[vertexDrag.vidx] = [snapVal(w.x), snapVal(w.y)]; renderPlanOnly(); }
+      return;
+    }
+    if (wallEndpointDrag) {
+      var wall = state.customWalls.find(function (x) { return x.id === wallEndpointDrag.wallId; });
+      if (wall) {
+        if (wallEndpointDrag.endpoint === 0) { wall.x1 = snapVal(w.x); wall.y1 = snapVal(w.y); }
+        else { wall.x2 = snapVal(w.x); wall.y2 = snapVal(w.y); }
+        renderPlanOnly();
+      }
+      return;
+    }
+    if (doorDrag) {
+      var dr = state.doors.find(function (d) { return d.id === doorDrag.id; });
+      if (dr) { dr.x = snapVal(w.x + doorDrag.offX); dr.y = snapVal(w.y + doorDrag.offY); renderPlanOnly(); }
+      return;
+    }
+    if (panning) updatePan(e);
+  }
+
+  function onEditPointerUp(e) {
+    if (state.wallDraw) {
+      var wd = state.wallDraw;
+      state.wallDraw = null;
+      var len = Math.hypot(wd.x2 - wd.x1, wd.y2 - wd.y1);
+      if (len > 0.2) {
+        var id = "cw" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+        state.customWalls.push({ id: id, x1: wd.x1, y1: wd.y1, x2: wd.x2, y2: wd.y2 });
+        state.selectedWallId = id;
+      }
+      scheduleSave();
+      renderAll();
+      return;
+    }
+    if (vertexDrag) { vertexDrag = null; scheduleSave(); renderAll(); return; }
+    if (wallEndpointDrag) { wallEndpointDrag = null; scheduleSave(); renderAll(); return; }
+    if (doorDrag) { doorDrag = null; scheduleSave(); renderAll(); return; }
+    panning = null;
+  }
+
+  svg.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    var rect = svg.getBoundingClientRect();
+    var w = screenToWorld(e.clientX, e.clientY);
+    var factor = e.deltaY > 0 ? 1.1 : 0.9;
+    var newW = Math.min(120, Math.max(8, state.view.w * factor));
+    var newH = newW * (state.view.h / state.view.w);
+    var fx = (w.svgX - state.view.x) / state.view.w;
+    var fy = (w.svgY - state.view.y) / state.view.h;
+    state.view.x = w.svgX - fx * newW;
+    state.view.y = w.svgY - fy * newH;
+    state.view.w = newW; state.view.h = newH;
+    renderPlanOnly();
+  }, { passive: false });
+
+  function renderPlanOnly() { renderPlan(); }
+
+  document.getElementById("zoomIn").addEventListener("click", function () { zoomBy(0.85); });
+  document.getElementById("zoomOut").addEventListener("click", function () { zoomBy(1 / 0.85); });
+  document.getElementById("zoomFit").addEventListener("click", function () {
+    state.view = Object.assign({}, DEFAULT_VIEW);
+    renderPlanOnly();
+  });
+  function zoomBy(factor) {
+    var cx = state.view.x + state.view.w / 2, cy = state.view.y + state.view.h / 2;
+    var newW = Math.min(120, Math.max(8, state.view.w * factor));
+    var newH = newW * (state.view.h / state.view.w);
+    state.view.x = cx - newW / 2; state.view.y = cy - newH / 2;
+    state.view.w = newW; state.view.h = newH;
+    renderPlanOnly();
+  }
+
+  snapToggle.addEventListener("click", function () {
+    state.snap = !state.snap;
+    snapToggle.setAttribute("aria-pressed", String(state.snap));
+  });
+  function setMeasureMode(mode) {
+    measureMode = measureMode === mode ? null : mode;
+    measureStart = null; measureEnd = null; measurePreview = null;
+    measureAxisToggle.setAttribute("aria-pressed", String(measureMode === "axis"));
+    measureFreeToggle.setAttribute("aria-pressed", String(measureMode === "free"));
+    measureAxisToggle.textContent = measureMode === "axis" ? "Tape H/V…" : "Tape H/V";
+    measureFreeToggle.textContent = measureMode === "free" ? "Tape Free…" : "Tape Free";
+    renderPlanOnly();
+  }
+  measureAxisToggle.addEventListener("click", function () { setMeasureMode("axis"); });
+  measureFreeToggle.addEventListener("click", function () { setMeasureMode("free"); });
+  footprintToggle.addEventListener("click", function () {
+    showFootprintBoxes = !showFootprintBoxes;
+    footprintToggle.setAttribute("aria-pressed", String(showFootprintBoxes));
+    renderPlanOnly();
+  });
+  wheelchairToggle.addEventListener("click", function () {
+    wheelchairMode = !wheelchairMode;
+    if (!wheelchairMode) { wheelchair = null; wheelchairDragging = false; }
+    wheelchairToggle.setAttribute("aria-pressed", String(wheelchairMode));
+    wheelchairToggle.textContent = wheelchairMode ? "Wheelchair…" : "Wheelchair";
+    renderPlanOnly();
+  });
+
+  /* -------- mode / edit-tool toggles -------- */
+
+  function setMode(mode) {
+    state.mode = mode;
+    state.selectedUid = null;
+    state.selectedRoomId = null; state.selectedWallId = null; state.selectedDoorId = null;
+    state.wallDraw = null;
+    modeLayoutBtn.setAttribute("aria-pressed", String(mode === "layout"));
+    modeEditBtn.setAttribute("aria-pressed", String(mode === "edit"));
+    editToolGroup.style.display = mode === "edit" ? "flex" : "none";
+    paletteList.style.display = mode === "edit" ? "none" : "";
+    furnitureHint.style.display = mode === "edit" ? "none" : "";
+    structurePanel.classList.toggle("active", mode === "edit");
+    renderAll();
+  }
+  modeLayoutBtn.addEventListener("click", function () { setMode("layout"); });
+  modeEditBtn.addEventListener("click", function () { setMode("edit"); });
+
+  function setEditTool(tool) {
+    state.editTool = tool;
+    state.wallDraw = null;
+    toolSelectBtn.setAttribute("aria-pressed", String(tool === "select"));
+    toolWallBtn.setAttribute("aria-pressed", String(tool === "wall"));
+    toolDoorBtn.setAttribute("aria-pressed", String(tool === "door"));
+    renderPlanOnly();
+  }
+  toolSelectBtn.addEventListener("click", function () { setEditTool("select"); });
+  toolWallBtn.addEventListener("click", function () { setEditTool("wall"); });
+  toolDoorBtn.addEventListener("click", function () { setEditTool("door"); });
+
+  resetPlanBtn.addEventListener("click", function () {
+    if (!window.confirm("Reset all rooms, walls, and doors to the original digitized floor plan? Furniture placement is kept.")) return;
+    state.rooms = deepClone(ROOMS_DEFAULT);
+    state.doors = deepClone(DOORS_DEFAULT);
+    state.customWalls = [];
+    state.selectedRoomId = null; state.selectedWallId = null; state.selectedDoorId = null;
+    scheduleSave();
+    renderAll();
+  });
+
+  var clearArmed = false, clearTimer = null;
+  clearAllBtn.addEventListener("click", function () {
+    if (!clearArmed) {
+      clearArmed = true;
+      clearAllBtn.textContent = "Click to confirm";
+      clearAllBtn.classList.add("confirming");
+      clearTimer = setTimeout(function () {
+        clearArmed = false;
+        clearAllBtn.textContent = "Clear layout";
+        clearAllBtn.classList.remove("confirming");
+      }, 4000);
+    } else {
+      clearTimeout(clearTimer);
+      clearArmed = false;
+      clearAllBtn.textContent = "Clear layout";
+      clearAllBtn.classList.remove("confirming");
+      state.items = [];
+      state.selectedUid = null;
+      scheduleSave();
+      renderAll();
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (state.mode === "edit") {
+      if (e.key === "Escape") {
+        state.selectedRoomId = null; state.selectedWallId = null; state.selectedDoorId = null;
+        renderAll();
+        return;
+      }
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (state.selectedWallId) {
+          state.customWalls = state.customWalls.filter(function (w) { return w.id !== state.selectedWallId; });
+          state.selectedWallId = null;
+          e.preventDefault(); scheduleSave(); renderAll(); return;
+        }
+        if (state.selectedDoorId) {
+          state.doors = state.doors.filter(function (d) { return d.id !== state.selectedDoorId; });
+          state.selectedDoorId = null;
+          e.preventDefault(); scheduleSave(); renderAll(); return;
+        }
+      }
+      return;
+    }
+    if (!state.selectedUid) return;
+    var it = state.items.find(function (i) { return i.uid === state.selectedUid; });
+    if (!it) return;
+    var step = e.shiftKey ? 1 : 0.25;
+    var changed = true;
+    if (e.key === "ArrowLeft") it.x -= step;
+    else if (e.key === "ArrowRight") it.x += step;
+    else if (e.key === "ArrowUp") it.y += step;
+    else if (e.key === "ArrowDown") it.y -= step;
+    else if (e.key === "r" || e.key === "R") it.rot = (((it.rot || 0) + 90) % 360 + 360) % 360;
+    else if (e.key === "Delete" || e.key === "Backspace") {
+      state.items = state.items.filter(function (i) { return i.uid !== it.uid; });
+      state.selectedUid = null;
+      scheduleSave(); renderAll(); return;
+    } else if (e.key === "Escape") { state.selectedUid = null; renderInspector(); renderPlanOnly(); return; }
+    else changed = false;
+    if (changed) { e.preventDefault(); scheduleSave(); renderPlanOnly(); renderInspector(); renderSchedule(); }
+  });
+
+  /* =========================== VERSIONS =========================== */
+  // Named snapshots of the whole plan (rooms, walls, doors AND furniture),
+  // kept in this browser alongside the autosave. "Save version" freezes the
+  // current state; "Restore" brings one back, first stashing whatever is on
+  // screen as an automatic version so a restore is never destructive.
+
+  var VERSIONS_KEY = "suite203-planner:versions";
+  var MAX_VERSIONS = 24;
+  var versions = [];
+  var versionNaming = false;
+
+  function loadVersions() {
+    try {
+      var raw = localStorage.getItem(VERSIONS_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      versions = Array.isArray(arr) ? arr : [];
+    } catch (err) { versions = []; }
+  }
+
+  function persistVersions() {
+    try {
+      localStorage.setItem(VERSIONS_KEY, JSON.stringify(versions));
+      return true;
+    } catch (err) {
+      saveStatus.innerHTML = '<span class="dot" style="background:var(--danger)"></span>Version not saved (storage full)';
+      return false;
+    }
+  }
+
+  function snapshot() {
+    return {
+      items: deepClone(state.items),
+      rooms: deepClone(state.rooms),
+      doors: deepClone(state.doors),
+      customWalls: deepClone(state.customWalls)
+    };
+  }
+
+  function saveVersion(name) {
+    var v = {
+      id: "v" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+      name: (name || "").trim() || defaultVersionName(),
+      at: Date.now(),
+      rooms: state.rooms.length,
+      doors: state.doors.length,
+      items: state.items.length,
+      data: snapshot()
+    };
+    versions.unshift(v);
+    if (versions.length > MAX_VERSIONS) versions.length = MAX_VERSIONS;
+    if (persistVersions()) {
+      saveStatus.innerHTML = '<span class="dot"></span>Version saved ' + nowStr();
+    }
+    renderVersions();
+    return v;
+  }
+
+  function defaultVersionName() {
+    return "Version " + (versions.length + 1);
+  }
+
+  function restoreVersion(id) {
+    var v = versions.find(function (x) { return x.id === id; });
+    if (!v || !v.data) return;
+    // stash what's on screen first, so Restore is always undoable
+    saveVersion("Before restoring \u201c" + v.name + "\u201d");
+    state.items = deepClone(v.data.items || []);
+    state.rooms = deepClone(v.data.rooms || ROOMS_DEFAULT);
+    state.doors = deepClone(v.data.doors || DOORS_DEFAULT);
+    state.customWalls = deepClone(v.data.customWalls || []);
+    state.selectedUid = null;
+    state.selectedRoomId = null;
+    state.selectedWallId = null;
+    state.selectedDoorId = null;
+    doSave();
+    saveStatus.innerHTML = '<span class="dot"></span>Restored \u201c' + escapeHtml(v.name) + '\u201d';
+    renderAll();
+  }
+
+  function deleteVersion(id) {
+    versions = versions.filter(function (x) { return x.id !== id; });
+    persistVersions();
+    renderVersions();
+  }
+
+  function stamp(ms) {
+    var d = new Date(ms);
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    var today = new Date();
+    var sameDay = d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+    var time = pad(d.getHours()) + ":" + pad(d.getMinutes());
+    return sameDay ? time : (d.getMonth() + 1) + "/" + d.getDate() + " " + time;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function renderVersions() {
+    var html = '<p class="panel-title">Versions (' + versions.length + ')</p>';
+    if (versionNaming) {
+      html += '<input class="ver-name-input" id="verNameInput" type="text" placeholder="' +
+        escapeAttr(defaultVersionName()) + '" />' +
+        '<div class="ver-save-row">' +
+        '<button type="button" class="primary" id="verConfirm">Save</button>' +
+        '<button type="button" id="verCancel">Cancel</button>' +
+        '</div>';
+    } else {
+      html += '<div class="ver-save-row"><button type="button" id="verNew">Save as new version</button></div>';
+    }
+    if (!versions.length) {
+      html += '<p class="ver-empty">No versions yet. Save one before a round of edits and you can always come back to it.</p>';
+    } else {
+      versions.forEach(function (v) {
+        html += '<div class="ver-row">' +
+          '<span class="ver-label">' +
+            '<span class="ver-nm">' + escapeHtml(v.name) + '</span>' +
+            '<span class="ver-meta">' + stamp(v.at) + ' &middot; ' + v.rooms + ' rooms &middot; ' +
+              v.doors + ' doors &middot; ' + v.items + ' items</span>' +
+          '</span>' +
+          '<button type="button" class="ver-btn" data-restore="' + v.id + '">Restore</button>' +
+          '<button type="button" class="ver-del" data-delver="' + v.id + '" title="Delete version">&times;</button>' +
+          '</div>';
+      });
+    }
+    versionsPanel.innerHTML = html;
+
+    var newBtn = document.getElementById("verNew");
+    if (newBtn) newBtn.addEventListener("click", function () { versionNaming = true; renderVersions(); });
+    var cancelBtn = document.getElementById("verCancel");
+    if (cancelBtn) cancelBtn.addEventListener("click", function () { versionNaming = false; renderVersions(); });
+    var confirmBtn = document.getElementById("verConfirm");
+    if (confirmBtn) {
+      var commit = function () {
+        var el = document.getElementById("verNameInput");
+        versionNaming = false;
+        saveVersion(el ? el.value : "");
+      };
+      confirmBtn.addEventListener("click", commit);
+      var inp = document.getElementById("verNameInput");
+      if (inp) {
+        inp.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); commit(); }
+          if (e.key === "Escape") { versionNaming = false; renderVersions(); }
+        });
+        inp.focus();
+      }
+    }
+    versionsPanel.querySelectorAll("[data-restore]").forEach(function (el) {
+      el.addEventListener("click", function () { restoreVersion(el.getAttribute("data-restore")); });
+    });
+    versionsPanel.querySelectorAll("[data-delver]").forEach(function (el) {
+      el.addEventListener("click", function () { deleteVersion(el.getAttribute("data-delver")); });
+    });
+  }
+
+  /* =========================== PERSISTENCE =========================== */
+
+  var saveTimer = null;
+  function scheduleSave() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 350);
+  }
+  function doSave() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        items: state.items, rooms: state.rooms, doors: state.doors,
+        customWalls: state.customWalls, units: state.units, savedAt: Date.now()
+      }));
+      saveStatus.innerHTML = '<span class="dot"></span>Saved ' + nowStr();
+    } catch (err) {
+      saveStatus.innerHTML = '<span class="dot" style="background:var(--danger)"></span>Not saved (storage unavailable)';
+    }
+  }
+  function nowStr() {
+    var d = new Date();
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    return pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (data) {
+          if (Array.isArray(data.items)) state.items = data.items;
+          if (Array.isArray(data.rooms)) state.rooms = data.rooms;
+          if (Array.isArray(data.doors)) {
+            state.doors = data.doors;
+            // Apply the approved 34-inch standard to the original suite doors
+            // while preserving any door the user has added manually.
+            state.doors.forEach(function (door) { if (!door.custom) door.w = STANDARD_DOOR_WIDTH; });
+            var adminReceptionDoor = state.doors.find(function (door) { return door.id === "d-recept"; });
+            if (adminReceptionDoor) adminReceptionDoor.swing = -1;
+          }
+          if (Array.isArray(data.customWalls)) state.customWalls = data.customWalls;
+          if (data.units === "in" || data.units === "ft") state.units = data.units;
+        }
+      }
+    } catch (err) { /* ignore, start empty */ }
+  }
+
+  /* =========================== INIT =========================== */
+
+  function setUnits(u) {
+    state.units = (u === "in") ? "in" : "ft";
+    unitToggle.textContent = unitsAreInches() ? "Inches" : "Feet";
+    unitToggle.setAttribute("aria-pressed", unitsAreInches() ? "true" : "false");
+    unitToggle.title = unitsAreInches()
+      ? "Showing every dimension in inches \u2014 click for feet-inches"
+      : "Showing every dimension in feet-inches \u2014 click for inches";
+    buildPalette();
+    renderAll();
+    scheduleSave();
+  }
+
+  function init() {
+    loadState();
+    loadCustomCatalog();
+    loadVersions();
+    unitToggle.addEventListener("click", function () { setUnits(unitsAreInches() ? "ft" : "in"); });
+    setUnits(state.units);
+    renderVersions();
+    setMode("layout");
+    doSave();
+  }
+
+  init();
+})();
+</script>
