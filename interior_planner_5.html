@@ -1045,14 +1045,15 @@
     return checks;
   }
 
-  function autoArrangeRoom(room) {
+  function autoArrangeRoom(room, strategy) {
     var roomItems = state.items.filter(function (item) {
       var itemRoom = roomForPoint(item.x, item.y);
       return itemRoom && itemRoom.id === room.id;
     });
     if (!roomItems.length) return "No items are placed in this room yet.";
     var box = polyBBox(room.poly), placed = [], notPlaced = 0;
-    var clearance = 0.35, gridStep = 0.5;
+    var comfortPlan = strategy !== "efficient";
+    var clearance = comfortPlan ? 0.5 : 0.25, gridStep = comfortPlan ? 0.5 : 0.25;
     var doorsNearRoom = state.doors.filter(function (door) {
       return door.x >= box.minX - 0.5 && door.x <= box.maxX + 0.5 && door.y >= box.minY - 0.5 && door.y <= box.maxY + 0.5;
     });
@@ -1091,7 +1092,8 @@
     });
     scheduleSave();
     renderAll();
-    return notPlaced ? ("Arranged " + (roomItems.length - notPlaced) + " item(s) using virtual footprints; " + notPlaced + " could not fit with the current clearance.") : ("Arranged " + roomItems.length + " item(s) using their full virtual planning footprints, wall buffer, and door buffer.");
+    var planName = comfortPlan ? "Plan A — Comfort" : "Plan B — Efficient";
+    return notPlaced ? (planName + ": arranged " + (roomItems.length - notPlaced) + " item(s) using virtual footprints; " + notPlaced + " could not fit with the selected clearance.") : (planName + ": arranged " + roomItems.length + " item(s) using full virtual footprints, wall buffer, and door buffer.");
   }
 
   var STORAGE_KEY = "suite203-planner-v6"; // bumped: rooms renamed (Kitchen/Storage/Bathroom/Infusion) and all 10 doors repositioned from the traced overlay
@@ -1978,13 +1980,15 @@
       var procurementMarkup = '<details class="product-spec-panel room-readiness"><summary>Procurement &amp; inventory next steps</summary><ul class="room-suggestions"><li>Confirm the final equipment and fixture list, then use each inventory item\'s purchase link/specification sheet where available.</li><li>Set a par level, reorder point, unit of measure, vendor, lead time, and storage location for consumables and replacement parts.</li><li>For future monitoring, track on-hand count, lot/expiration, temperature logs for medical refrigeration, and reorder status in an inventory register.</li><li>Do not purchase or install equipment until utilities, door clearance, load capacity, infection-control needs, and local code requirements have been verified.</li></ul></details>';
       var roomPhotos = selectedRoomReference ? [{ name: selectedRoomReference.name, src: selectedRoomReference.src }].concat(selectedRoomReference.extraPhotos || []) : [];
       var roomPhotoMarkup = roomPhotos.length ? '<div class="room-photo-stack">' + roomPhotos.map(function (photo, photoIndex) { return '<button type="button" class="product-photo-inline view-room-reference" data-room-photo-index="' + photoIndex + '" title="Click to enlarge room reference"><img src="' + escapeAttr(photo.src) + '" alt="' + escapeAttr(photo.name) + '" /></button>'; }).join("") + '</div><p class="empty-inspector">' + escapeHtml(selectedRoomReference.detail) + '</p>' : '<p class="empty-inspector">No reference photo has been assigned. Open References to load room photos.</p>';
-      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeRoom">Auto arrange items in this room</button></div><p class="empty-inspector" id="autoArrangeStatus">Uses each item\'s full virtual planning footprint, keeps items away from nearby door positions, and places IV poles beside recliners when space permits. Review the result before finalizing.</p>';
+      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeComfort">Plan A · Comfort fit</button><button type="button" class="ghost-btn" id="autoArrangeEfficient">Plan B · Efficient fit</button></div><p class="empty-inspector" id="autoArrangeStatus"><strong>Plan A</strong> uses a 6 in working buffer; <strong>Plan B</strong> uses a 3 in placement buffer. Both use each item\'s full virtual footprint and place IV poles beside recliners when space permits. Review door swings, transfers, and utilities before finalizing.</p>';
       inspectorEl.innerHTML = '<p class="panel-title">Selected room</p><div class="insp-room">' + escapeHtml(selectedRoom.name.toUpperCase()) + '</div>' +
         '<p class="empty-inspector"><strong>' + fmtFt(selectedRoomBox.w) + ' × ' + fmtFt(selectedRoomBox.h) + '</strong><br/>' + Math.round(polyArea(selectedRoom.poly)) + ' sq ft</p>' +
         arrangeMarkup + roomPhotoMarkup + layoutAwareMarkup + roomSuggestionMarkup + doorReviewMarkup + readinessMarkup + procurementMarkup;
       inspectorEl.querySelectorAll(".view-room-reference").forEach(function (roomPhotoButton) { roomPhotoButton.addEventListener("click", function () { var photo = roomPhotos[parseInt(roomPhotoButton.getAttribute("data-room-photo-index"), 10)]; if (photo) openProductPhoto(photo.src, photo.name); }); });
-      var autoArrangeButton = document.getElementById("autoArrangeRoom");
-      if (autoArrangeButton) autoArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Review door swings, patient transfer, equipment utilities, and local requirements before finalizing."; });
+      var comfortArrangeButton = document.getElementById("autoArrangeComfort");
+      var efficientArrangeButton = document.getElementById("autoArrangeEfficient");
+      if (comfortArrangeButton) comfortArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom, "comfort"); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Review door swings, patient transfer, equipment utilities, and local requirements before finalizing."; });
+      if (efficientArrangeButton) efficientArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom, "efficient"); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Review door swings, patient transfer, equipment utilities, and local requirements before finalizing."; });
       return;
     }
     if (!it) {
