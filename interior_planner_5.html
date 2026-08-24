@@ -137,6 +137,7 @@
     font-size: 15px;
   }
   .icon-btn:hover { border-color: var(--line); color: var(--line); }
+  .icon-btn:disabled { opacity: 0.38; cursor: not-allowed; }
   .toggle-btn {
     display: inline-flex; align-items: center; gap: 6px;
     height: 30px; padding: 0 10px;
@@ -735,6 +736,7 @@
       <button class="toggle-btn" id="wheelchairToggle" aria-pressed="false" title="Simulate a 30 inch wheelchair footprint">Wheelchair</button>
       <button class="toggle-btn" id="referencesBtn" title="Open clinical reference photos and planning guidance">References</button>
       <button class="toggle-btn" id="marketingBtn" title="Open the clinic marketing and promotion strategy">Marketing</button>
+      <button class="icon-btn" id="undoArrange" title="Undo auto-fit arrangement" aria-label="Undo auto-fit arrangement" disabled>&#8630;</button>
       <button class="icon-btn" id="zoomOut" title="Zoom out" aria-label="Zoom out">&#8722;</button>
       <button class="icon-btn" id="zoomFit" title="Fit to plan" aria-label="Fit to plan">&#8862;</button>
       <button class="icon-btn" id="zoomIn" title="Zoom in" aria-label="Zoom in">&#43;</button>
@@ -1051,6 +1053,7 @@
       return itemRoom && itemRoom.id === room.id;
     });
     if (!roomItems.length) return "No items are placed in this room yet.";
+    if (!autoArrangeUndoItems) autoArrangeUndoItems = deepClone(state.items);
     var box = polyBBox(room.poly), placed = [], notPlaced = 0;
     var comfortPlan = strategy !== "efficient";
     var clearance = comfortPlan ? 0.5 : 0.25, gridStep = comfortPlan ? 0.5 : 0.25;
@@ -1096,6 +1099,14 @@
     return notPlaced ? (planName + ": arranged " + (roomItems.length - notPlaced) + " item(s) using virtual footprints; " + notPlaced + " could not fit with the selected clearance.") : (planName + ": arranged " + roomItems.length + " item(s) using full virtual footprints, wall buffer, and door buffer.");
   }
 
+  function undoAutoArrange() {
+    if (!autoArrangeUndoItems) return;
+    state.items = autoArrangeUndoItems;
+    autoArrangeUndoItems = null;
+    scheduleSave();
+    renderAll();
+  }
+
   var STORAGE_KEY = "suite203-planner-v6"; // bumped: rooms renamed (Kitchen/Storage/Bathroom/Infusion) and all 10 doors repositioned from the traced overlay
 
   /* =========================== STATE =========================== */
@@ -1120,6 +1131,7 @@
   };
 
   var DEFAULT_VIEW = { x: -15, y: -4, w: 64, h: 38.5 };
+  var autoArrangeUndoItems = null;
 
   /* =========================== DOM REFS =========================== */
 
@@ -1144,6 +1156,7 @@
   var footprintToggle = document.getElementById("footprintToggle");
   var wheelchairToggle = document.getElementById("wheelchairToggle");
   var wheelchairStatusEl = document.getElementById("wheelchairStatus");
+  var undoArrangeBtn = document.getElementById("undoArrange");
   var versionsPanel = document.getElementById("versionsPanel");
   var clearAllBtn = document.getElementById("clearAll");
   var suiteAreaEl = document.getElementById("suiteArea");
@@ -2411,6 +2424,7 @@
 
   function renderAll() {
     updateSuiteAreaLabel();
+    undoArrangeBtn.disabled = !autoArrangeUndoItems;
     renderPlan();
     renderMapHoverPanel();
     renderInspector();
@@ -3134,6 +3148,7 @@
     loadCustomCatalog();
     loadVersions();
     unitToggle.addEventListener("click", function () { setUnits(unitsAreInches() ? "ft" : "in"); });
+    undoArrangeBtn.addEventListener("click", undoAutoArrange);
     setUnits(state.units);
     renderVersions();
     setMode("layout");
