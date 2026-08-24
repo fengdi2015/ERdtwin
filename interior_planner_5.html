@@ -1088,6 +1088,7 @@
         if (anchor) {
           var leftOfRecliner = { x: anchor.x - anchor.halfW - fp.halfW - clearance, y: anchor.y };
           if (validPosition(leftOfRecliner.x, leftOfRecliner.y, fp)) chosen = leftOfRecliner;
+          if (!chosen) { notPlaced++; return; }
         }
       }
       for (var y = box.minY + clearance + fp.halfD; y <= box.maxY - clearance - fp.halfD && !chosen; y += gridStep) {
@@ -1382,8 +1383,11 @@
     return { x: best.x, y: best.y, angle: Math.round(best.angle) };
   }
 
-  function rectCorners(item) {
-    var hw = (item.w / 12) / 2, hd = (item.d / 12) / 2;
+  function rectCorners(item, includeVirtualFootprint) {
+    var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
+    var width = includeVirtualFootprint ? (catalogItem.reclinedW || item.w) : item.w;
+    var depth = includeVirtualFootprint ? (catalogItem.reclinedD || item.d) : item.d;
+    var hw = (width / 12) / 2, hd = (depth / 12) / 2;
     var rad = (item.rot || 0) * Math.PI / 180;
     var cos = Math.cos(rad), sin = Math.sin(rad);
     var local = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
@@ -1393,7 +1397,7 @@
   }
 
   function rectsOverlap(a, b) {
-    var ca = rectCorners(a), cb = rectCorners(b);
+    var ca = rectCorners(a, true), cb = rectCorners(b, true);
     var polys = [ca, cb];
     for (var pi = 0; pi < polys.length; pi++) {
       var poly = polys[pi];
