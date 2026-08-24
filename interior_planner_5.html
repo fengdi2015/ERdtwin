@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <title>Suite 203 Layout Planner</title>
 <style>
@@ -345,6 +347,31 @@
   .placement-row em { color: #245444; font-style: normal; font-weight: 650; }
   @media (max-width: 700px) { .placement-row { grid-template-columns: 1fr; gap: 3px; } }
   @media (max-width: 700px) { .reference-modal { padding: 10px; } .reference-dialog { padding: 16px; } .reference-layout, .marketing-grid { grid-template-columns: 1fr; } .reference-gallery { flex-direction: row; max-height: none; overflow-x: auto; } .reference-thumb { min-width: 126px; } }
+  @media (max-width: 760px) {
+    html, body { height: auto; min-height: 100%; overflow-x: hidden; }
+    .app { height: auto; min-height: 100dvh; }
+    .topbar { gap: 7px; padding: 9px 10px; flex-wrap: wrap; align-items: center; }
+    .brand { flex: 1 1 185px; }
+    .brand h1 { font-size: 16px; }
+    .brand .sub { font-size: 9.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 310px; }
+    .topbar-spacer { display: none; }
+    .toolgroup { gap: 4px; flex-wrap: wrap; }
+    .toolgroup + .toolgroup { padding-left: 0; border-left: 0; }
+    .toggle-btn { height: 32px; padding: 0 8px; font-size: 11px; }
+    .icon-btn { width: 32px; height: 32px; }
+    .clear-btn { height: 32px; padding: 0 8px; font-size: 11px; }
+    .save-status { display: none; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(370px, 58dvh) auto auto; overflow: visible; min-height: 0; }
+    .canvas-wrap { grid-row: 1; min-height: 370px; border-bottom: 1px solid var(--border); }
+    .rightcol { grid-row: 2; border-left: 0; border-bottom: 1px solid var(--border); }
+    .palette { grid-row: 3; border-right: 0; padding: 13px 10px 28px; overflow: visible; }
+    .inspector, .map-hover-panel, .versions, .schedule { padding-left: 12px; padding-right: 12px; }
+    .empty-hint { max-width: calc(100% - 24px); text-align: center; top: 10px; font-size: 11px; }
+    .warn-pill { right: 8px; top: 8px; font-size: 10.5px; padding: 4px 8px; }
+    .wheelchair-status { left: 8px; right: 8px; bottom: 8px; font-size: 11px; }
+    .photo-modal { padding: 12px; }
+    .photo-modal img { max-width: 96vw; max-height: 84dvh; }
+  }
   .panel-title {
     font-family: var(--font-display);
     font-weight: 700;
