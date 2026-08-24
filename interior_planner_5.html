@@ -284,6 +284,7 @@
     padding: 5px 11px;
     font-size: 12px; font-weight: 600;
   }
+  .warn-pill.soft-warning { background: var(--amber-soft); color: var(--amber); border-color: var(--amber); }
 
   .rightcol {
     border-left: 1px solid var(--border);
@@ -579,6 +580,8 @@
   .item-selected .item-shape-detail { stroke: var(--amber); stroke-width: 0.04; }
   .item-selected .item-label, .item-selected .item-size-label { fill: var(--amber); font-weight: 900; }
   .item-overlap .item-shape { stroke: var(--danger); stroke-dasharray: 0.12 0.1; }
+  .item-soft-overlap .item-shape { stroke: var(--amber); stroke-dasharray: 0.10 0.08; }
+  .item-soft-overlap .item-label, .item-soft-overlap .item-size-label { fill: var(--amber); }
 
   /* ---------- edit mode: walls / doors / room corners ---------- */
   .room-poly.room-selected { stroke: var(--amber); stroke-width: 0.11; }
@@ -886,7 +889,7 @@
   var CATALOG = [
     { id: "ritter-204-011", name: "Ritter 204-011 · seamless top", cat: "Exam Tables & Chairs", w: 59.5, d: 28.5, shape: "table-flat", price: "$2,000–$2,600 each", detail: "Manufacturer category: Manual Examination Table · 500-lb capacity · 33.13 in H · manual air-spring back · no heater or pelvic tilt", link: "https://www.midmark.com/medical/products/manual-examination-tables/detail/ritter-204-manual-examination-table", photo: "https://www.midmark.com/images/default-source/webp/medical/products/manual-examination-tables/ritter-204-manual-examination-table/1.webp?sfvrsn=728ec1d9_1" },
     { id: "ritter-228-001", name: "Ritter 228-001 · Barrier-Free", cat: "Exam Tables & Chairs", w: 60, d: 28, shape: "table-flat", price: "$6,500–$8,000", detail: "Manufacturer category: Barrier-Free Examination Chair (not a manual exam table) · 500-lb capacity · powered 17–37 in height · add seamless upholstery + bilateral support rails", specs: "28 in W × 60 in L seamless upholstery; 76 in L with 16 in footrest extended · 17–37 in height range · 500 lb capacity · 115 VAC / 60 Hz / 9 A (228-001)", link: "https://www.midmark.com/medical/products/barrier-free-examination-chairs/detail/ritter-228-barrier-free-examination-chair", photo: "https://www.midmark.com/images/default-source/webp/medical/products/examination-chairs/ritter-228-229-examination-chairs/228-01.webp?sfvrsn=7238e757_3" },
-    { id: "winco-6740", name: "Winco 6740 Swing-Away Arm CareCliner", cat: "Recommended Package", w: 34, d: 41, reclinedW: 55, reclinedD: 70, innerReclinedW: 45.5, reclinedLabel: "CLEANING · ARMS OPEN", shape: "recliner", price: "$1,743 quoted", detail: "350-lb capacity · 46.5 in H · 34 in W × 41 in upright L · 70 in fully reclined L · 5 in casters · dual flip-side tables", specs: "Two virtual zones are shown at 70 in reclined length: inner patient-use box = 45.5 in W (one table open / one closed); outer cleaning box = 55 in W (arms/tables fully open). The outer cleaning box is used for collision and auto-fit safety.", link: "https://www.medproshop.com/products/winco-6740-swing-away-arm-designer-care-cliner-recliner", photo: "winco-6740-product.jpg" },
+    { id: "winco-6740", name: "Winco 6740 Swing-Away Arm CareCliner", cat: "Recommended Package", w: 34, d: 41, reclinedW: 55, reclinedD: 70, innerReclinedW: 45.5, reclinedLabel: "CLEANING · ARMS OPEN", shape: "recliner", price: "$1,743 quoted", detail: "350-lb capacity · 46.5 in H · 34 in W × 41 in upright L · 70 in fully reclined L · 5 in casters · dual flip-side tables", specs: "Two virtual zones are shown at 70 in reclined length: inner patient-use box = 45.5 in W (one table open / one closed); outer cleaning box = 55 in W (arms/tables fully open). Auto Fit never overlaps the inner patient-use box and minimizes overlap of the outer cleaning clearance zone.", link: "https://www.medproshop.com/products/winco-6740-swing-away-arm-designer-care-cliner-recliner", photo: "winco-6740-product.jpg" },
     { id: "winaz-nurse-mobile-station", name: "WINAZ Nurse Mobile Station with Drawers", cat: "Recommended Package", w: 31.5, d: 18.9, shape: "desk", price: "Price to confirm", detail: "Adjustable work height 27.9–41.3 in · 2 fabric drawers · lower shelf · side storage bag · 4 locking casters", photo: "winaz-nurse-mobile-station.jpg" },
     { id: "accucold-ars23mllh", name: "AccuCold ARS23MLLH Medical Refrigerator", cat: "Recommended Package", w: 27.5, d: 31, shape: "fridge", doorHinge: "left", price: "$3,166.30 quoted", detail: "84 in H · 23 cu ft · full solid left-hand door · reach-in medical refrigerator", specs: "27.5 in W × 31 in D × 84 in H · 150 lb · 115 V / 60 Hz / 1 phase · R290 hydrocarbon refrigerant · one section / one solid full door · door lock · casters supplied uninstalled · general-purpose use · 2-year parts & labor warranty; 5-year compressor-parts warranty", link: "https://www.katom.com/162-ARS23MLLH.html?utm_id=627377896&msclkid=c4f7601bc8fc11897cf40a9004c812ce&utm_source=bing&utm_medium=cpc&utm_campaign=%5BROI%5D%20Shopping%20-%20PMax%20-%20Commercial%20Refrigeration&utm_term=2332888796697635&utm_content=PMax%20-%20Commercial%20Refrigerators", specSheet: "https://res.katom.com/products/498/162-ARS23MLLH/162-ARS23MLLH.pdf", photo: "accucold-ars23mllh-product.jpg" },
     { id: "hamilton-beach-hbf1152", name: "Hamilton Beach HBF1152-SS Top-Freezer Refrigerator", cat: "Recommended Package", w: 23.6, d: 26.2, shape: "fridge", doorHinge: "right", price: "$649 quoted", detail: "72.4 in H · 11.5 cu ft total · frost-free stainless refrigerator · reversible door", specs: "23.6 in W × 26.2 in D × 72.4 in H · 26 in D less door · 30 in depth with door open 90° · 7.79 cu ft refrigerator + 3.72 cu ft freezer · auto/cycle defrost · garage ready · counter depth · no ice maker or water dispenser · adjustable leveling legs · reversible door", link: "https://www.homedepot.com/p/336857383", photo: "hamilton-beach-hbf1152-product.jpg" },
@@ -1036,6 +1039,12 @@
     return { w: catalogItem.reclinedW || item.w, d: catalogItem.reclinedD || item.d, label: catalogItem.reclinedLabel || "RECLINED" };
   }
 
+  function operatingFootprint(item) {
+    var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
+    if (catalogItem.id === "winco-6740") return { w: catalogItem.innerReclinedW || 45.5, d: catalogItem.reclinedD || 70, label: "1 TABLE OPEN" };
+    return planningFootprint(item);
+  }
+
   function roomLayoutAwareChecks(room) {
     var allPlaced = state.items.map(function (item) {
       var itemRoom = roomForPoint(item.x, item.y);
@@ -1077,14 +1086,21 @@
       return door.x >= box.minX - 0.5 && door.x <= box.maxX + 0.5 && door.y >= box.minY - 0.5 && door.y <= box.maxY + 0.5;
     });
     function footprint(item) {
-      var plan = planningFootprint(item);
-      return { halfW: plan.w / 24, halfD: plan.d / 24 };
+      var hard = operatingFootprint(item), soft = planningFootprint(item);
+      return { halfW: hard.w / 24, halfD: hard.d / 24, softHalfW: soft.w / 24, softHalfD: soft.d / 24 };
     }
     function validPosition(x, y, fp) {
-      var corners = [[x-fp.halfW,y-fp.halfD],[x+fp.halfW,y-fp.halfD],[x+fp.halfW,y+fp.halfD],[x-fp.halfW,y+fp.halfD]];
+      var corners = [[x-fp.softHalfW,y-fp.softHalfD],[x+fp.softHalfW,y-fp.softHalfD],[x+fp.softHalfW,y+fp.softHalfD],[x-fp.softHalfW,y+fp.softHalfD]];
       if (!corners.every(function (corner) { return pointInPoly(corner, room.poly); })) return false;
-      if (doorsNearRoom.some(function (door) { return Math.hypot(x-door.x, y-door.y) < Math.max(fp.halfW, fp.halfD) + door.w + clearance; })) return false;
+      if (doorsNearRoom.some(function (door) { return Math.hypot(x-door.x, y-door.y) < Math.max(fp.softHalfW, fp.softHalfD) + door.w + clearance; })) return false;
       return !placed.some(function (other) { return Math.abs(x-other.x) < fp.halfW + other.halfW + clearance && Math.abs(y-other.y) < fp.halfD + other.halfD + clearance; });
+    }
+    function softOverlapScore(x, y, fp) {
+      return placed.reduce(function (score, other) {
+        var overlapW = Math.max(0, fp.softHalfW + other.softHalfW - Math.abs(x - other.x));
+        var overlapD = Math.max(0, fp.softHalfD + other.softHalfD - Math.abs(y - other.y));
+        return score + overlapW * overlapD;
+      }, 0);
     }
     var poles = roomItems.filter(function (item) { return item.shape === "iv-pole"; });
     var furniture = roomItems.filter(function (item) { return item.shape !== "iv-pole"; }).sort(function (a, b) { var af = footprint(a), bf = footprint(b); return (bf.halfW * bf.halfD) - (af.halfW * af.halfD); });
@@ -1100,20 +1116,31 @@
           if (!chosen) { notPlaced++; return; }
         }
       }
-      for (var y = box.minY + clearance + fp.halfD; y <= box.maxY - clearance - fp.halfD && !chosen; y += gridStep) {
-        for (var x = box.minX + clearance + fp.halfW; x <= box.maxX - clearance - fp.halfW && !chosen; x += gridStep) {
-          if (validPosition(x, y, fp)) chosen = { x: x, y: y };
+      if (!chosen) {
+        var bestScore = Infinity;
+        for (var y = box.minY + clearance + fp.softHalfD; y <= box.maxY - clearance - fp.softHalfD; y += gridStep) {
+          for (var x = box.minX + clearance + fp.softHalfW; x <= box.maxX - clearance - fp.softHalfW; x += gridStep) {
+            if (validPosition(x, y, fp)) {
+              var score = softOverlapScore(x, y, fp);
+              if (score < bestScore) { bestScore = score; chosen = { x: x, y: y }; }
+            }
+          }
         }
       }
       if (chosen) {
         item.x = chosen.x; item.y = chosen.y; item.rot = 0;
-        placed.push({ item: item, x: chosen.x, y: chosen.y, halfW: fp.halfW, halfD: fp.halfD });
+        placed.push({ item: item, x: chosen.x, y: chosen.y, halfW: fp.halfW, halfD: fp.halfD, softHalfW: fp.softHalfW, softHalfD: fp.softHalfD });
       } else notPlaced++;
     });
     scheduleSave();
     renderAll();
     var planName = comfortPlan ? "Plan A — Comfort" : "Plan B — Efficient";
-    return notPlaced ? (planName + ": arranged " + (roomItems.length - notPlaced) + " item(s) using virtual footprints; " + notPlaced + " could not fit with the selected clearance.") : (planName + ": arranged " + roomItems.length + " item(s) using full virtual footprints, wall buffer, and door buffer.");
+    var softPairs = 0;
+    placed.forEach(function (entry, i) { placed.slice(i + 1).forEach(function (other) {
+      if (Math.abs(entry.x - other.x) < entry.softHalfW + other.softHalfW && Math.abs(entry.y - other.y) < entry.softHalfD + other.softHalfD) softPairs++;
+    }); });
+    var result = planName + ": arranged " + (roomItems.length - notPlaced) + " item(s). Inner patient-use boxes do not overlap; outer cleaning zones were minimized" + (softPairs ? " (" + softPairs + " soft clearance overlap" + (softPairs === 1 ? " remains)." : "s remain).") : ".");
+    return notPlaced ? result + " " + notPlaced + " could not fit with the selected wall and door clearance." : result;
   }
 
   function undoAutoArrange() {
@@ -1392,10 +1419,10 @@
     return { x: best.x, y: best.y, angle: Math.round(best.angle) };
   }
 
-  function rectCorners(item, includeVirtualFootprint) {
-    var plan = planningFootprint(item);
-    var width = includeVirtualFootprint ? plan.w : item.w;
-    var depth = includeVirtualFootprint ? plan.d : item.d;
+  function rectCorners(item, footprintMode) {
+    var plan = footprintMode === "hard" ? operatingFootprint(item) : planningFootprint(item);
+    var width = footprintMode ? plan.w : item.w;
+    var depth = footprintMode ? plan.d : item.d;
     var hw = (width / 12) / 2, hd = (depth / 12) / 2;
     var rad = (item.rot || 0) * Math.PI / 180;
     var cos = Math.cos(rad), sin = Math.sin(rad);
@@ -1405,8 +1432,8 @@
     });
   }
 
-  function rectsOverlap(a, b) {
-    var ca = rectCorners(a, true), cb = rectCorners(b, true);
+  function rectsOverlap(a, b, footprintMode) {
+    var ca = rectCorners(a, footprintMode), cb = rectCorners(b, footprintMode);
     var polys = [ca, cb];
     for (var pi = 0; pi < polys.length; pi++) {
       var poly = polys[pi];
@@ -1427,16 +1454,19 @@
   }
 
   function computeOverlaps() {
-    var bad = {};
+    var hard = {}, soft = {};
     for (var i = 0; i < state.items.length; i++) {
       for (var j = i + 1; j < state.items.length; j++) {
-        if (rectsOverlap(state.items[i], state.items[j])) {
-          bad[state.items[i].uid] = true;
-          bad[state.items[j].uid] = true;
+        if (rectsOverlap(state.items[i], state.items[j], "hard")) {
+          hard[state.items[i].uid] = true;
+          hard[state.items[j].uid] = true;
+        } else if (rectsOverlap(state.items[i], state.items[j], "soft")) {
+          soft[state.items[i].uid] = true;
+          soft[state.items[j].uid] = true;
         }
       }
     }
-    return bad;
+    return { hard: hard, soft: soft };
   }
 
   /* =========================== SHAPE GLYPHS =========================== */
@@ -1921,7 +1951,8 @@
       var innerVirtualWFt = (catalogItem.innerReclinedW || 0) / 12;
       var cls = "item item-" + it.shape;
       if (it.uid === state.selectedUid) cls += " item-selected";
-      if (overlaps[it.uid]) cls += " item-overlap";
+      if (overlaps.hard[it.uid]) cls += " item-overlap";
+      else if (overlaps.soft[it.uid]) cls += " item-soft-overlap";
       var showLabel = Math.max(wFt, dFt) > (state.view.w / 34);
       out += '<g class="' + cls + '" data-uid="' + it.uid + '" transform="translate(' + f[0] + ',' + f[1] + ') rotate(' + (it.rot || 0) + ')">' +
         (showFootprintBoxes && shapedFootprints.indexOf(it.shape) !== -1
@@ -2018,12 +2049,19 @@
     svg.innerHTML = buildDefs() + bg + buildRooms() + buildOverallDimensions() + buildSegmentDimensions() + buildDoors() + buildHalfWalls() + buildCustomWalls() + buildItems(overlaps) + buildWheelchair() + buildNursePath() + buildEditHandles() + buildMeasure();
 
     emptyHint.hidden = state.mode !== "layout" || state.items.length > 0;
-    var overlapCount = Object.keys(overlaps).length;
+    var overlapCount = Object.keys(overlaps.hard).length;
+    var softOverlapCount = Object.keys(overlaps.soft).length;
     if (overlapCount > 0) {
       warnPill.style.display = "flex";
+      warnPill.classList.remove("soft-warning");
       warnPill.textContent = "⚠ " + overlapCount + " piece" + (overlapCount === 1 ? "" : "s") + " overlapping";
+    } else if (softOverlapCount > 0) {
+      warnPill.style.display = "flex";
+      warnPill.classList.add("soft-warning");
+      warnPill.textContent = "△ " + softOverlapCount + " item" + (softOverlapCount === 1 ? "" : "s") + " share cleaning clearance";
     } else {
       warnPill.style.display = "none";
+      warnPill.classList.remove("soft-warning");
     }
     if (wheelchair) {
       var wheelchairState = wheelchairCheck(wheelchair.x, wheelchair.y);
