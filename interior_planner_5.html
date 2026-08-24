@@ -551,6 +551,7 @@
   .item { filter: drop-shadow(0.035px 0.055px 0.045px #27333f33); }
   .item-shape { fill: #fffdf8; stroke: #27333f; stroke-width: 0.045; stroke-linejoin: round; }
   .item-shape-detail { stroke: #4b5d68; fill: none; stroke-width: 0.028; stroke-linecap: round; stroke-linejoin: round; }
+  .recliner-orientation { stroke: #60401f; fill: #fff9ee; stroke-width: 0.028; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
   .item-table-flat .item-shape { fill: #dceef9; stroke: #336e91; }
   .item-table-round .item-shape { fill: #e7f0d8; stroke: #5d8040; }
   .item-chair .item-shape, .item-sofa .item-shape, .item-recliner .item-shape { fill: #f6e6cf; stroke: #8b5a2b; }
@@ -1590,7 +1591,10 @@
       case "recliner":
         return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + (d * 0.74) + '" rx="0.12" />' +
                '<rect class="item-shape" x="' + (-hw * 0.78) + '" y="' + (-hd + d * 0.74) + '" width="' + (w * 0.78) + '" height="' + (d * 0.26) + '" rx="0.08" />' +
-               '<path class="item-shape-detail" d="M ' + (-hw + 0.08) + ' ' + (-hd + d * 0.2) + ' A ' + (hw * 0.9) + ' ' + (hw * 0.9) + ' 0 0 1 ' + (hw - 0.08) + ' ' + (-hd + d * 0.2) + '" />';
+               '<path class="item-shape-detail" d="M ' + (-hw + 0.08) + ' ' + (-hd + d * 0.2) + ' A ' + (hw * 0.9) + ' ' + (hw * 0.9) + ' 0 0 1 ' + (hw - 0.08) + ' ' + (-hd + d * 0.2) + '" />' +
+               '<circle class="recliner-orientation" cx="0" cy="' + (-hd + d * 0.17) + '" r="' + Math.min(hw, hd) * 0.16 + '" />' +
+               '<path class="recliner-orientation" d="M 0 ' + (-hd + d * 0.37) + ' v ' + (d * 0.32) + ' M ' + (-w * 0.10) + ' ' + (-hd + d * 0.61) + ' l ' + (w * 0.10) + ' ' + (d * 0.08) + ' l ' + (w * 0.10) + ' ' + (-d * 0.08) + '" />' +
+               '<path class="recliner-orientation" d="M ' + (-w * 0.16) + ' ' + (hd - d * 0.08) + ' h ' + (w * 0.10) + ' M ' + (w * 0.06) + ' ' + (hd - d * 0.08) + ' h ' + (w * 0.10) + '" />';
       case "iv-pole":
         return '<circle class="item-shape" cx="0" cy="0" r="' + hw + '" />' +
                '<line class="item-shape-detail" x1="' + (-hw) + '" y1="0" x2="' + hw + '" y2="0" />' +
