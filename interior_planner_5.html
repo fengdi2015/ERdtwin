@@ -553,6 +553,9 @@
   .item-shape-detail { stroke: #4b5d68; fill: none; stroke-width: 0.028; stroke-linecap: round; stroke-linejoin: round; }
   .recliner-orientation { stroke: #60401f; fill: #fff9ee; stroke-width: 0.028; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
   .recliner-orientation-label { fill: #60401f; font-family: var(--font-mono); font-size: 0.13px; font-weight: 900; letter-spacing: 0.015px; pointer-events: none; }
+  .recliner-product-image { pointer-events: none; opacity: .88; }
+  .recliner-mode-open { fill: #f7e6ca; stroke: #8b5a2b; stroke-width: .035; }
+  .recliner-mode-closed { fill: #e7eef1; stroke: #4d6878; stroke-width: .035; }
   .item-table-flat .item-shape { fill: #dceef9; stroke: #336e91; }
   .item-table-round .item-shape { fill: #e7f0d8; stroke: #5d8040; }
   .item-chair .item-shape, .item-sofa .item-shape, .item-recliner .item-shape { fill: #f6e6cf; stroke: #8b5a2b; }
@@ -1039,6 +1042,7 @@
   function planningFootprint(item) {
     var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
     if (catalogItem.id === "winco-6740") {
+      if (item.reclinerMode === "closed") return { w: item.w, d: item.d, label: "IDLE · TABLE CLOSED" };
       return { w: 55, d: 70, label: "CLEANING · ARMS OPEN" };
     }
     return { w: catalogItem.reclinedW || item.w, d: catalogItem.reclinedD || item.d, label: catalogItem.reclinedLabel || "RECLINED" };
@@ -1046,7 +1050,7 @@
 
   function operatingFootprint(item) {
     var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
-    if (catalogItem.id === "winco-6740") return { w: catalogItem.innerReclinedW || 45.5, d: catalogItem.reclinedD || 70, label: "1 TABLE OPEN" };
+    if (catalogItem.id === "winco-6740") return item.reclinerMode === "closed" ? planningFootprint(item) : { w: catalogItem.innerReclinedW || 45.5, d: catalogItem.reclinedD || 70, label: "1 TABLE OPEN" };
     return planningFootprint(item);
   }
 
@@ -1608,9 +1612,16 @@
         }
         return sout;
       case "recliner":
-        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + (d * 0.74) + '" rx="0.12" />' +
+        var isPatientMode = !options || options.reclinerMode !== "closed";
+        var productImage = options && options.photo ? '<image class="recliner-product-image" href="' + escapeAttr(options.photo) + '" x="' + (-d * .36) + '" y="' + (-hd) + '" width="' + (d * .72) + '" height="' + d + '" preserveAspectRatio="xMidYMid meet" />' : '';
+        var sideTable = isPatientMode
+          ? '<rect class="recliner-mode-open" x="' + (hw * .83) + '" y="' + (-hd + d * .28) + '" width="' + (w * .42) + '" height="' + (d * .22) + '" rx=".04" />' +
+            '<line class="recliner-orientation" x1="' + hw + '" y1="' + (-hd + d * .39) + '" x2="' + (hw * 1.25) + '" y2="' + (-hd + d * .39) + '" />'
+          : '<rect class="recliner-mode-closed" x="' + (hw * .56) + '" y="' + (-hd + d * .35) + '" width="' + (w * .18) + '" height="' + (d * .16) + '" rx=".03" />';
+        return '<rect class="item-shape" x="' + (-hw) + '" y="' + (-hd) + '" width="' + w + '" height="' + (d * 0.74) + '" rx="0.12" />' + productImage +
                '<rect class="item-shape" x="' + (-hw * 0.78) + '" y="' + (-hd + d * 0.74) + '" width="' + (w * 0.78) + '" height="' + (d * 0.26) + '" rx="0.08" />' +
                '<path class="item-shape-detail" d="M ' + (-hw + 0.08) + ' ' + (-hd + d * 0.2) + ' A ' + (hw * 0.9) + ' ' + (hw * 0.9) + ' 0 0 1 ' + (hw - 0.08) + ' ' + (-hd + d * 0.2) + '" />' +
+               sideTable +
                '<circle class="recliner-orientation" cx="0" cy="' + (-hd + d * 0.17) + '" r="' + Math.min(hw, hd) * 0.16 + '" />' +
                '<path class="recliner-orientation" d="M 0 ' + (-hd + d * 0.37) + ' v ' + (d * 0.32) + ' M ' + (-w * 0.10) + ' ' + (-hd + d * 0.61) + ' l ' + (w * 0.10) + ' ' + (d * 0.08) + ' l ' + (w * 0.10) + ' ' + (-d * 0.08) + '" />' +
                '<path class="recliner-orientation" d="M ' + (-w * 0.16) + ' ' + (hd - d * 0.08) + ' h ' + (w * 0.10) + ' M ' + (w * 0.06) + ' ' + (hd - d * 0.08) + ' h ' + (w * 0.10) + '" />' +
@@ -1791,7 +1802,7 @@
     state.items.push({
       uid: uid, catalogId: catId, name: cat.name, shape: cat.shape,
       w: cat.w, d: cat.d, x: round2(worldX), y: round2(worldY), rot: 0,
-      doorHinge: cat.doorHinge || null, photoScale: 1, photoX: 0, photoY: 0
+      doorHinge: cat.doorHinge || null, reclinerMode: cat.id === "winco-6740" ? "open" : null, photoScale: 1, photoX: 0, photoY: 0
     });
     state.selectedUid = uid;
     scheduleSave();
@@ -2008,7 +2019,8 @@
       var virtualWFt = itemPlan.w / 12;
       var virtualDFt = itemPlan.d / 12;
       var hasReclinedFootprint = !!catalogItem.reclinedD;
-      var innerVirtualWFt = (catalogItem.innerReclinedW || 0) / 12;
+      var isWincoPatientMode = catalogItem.id === "winco-6740" && it.reclinerMode !== "closed";
+      var innerVirtualWFt = isWincoPatientMode ? (catalogItem.innerReclinedW || 0) / 12 : 0;
       var cls = "item item-" + it.shape;
       if (it.uid === state.selectedUid) cls += " item-selected";
       if (overlaps.hard[it.uid]) cls += " item-overlap";
@@ -2024,7 +2036,7 @@
               : '<rect class="virtual-footprint" x="' + (-virtualWFt / 2) + '" y="' + (-virtualDFt / 2) + '" width="' + virtualWFt + '" height="' + virtualDFt + '" rx=".04" />' +
                 (hasReclinedFootprint ? '<text class="virtual-footprint-label" x="0" y="' + (-virtualDFt / 2 - 0.12) + '" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + itemPlan.label + ' · ' + fmtIn(itemPlan.w) + ' × ' + fmtIn(itemPlan.d) + '</text>' : ''))
           : '') +
-        shapeMarkup(it.shape, wFt, dFt, Object.assign({}, catalogItem, { doorHinge: it.doorHinge || catalogItem.doorHinge }));
+        shapeMarkup(it.shape, wFt, dFt, Object.assign({}, catalogItem, { doorHinge: it.doorHinge || catalogItem.doorHinge, reclinerMode: it.reclinerMode || "open" }));
       if (showLabel) {
         out += '<text class="item-label" x="0" y="' + (dFt/2 + 0.34) + '" font-size="0.28" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + it.name + '</text>';
         out += '<text class="item-size-label" x="0" y="' + (dFt/2 + 0.64) + '" font-size="0.25" text-anchor="middle" transform="rotate(' + (-(it.rot||0)) + ')">' + fmtIn(it.w) + ' × ' + fmtIn(it.d) + '</text>';
@@ -2210,6 +2222,9 @@
     var fridgeDoorControl = it.shape === "fridge"
       ? '<div class="insp-actions" style="margin-top:8px"><button type="button" class="ghost-btn" id="fridgeDoorBtn">Door hinge: ' + ((it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "LEFT" : "RIGHT") + ' · flip direction</button></div>'
       : '';
+    var reclinerModeControl = catalogEntry.id === "winco-6740"
+      ? '<details class="product-spec-panel" open><summary>CareCliner map mode</summary><p><strong>' + (it.reclinerMode === "closed" ? "B · Idle / table closed" : "A · Patient / reclined + side table open") + '</strong></p><div class="insp-actions"><button type="button" class="ghost-btn" id="reclinerModeOpen">A · Patient open</button><button type="button" class="ghost-btn" id="reclinerModeClosed">B · Idle closed</button></div><p class="product-specs">Mode A uses the reclined patient and cleaning virtual boxes. Mode B uses the compact upright footprint while no patient is receiving care.</p></details>'
+      : '';
     inspectorEl.innerHTML =
       '<p class="panel-title">Selected item</p>' +
       '<input class="insp-name" id="fName" value="' + escapeAttr(it.name) + '" />' +
@@ -2236,7 +2251,7 @@
       '<div class="insp-actions" style="margin-top:8px">' +
       '<button type="button" class="ghost-btn" id="toPaletteBtn" title="Add this piece, at its current name and size, to My Items">Save to palette</button>' +
       '</div>' +
-      '<div class="footprint-note">Footprint: ' + sqft + ' sq ft</div>' + fridgeDoorControl + productSpecs + imageCropControl + productPhoto;
+      '<div class="footprint-note">Footprint: ' + sqft + ' sq ft</div>' + fridgeDoorControl + reclinerModeControl + productSpecs + imageCropControl + productPhoto;
 
     document.getElementById("fName").addEventListener("change", function (e) { it.name = e.target.value || it.name; scheduleSave(); renderPlan(); renderSchedule(); });
     bindLen("fW", parseInches, function (v) { it.w = Math.max(2, round2(v)); });
@@ -2251,6 +2266,10 @@
       it.doorHinge = (it.doorHinge || catalogEntry.doorHinge || "right") === "left" ? "right" : "left";
       scheduleSave(); renderAll();
     });
+    var reclinerModeOpen = document.getElementById("reclinerModeOpen");
+    var reclinerModeClosed = document.getElementById("reclinerModeClosed");
+    if (reclinerModeOpen) reclinerModeOpen.addEventListener("click", function () { it.reclinerMode = "open"; scheduleSave(); renderAll(); });
+    if (reclinerModeClosed) reclinerModeClosed.addEventListener("click", function () { it.reclinerMode = "closed"; scheduleSave(); renderAll(); });
     var viewProductPhoto = document.getElementById("viewProductPhoto");
     if (viewProductPhoto) viewProductPhoto.addEventListener("click", function () { openProductPhoto(catalogEntry.photo, it.name); });
     function updateInlinePhotoCrop() {
