@@ -1102,6 +1102,12 @@
         return score + overlapW * overlapD;
       }, 0);
     }
+    function validPolePosition(x, y, fp, anchor) {
+      if (!validPosition(x, y, fp)) return false;
+      // A pump/pole may never occupy the recliner's patient or cleaning zone.
+      return !(Math.abs(x - anchor.x) < fp.softHalfW + anchor.softHalfW + clearance &&
+               Math.abs(y - anchor.y) < fp.softHalfD + anchor.softHalfD + clearance);
+    }
     var poles = roomItems.filter(function (item) { return item.shape === "iv-pole"; });
     var furniture = roomItems.filter(function (item) { return item.shape !== "iv-pole"; }).sort(function (a, b) { var af = footprint(a), bf = footprint(b); return (bf.halfW * bf.halfD) - (af.halfW * af.halfD); });
     furniture.concat(poles).forEach(function (item) {
@@ -1111,8 +1117,8 @@
         var recliners = placed.filter(function (entry) { return entry.item && entry.item.shape === "recliner"; });
         var anchor = recliners[poles.indexOf(item) % Math.max(1, recliners.length)];
         if (anchor) {
-          var leftOfRecliner = { x: anchor.x - anchor.halfW - fp.halfW - clearance, y: anchor.y };
-          if (validPosition(leftOfRecliner.x, leftOfRecliner.y, fp)) chosen = leftOfRecliner;
+          var leftOfRecliner = { x: anchor.x - anchor.softHalfW - fp.softHalfW - clearance, y: anchor.y };
+          if (validPolePosition(leftOfRecliner.x, leftOfRecliner.y, fp, anchor)) chosen = leftOfRecliner;
           if (!chosen) { notPlaced++; return; }
         }
       }
