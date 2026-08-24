@@ -1072,6 +1072,23 @@
     return checks;
   }
 
+  function assessAutoFitRoom(room) {
+    var items = state.items.filter(function (item) { var itemRoom = roomForPoint(item.x, item.y); return itemRoom && itemRoom.id === room.id; });
+    var fixed = items.filter(function (item) { return item.shape === "sink"; });
+    var movable = items.filter(function (item) { return item.shape !== "sink"; });
+    var box = polyBBox(room.poly);
+    var roomArea = polyArea(room.poly);
+    var hardArea = movable.reduce(function (sum, item) { var fp = operatingFootprint(item); return sum + fp.w * fp.d / 144; }, 0);
+    var softArea = movable.reduce(function (sum, item) { var fp = planningFootprint(item); return sum + fp.w * fp.d / 144; }, 0);
+    var doors = state.doors.filter(function (door) { return door.x >= box.minX - .5 && door.x <= box.maxX + .5 && door.y >= box.minY - .5 && door.y <= box.maxY + .5; }).length;
+    var recliners = movable.filter(function (item) { return item.shape === "recliner"; }).length;
+    var poles = movable.filter(function (item) { return item.shape === "iv-pole"; }).length;
+    var fitRatio = roomArea ? Math.round(hardArea / roomArea * 100) : 0;
+    var note = fitRatio > 55 ? "The patient-use footprint is dense; begin with Plan B and use Plan C only as a field-verified fallback." : (fitRatio > 35 ? "The room is moderately loaded; compare Plan A and Plan B before choosing." : "There is reasonable patient-use area; start with Plan A for the most comfortable layout.");
+    if (recliners && poles < recliners) note += " Add or assign one IV pole/pump per recliner as needed.";
+    return "Space check complete — " + Math.round(roomArea) + " sq ft; " + movable.length + " movable item(s), " + fixed.length + " fixed sink(s), " + doors + " nearby door(s). Patient-use footprint: " + Math.round(hardArea) + " sq ft (" + fitRatio + "% of room); cleaning envelopes: " + Math.round(softArea) + " sq ft. " + note + " No items moved. Choose a proposed attempt below.";
+  }
+
   function autoArrangeRoom(room, strategy) {
     var roomItems = state.items.filter(function (item) {
       var itemRoom = roomForPoint(item.x, item.y);
@@ -1080,8 +1097,9 @@
     if (!roomItems.length) return "No items are placed in this room yet.";
     if (!autoArrangeUndoItems) autoArrangeUndoItems = deepClone(state.items);
     var box = polyBBox(room.poly), placed = [], notPlaced = 0;
-    var comfortPlan = strategy !== "efficient";
-    var clearance = comfortPlan ? 0.5 : 0.25, gridStep = comfortPlan ? 0.5 : 0.25;
+    var comfortPlan = strategy === "comfort";
+    var compactPlan = strategy === "compact";
+    var clearance = comfortPlan ? 0.5 : (compactPlan ? 0.1 : 0.25), gridStep = comfortPlan ? 0.5 : 0.25;
     var doorsNearRoom = state.doors.filter(function (door) {
       return door.x >= box.minX - 0.5 && door.x <= box.maxX + 0.5 && door.y >= box.minY - 0.5 && door.y <= box.maxY + 0.5;
     });
@@ -1148,7 +1166,7 @@
     });
     scheduleSave();
     renderAll();
-    var planName = comfortPlan ? "Plan A — Comfort" : "Plan B — Efficient";
+    var planName = comfortPlan ? "Plan A — Comfort" : (compactPlan ? "Plan C — Compact" : "Plan B — Efficient");
     var softPairs = 0;
     placed.forEach(function (entry, i) { placed.slice(i + 1).forEach(function (other) {
       if (Math.abs(entry.x - other.x) < entry.softHalfW + other.softHalfW && Math.abs(entry.y - other.y) < entry.softHalfD + other.softHalfD) softPairs++;
@@ -2112,15 +2130,23 @@
       var procurementMarkup = '<details class="product-spec-panel room-readiness"><summary>Procurement &amp; inventory next steps</summary><ul class="room-suggestions"><li>Confirm the final equipment and fixture list, then use each inventory item\'s purchase link/specification sheet where available.</li><li>Set a par level, reorder point, unit of measure, vendor, lead time, and storage location for consumables and replacement parts.</li><li>For future monitoring, track on-hand count, lot/expiration, temperature logs for medical refrigeration, and reorder status in an inventory register.</li><li>Do not purchase or install equipment until utilities, door clearance, load capacity, infection-control needs, and local code requirements have been verified.</li></ul></details>';
       var roomPhotos = selectedRoomReference ? [{ name: selectedRoomReference.name, src: selectedRoomReference.src }].concat(selectedRoomReference.extraPhotos || []) : [];
       var roomPhotoMarkup = roomPhotos.length ? '<div class="room-photo-stack">' + roomPhotos.map(function (photo, photoIndex) { return '<button type="button" class="product-photo-inline view-room-reference" data-room-photo-index="' + photoIndex + '" title="Click to enlarge room reference"><img src="' + escapeAttr(photo.src) + '" alt="' + escapeAttr(photo.name) + '" /></button>'; }).join("") + '</div><p class="empty-inspector">' + escapeHtml(selectedRoomReference.detail) + '</p>' : '<p class="empty-inspector">No reference photo has been assigned. Open References to load room photos.</p>';
-      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeComfort">Plan A · Comfort fit</button><button type="button" class="ghost-btn" id="autoArrangeEfficient">Plan B · Efficient fit</button></div><p class="empty-inspector" id="autoArrangeStatus"><strong>Plan A</strong> uses a 6 in working buffer; <strong>Plan B</strong> uses a 3 in placement buffer. Both use each item\'s full virtual footprint and place IV poles beside recliners when space permits. Review door swings, transfers, and utilities before finalizing.</p>';
+      var arrangeMarkup = '<div class="insp-actions" style="margin:10px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeAssess">1. Check space &amp; propose options</button></div><div class="insp-actions" style="margin:6px 0 2px"><button type="button" class="ghost-btn" id="autoArrangeComfort" disabled>2A. Apply Comfort</button><button type="button" class="ghost-btn" id="autoArrangeEfficient" disabled>2B. Apply Efficient</button><button type="button" class="ghost-btn" id="autoArrangeCompact" disabled>2C. Apply Compact</button></div><p class="empty-inspector" id="autoArrangeStatus">First use <strong>Check space &amp; propose options</strong>. It reviews room area, fixed sinks, door locations, patient-use footprints, cleaning envelopes, recliners, and IV equipment without moving anything. Then compare and apply one of three layouts: <strong>A</strong> 6 in comfort buffer, <strong>B</strong> 3 in efficient buffer, or <strong>C</strong> 1.2 in compact buffer for field verification.</p>';
       inspectorEl.innerHTML = '<p class="panel-title">Selected room</p><div class="insp-room">' + escapeHtml(selectedRoom.name.toUpperCase()) + '</div>' +
         '<p class="empty-inspector"><strong>' + fmtFt(selectedRoomBox.w) + ' × ' + fmtFt(selectedRoomBox.h) + '</strong><br/>' + Math.round(polyArea(selectedRoom.poly)) + ' sq ft</p>' +
         arrangeMarkup + roomPhotoMarkup + layoutAwareMarkup + roomSuggestionMarkup + doorReviewMarkup + readinessMarkup + procurementMarkup;
       inspectorEl.querySelectorAll(".view-room-reference").forEach(function (roomPhotoButton) { roomPhotoButton.addEventListener("click", function () { var photo = roomPhotos[parseInt(roomPhotoButton.getAttribute("data-room-photo-index"), 10)]; if (photo) openProductPhoto(photo.src, photo.name); }); });
       var comfortArrangeButton = document.getElementById("autoArrangeComfort");
       var efficientArrangeButton = document.getElementById("autoArrangeEfficient");
+      var compactArrangeButton = document.getElementById("autoArrangeCompact");
+      var assessArrangeButton = document.getElementById("autoArrangeAssess");
+      if (assessArrangeButton) assessArrangeButton.addEventListener("click", function () {
+        var status = document.getElementById("autoArrangeStatus");
+        if (status) status.textContent = assessAutoFitRoom(selectedRoom);
+        [comfortArrangeButton, efficientArrangeButton, compactArrangeButton].forEach(function (button) { if (button) button.disabled = false; });
+      });
       if (comfortArrangeButton) comfortArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom, "comfort"); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Review door swings, patient transfer, equipment utilities, and local requirements before finalizing."; });
       if (efficientArrangeButton) efficientArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom, "efficient"); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Review door swings, patient transfer, equipment utilities, and local requirements before finalizing."; });
+      if (compactArrangeButton) compactArrangeButton.addEventListener("click", function () { var result = autoArrangeRoom(selectedRoom, "compact"); var status = document.getElementById("autoArrangeStatus"); if (status) status.textContent = result + " Compact mode needs onsite verification of door arcs, transfers, outlet reach, and staff passage before finalizing."; });
       return;
     }
     if (!it) {
