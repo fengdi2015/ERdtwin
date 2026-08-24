@@ -369,7 +369,7 @@
     .inspector, .map-hover-panel, .versions, .schedule { padding-left: 12px; padding-right: 12px; }
     .empty-hint { max-width: calc(100% - 24px); text-align: center; top: 10px; font-size: 11px; }
     .warn-pill { right: 8px; top: 8px; font-size: 10.5px; padding: 4px 8px; }
-    .wheelchair-status { left: 8px; right: 8px; bottom: 8px; font-size: 11px; }
+    .wheelchair-status, .nurse-status { left: 8px; right: 8px; bottom: 8px; font-size: 11px; }
     .photo-modal { padding: 12px; }
     .photo-modal img { max-width: 96vw; max-height: 84dvh; }
   }
@@ -567,8 +567,13 @@
   .wheelchair-footprint { fill: #4e9dc22; stroke: #245f92; stroke-width: 0.07; stroke-dasharray: 0.16 0.09; pointer-events: none; }
   .wheelchair-footprint.blocked { fill: #c84a4528; stroke: #b53632; }
   .wheelchair-label { fill: #173f61; font-family: var(--font-mono); font-weight: 900; pointer-events: none; }
+  .nurse-footprint { fill: #42a66b22; stroke: #27814f; stroke-width: 0.07; stroke-dasharray: 0.16 0.09; pointer-events: none; }
+  .nurse-footprint.blocked { fill: #c84a4528; stroke: #b53632; }
+  .nurse-label { fill: #1d6840; font-family: var(--font-mono); font-weight: 900; pointer-events: none; }
   .wheelchair-status { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); z-index: 5; padding: 7px 12px; border: 1px solid #245f92; border-radius: 999px; background: #eaf5ff; color: #173f61; font-size: 12px; font-weight: 800; pointer-events: none; }
   .wheelchair-status.blocked { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+  .nurse-status { position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%); z-index: 5; padding: 7px 12px; border: 1px solid #27814f; border-radius: 999px; background: #e8f7ee; color: #1d6840; font-size: 12px; font-weight: 800; pointer-events: none; }
+  .nurse-status.blocked { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
   .item-selected .item-shape { stroke: var(--amber); fill: var(--amber-soft); stroke-width: 0.06; }
   .item-selected .item-shape-detail { stroke: var(--amber); stroke-width: 0.04; }
   .item-selected .item-label, .item-selected .item-size-label { fill: var(--amber); font-weight: 900; }
@@ -734,6 +739,7 @@
       <button class="toggle-btn" id="measureFreeToggle" aria-pressed="false" title="Measure freely between any two points">Tape Free</button>
       <button class="toggle-btn" id="footprintToggle" aria-pressed="true" title="Show virtual fit boxes for shaped items">Fit Boxes</button>
       <button class="toggle-btn" id="wheelchairToggle" aria-pressed="false" title="Simulate a 30 inch wheelchair footprint">Wheelchair</button>
+      <button class="toggle-btn" id="nurseToggle" aria-pressed="false" title="Drag a nurse figure to check a 36 inch staff work path">Nurse path</button>
       <button class="toggle-btn" id="referencesBtn" title="Open clinical reference photos and planning guidance">References</button>
       <button class="toggle-btn" id="marketingBtn" title="Open the clinic marketing and promotion strategy">Marketing</button>
       <button class="icon-btn" id="undoArrange" title="Undo auto-fit arrangement" aria-label="Undo auto-fit arrangement" disabled>&#8630;</button>
@@ -762,6 +768,7 @@
       <div class="empty-hint" id="emptyHint">The plan is empty &mdash; click any item on the left to add it.</div>
       <div class="warn-pill" id="warnPill" style="display:none"></div>
       <div class="wheelchair-status" id="wheelchairStatus" style="display:none"></div>
+      <div class="nurse-status" id="nurseStatus" style="display:none"></div>
     </main>
 
     <aside class="rightcol">
@@ -1156,6 +1163,8 @@
   var footprintToggle = document.getElementById("footprintToggle");
   var wheelchairToggle = document.getElementById("wheelchairToggle");
   var wheelchairStatusEl = document.getElementById("wheelchairStatus");
+  var nurseToggle = document.getElementById("nurseToggle");
+  var nurseStatusEl = document.getElementById("nurseStatus");
   var undoArrangeBtn = document.getElementById("undoArrange");
   var versionsPanel = document.getElementById("versionsPanel");
   var clearAllBtn = document.getElementById("clearAll");
@@ -1948,13 +1957,45 @@
     return '<g class="wheelchair-footprint' + (check.blocked ? ' blocked' : '') + '"><circle cx="' + wheelchair.x + '" cy="' + wheelchair.y + '" r="1.25" /><path d="M ' + (wheelchair.x - .38) + ' ' + wheelchair.y + ' h .76 M ' + wheelchair.x + ' ' + (wheelchair.y - .38) + ' v .76" stroke="currentColor" stroke-width=".045" fill="none" /></g>' +
       '<text class="wheelchair-label" x="' + wheelchair.x + '" y="' + (wheelchair.y - 1.48) + '" font-size=".28" text-anchor="middle">30″ wheelchair</text>';
   }
+  function nursePathCheck(x, y) {
+    var radius = 36 / 24; // 36 in staff movement / working diameter
+    var room = roomForPoint(x, y);
+    if (!room) return { blocked: true, message: "Blocked — nurse zone is outside a room boundary" };
+    var minWall = Infinity;
+    room.poly.forEach(function (point, index) {
+      var next = room.poly[(index + 1) % room.poly.length];
+      minWall = Math.min(minWall, pointSegmentDistance(x, y, point[0], point[1], next[0], next[1]));
+    });
+    if (minWall < radius) return { blocked: true, message: "Blocked — less than 36 in staff working zone at wall" };
+    for (var i = 0; i < state.items.length; i++) {
+      var item = state.items[i];
+      var catalogItem = CATALOG_BY_ID[item.catalogId] || {};
+      var halfW = (catalogItem.reclinedW || item.w) / 24;
+      var halfD = (catalogItem.reclinedD || item.d) / 24;
+      var angle = -((item.rot || 0) * Math.PI / 180);
+      var dx = x - item.x, dy = y - item.y;
+      var lx = dx * Math.cos(angle) - dy * Math.sin(angle);
+      var ly = dx * Math.sin(angle) + dy * Math.cos(angle);
+      var gapX = Math.max(Math.abs(lx) - halfW, 0);
+      var gapY = Math.max(Math.abs(ly) - halfD, 0);
+      if (Math.hypot(gapX, gapY) < radius) return { blocked: true, message: "Blocked — staff zone overlaps " + item.name + " or its virtual fit box" };
+    }
+    return { blocked: false, message: "Clear — 36 in nurse working zone in " + room.name };
+  }
+  function buildNursePath() {
+    if (!nurseFigure) return "";
+    var check = nursePathCheck(nurseFigure.x, nurseFigure.y);
+    var x = nurseFigure.x, y = nurseFigure.y;
+    return '<g class="nurse-footprint' + (check.blocked ? ' blocked' : '') + '"><circle cx="' + x + '" cy="' + y + '" r="1.5" /><circle cx="' + x + '" cy="' + (y - .34) + '" r=".13" fill="currentColor" stroke="none" /><path d="M ' + x + ' ' + (y - .19) + ' v .46 M ' + (x - .24) + ' ' + (y + .03) + ' h .48 M ' + x + ' ' + (y + .27) + ' l -.18 .25 M ' + x + ' ' + (y + .27) + ' l .18 .25" stroke="currentColor" stroke-width=".075" stroke-linecap="round" stroke-linejoin="round" fill="none" /></g>' +
+      '<text class="nurse-label" x="' + x + '" y="' + (y - 1.72) + '" font-size=".28" text-anchor="middle">NURSE · 36″ PATH</text>';
+  }
 
   function renderPlan() {
     var overlaps = computeOverlaps();
     svg.setAttribute("viewBox", state.view.x + " " + state.view.y + " " + state.view.w + " " + state.view.h);
     svg.classList.toggle("plan-svg-edit", state.mode === "edit" && state.editTool !== "select");
     var bg = '<rect x="' + (state.view.x - 20) + '" y="' + (state.view.y - 20) + '" width="' + (state.view.w + 40) + '" height="' + (state.view.h + 40) + '" fill="url(#gridMajor)" />';
-    svg.innerHTML = buildDefs() + bg + buildRooms() + buildOverallDimensions() + buildSegmentDimensions() + buildDoors() + buildHalfWalls() + buildCustomWalls() + buildItems(overlaps) + buildWheelchair() + buildEditHandles() + buildMeasure();
+    svg.innerHTML = buildDefs() + bg + buildRooms() + buildOverallDimensions() + buildSegmentDimensions() + buildDoors() + buildHalfWalls() + buildCustomWalls() + buildItems(overlaps) + buildWheelchair() + buildNursePath() + buildEditHandles() + buildMeasure();
 
     emptyHint.hidden = state.mode !== "layout" || state.items.length > 0;
     var overlapCount = Object.keys(overlaps).length;
@@ -1970,6 +2011,12 @@
       wheelchairStatusEl.classList.toggle("blocked", wheelchairState.blocked);
       wheelchairStatusEl.style.display = "";
     } else wheelchairStatusEl.style.display = "none";
+    if (nurseFigure) {
+      var nurseState = nursePathCheck(nurseFigure.x, nurseFigure.y);
+      nurseStatusEl.textContent = nurseState.message;
+      nurseStatusEl.classList.toggle("blocked", nurseState.blocked);
+      nurseStatusEl.style.display = "";
+    } else nurseStatusEl.style.display = "none";
   }
 
   /* =========================== RENDER: INSPECTOR =========================== */
@@ -2479,6 +2526,9 @@
   var wheelchairMode = false;
   var wheelchair = null;
   var wheelchairDragging = false;
+  var nurseMode = false;
+  var nurseFigure = null;
+  var nurseDragging = false;
 
   function selectRoomReference(roomId) {
     selectedRoomReferenceId = roomId;
@@ -2515,6 +2565,14 @@
   }
 
   svg.addEventListener("pointerdown", function (e) {
+    if (nurseMode) {
+      var nursePoint = screenToWorld(e.clientX, e.clientY);
+      nurseFigure = { x: snapVal(nursePoint.x), y: snapVal(nursePoint.y) };
+      nurseDragging = true;
+      svg.setPointerCapture(e.pointerId);
+      renderPlanOnly();
+      return;
+    }
     if (wheelchairMode) {
       var wheelchairPoint = screenToWorld(e.clientX, e.clientY);
       wheelchair = { x: snapVal(wheelchairPoint.x), y: snapVal(wheelchairPoint.y) };
@@ -2574,6 +2632,13 @@
   });
 
   svg.addEventListener("pointermove", function (e) {
+    if (nurseMode && nurseDragging) {
+      var movingNursePoint = screenToWorld(e.clientX, e.clientY);
+      nurseFigure.x = snapVal(movingNursePoint.x);
+      nurseFigure.y = snapVal(movingNursePoint.y);
+      renderPlanOnly();
+      return;
+    }
     if (wheelchairMode && wheelchairDragging) {
       var movingWheelchairPoint = screenToWorld(e.clientX, e.clientY);
       wheelchair.x = snapVal(movingWheelchairPoint.x);
@@ -2615,6 +2680,7 @@
   });
 
   function endInteraction(e) {
+    if (nurseDragging) { nurseDragging = false; return; }
     if (wheelchairDragging) { wheelchairDragging = false; return; }
     if (state.mode === "edit") { onEditPointerUp(e); return; }
     if (drag) { drag = null; scheduleSave(); renderInspector(); renderSchedule(); }
@@ -2815,8 +2881,17 @@
   wheelchairToggle.addEventListener("click", function () {
     wheelchairMode = !wheelchairMode;
     if (!wheelchairMode) { wheelchair = null; wheelchairDragging = false; }
+    if (wheelchairMode) { nurseMode = false; nurseFigure = null; nurseDragging = false; nurseToggle.setAttribute("aria-pressed", "false"); nurseToggle.textContent = "Nurse path"; }
     wheelchairToggle.setAttribute("aria-pressed", String(wheelchairMode));
     wheelchairToggle.textContent = wheelchairMode ? "Wheelchair…" : "Wheelchair";
+    renderPlanOnly();
+  });
+  nurseToggle.addEventListener("click", function () {
+    nurseMode = !nurseMode;
+    if (!nurseMode) { nurseFigure = null; nurseDragging = false; }
+    if (nurseMode) { wheelchairMode = false; wheelchair = null; wheelchairDragging = false; wheelchairToggle.setAttribute("aria-pressed", "false"); wheelchairToggle.textContent = "Wheelchair"; }
+    nurseToggle.setAttribute("aria-pressed", String(nurseMode));
+    nurseToggle.textContent = nurseMode ? "Nurse path…" : "Nurse path";
     renderPlanOnly();
   });
 
