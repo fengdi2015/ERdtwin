@@ -1108,8 +1108,16 @@
       return !(Math.abs(x - anchor.x) < fp.softHalfW + anchor.softHalfW + clearance &&
                Math.abs(y - anchor.y) < fp.softHalfD + anchor.softHalfD + clearance);
     }
-    var poles = roomItems.filter(function (item) { return item.shape === "iv-pole"; });
-    var furniture = roomItems.filter(function (item) { return item.shape !== "iv-pole"; }).sort(function (a, b) { var af = footprint(a), bf = footprint(b); return (bf.halfW * bf.halfD) - (af.halfW * af.halfD); });
+    // Sinks are fixed building fixtures: retain their current position and reserve
+    // their complete footprint before fitting mobile furniture around them.
+    var fixedItems = roomItems.filter(function (item) { return item.shape === "sink"; });
+    fixedItems.forEach(function (item) {
+      var fixedFp = footprint(item);
+      placed.push({ item: item, x: item.x, y: item.y, halfW: fixedFp.halfW, halfD: fixedFp.halfD, softHalfW: fixedFp.softHalfW, softHalfD: fixedFp.softHalfD });
+    });
+    var movableItems = roomItems.filter(function (item) { return item.shape !== "sink"; });
+    var poles = movableItems.filter(function (item) { return item.shape === "iv-pole"; });
+    var furniture = movableItems.filter(function (item) { return item.shape !== "iv-pole"; }).sort(function (a, b) { var af = footprint(a), bf = footprint(b); return (bf.halfW * bf.halfD) - (af.halfW * af.halfD); });
     furniture.concat(poles).forEach(function (item) {
       var fp = footprint(item), chosen = null;
       var isPole = item.shape === "iv-pole";
@@ -1145,7 +1153,7 @@
     placed.forEach(function (entry, i) { placed.slice(i + 1).forEach(function (other) {
       if (Math.abs(entry.x - other.x) < entry.softHalfW + other.softHalfW && Math.abs(entry.y - other.y) < entry.softHalfD + other.softHalfD) softPairs++;
     }); });
-    var result = planName + ": arranged " + (roomItems.length - notPlaced) + " item(s). Inner patient-use boxes do not overlap; outer cleaning zones were minimized" + (softPairs ? " (" + softPairs + " soft clearance overlap" + (softPairs === 1 ? " remains)." : "s remain).") : ".");
+    var result = planName + ": arranged " + (movableItems.length - notPlaced) + " movable item(s)" + (fixedItems.length ? " around " + fixedItems.length + " fixed sink" + (fixedItems.length === 1 ? "" : "s") : "") + ". Inner patient-use boxes do not overlap; outer cleaning zones were minimized" + (softPairs ? " (" + softPairs + " soft clearance overlap" + (softPairs === 1 ? " remains)." : "s remain).") : ".");
     return notPlaced ? result + " " + notPlaced + " could not fit with the selected wall and door clearance." : result;
   }
 
