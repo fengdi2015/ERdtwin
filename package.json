@@ -1,0 +1,8 @@
+{
+  "name": "clinic-content-studio-local",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start:content-studio": "node server.js"
+  }
+}
