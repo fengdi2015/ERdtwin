@@ -3,6 +3,10 @@
     {
       "source": "/",
       "destination": "/interior_planner_5.html"
+    },
+    {
+      "source": "/content-studio",
+      "destination": "/content_studio.html"
     }
   ]
 }
