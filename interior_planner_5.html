@@ -771,7 +771,6 @@
       <button class="toggle-btn" id="nurseToggle" aria-pressed="false" title="Drag a nurse figure to check a 36 inch staff work path">Nurse path</button>
       <button class="toggle-btn" id="referencesBtn" title="Open clinical reference photos and planning guidance">References</button>
       <button class="toggle-btn" id="marketingBtn" title="Open the clinic marketing and promotion strategy">Marketing</button>
-      <button class="toggle-btn" id="contentStudioBtn" title="Create reviewed social-media promotion drafts">Content Studio</button>
       <button class="icon-btn" id="undoArrange" title="Undo auto-fit arrangement" aria-label="Undo auto-fit arrangement" disabled>&#8630;</button>
       <button class="icon-btn" id="zoomOut" title="Zoom out" aria-label="Zoom out">&#8722;</button>
       <button class="icon-btn" id="zoomFit" title="Fit to plan" aria-label="Fit to plan">&#8862;</button>
@@ -846,22 +845,6 @@
     <section class="clinic-guidance"><strong>Privacy, compliance &amp; brand safeguards</strong><ul><li>Use only approved systems and vendors for any patient data. Do not put PHI into public forms, ad platforms, pixels, chat widgets, or marketing tools unless your privacy and security review permits it.</li><li>Do not use patient photos, testimonials, or identifiable stories without the appropriate written authorization. Marketing rules can vary by communication and payment arrangement.</li><li>Have a privacy official or health-care counsel review campaigns, representative-visit policy, consent language, claims, accessibility, and vendor agreements before launch. See <a href="https://www.hhs.gov/hipaa/for-professionals/faq/authorizations/index.html" target="_blank" rel="noopener">HHS HIPAA authorization guidance</a>.</li></ul></section>
   </section>
 </div>
-<div class="reference-modal" id="contentStudioModal" role="dialog" aria-modal="true" aria-label="Content Studio">
-  <section class="reference-dialog content-studio">
-    <button type="button" class="reference-close" id="contentStudioClose" aria-label="Close Content Studio">&times;</button>
-    <p class="panel-title">Content Studio · approval-first MVP</p>
-    <p class="marketing-note">Creates an evidence-aware draft, video storyboard, carousel outline, and publishing queue. It does not publish automatically until connected business accounts and a clinician-approval workflow are configured.</p>
-    <div class="studio-grid"><section class="studio-panel"><h3>1. Brief</h3>
-      <label for="studioTopic">Topic</label><select id="studioTopic"><option value="b12">How to interpret a vitamin B12 result</option><option value="fatigue">Fatigue and rheumatology: when to ask for help</option><option value="stiffness">Morning stiffness: what to track before a visit</option><option value="infusion">Preparing for an infusion visit</option><option value="custom">Custom education topic</option></select>
-      <label for="studioCustomTopic">Custom angle or source note</label><textarea id="studioCustomTopic" placeholder="Optional: audience, source link, campaign goal, or clinical review note"></textarea>
-      <label>Platforms</label><div class="studio-platforms"><label><input type="checkbox" value="Instagram" checked>Instagram</label><label><input type="checkbox" value="Facebook" checked>Facebook</label><label><input type="checkbox" value="TikTok">TikTok</label><label><input type="checkbox" value="YouTube">YouTube</label><label><input type="checkbox" value="LinkedIn">LinkedIn</label><label><input type="checkbox" value="Google Business">Google</label></div>
-      <button type="button" class="toggle-btn" id="studioGenerate">Generate reviewed draft</button>
-      <p class="empty-inspector">No PHI, patient stories, or product-treatment claims. Clinical approval is required before queueing.</p>
-    </section><section class="studio-panel studio-output" id="contentStudioOutput"><h3>2. Draft preview</h3><p class="empty-inspector">Choose a topic, then generate a cross-platform draft.</p></section></div>
-    <div class="studio-queue" id="contentStudioQueue"><strong>Publishing queue</strong><p class="empty-inspector">No approved posts queued.</p></div>
-  </section>
-</div>
-
 <script>
 (function () {
   "use strict";
@@ -1371,10 +1354,12 @@
   }
   function openContentStudio() { renderContentQueue(); contentStudioModal.classList.add("open"); }
   function closeContentStudio() { contentStudioModal.classList.remove("open"); }
-  document.getElementById("contentStudioBtn").addEventListener("click", openContentStudio);
-  document.getElementById("contentStudioClose").addEventListener("click", closeContentStudio);
-  contentStudioModal.addEventListener("click", function (e) { if (e.target === contentStudioModal) closeContentStudio(); });
-  document.getElementById("studioGenerate").addEventListener("click", function () { var topic = document.getElementById("studioTopic").value, note = document.getElementById("studioCustomTopic").value.trim(); var platforms = Array.prototype.slice.call(contentStudioModal.querySelectorAll(".studio-platforms input:checked")).map(function (input) { return input.value; }); studioDraft = buildStudioDraft(topic, note, platforms); renderStudioDraft(); });
+  if (contentStudioModal) {
+    document.getElementById("contentStudioBtn").addEventListener("click", openContentStudio);
+    document.getElementById("contentStudioClose").addEventListener("click", closeContentStudio);
+    contentStudioModal.addEventListener("click", function (e) { if (e.target === contentStudioModal) closeContentStudio(); });
+    document.getElementById("studioGenerate").addEventListener("click", function () { var topic = document.getElementById("studioTopic").value, note = document.getElementById("studioCustomTopic").value.trim(); var platforms = Array.prototype.slice.call(contentStudioModal.querySelectorAll(".studio-platforms input:checked")).map(function (input) { return input.value; }); studioDraft = buildStudioDraft(topic, note, platforms); renderStudioDraft(); });
+  }
   document.getElementById("referenceUpload").addEventListener("change", function (e) {
     Array.prototype.forEach.call(e.target.files || [], function (file) {
       if (!file.type || file.type.indexOf("image/") !== 0) return;
