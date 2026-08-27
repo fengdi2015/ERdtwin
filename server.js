@@ -57,14 +57,18 @@ async function generateContent(request, response) {
     const apiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-      body: JSON.stringify({ model: 'gpt-5', input: prompt })
+      body: JSON.stringify({ model: 'gpt-5', input: prompt, max_output_tokens: variationCount === 3 ? 3000 : 1200, text: { format: { type: 'json_object' } } })
     });
     const body = await apiResponse.json();
     if (!apiResponse.ok) throw new Error(body.error?.message || 'OpenAI request failed');
     const text = body.output_text || '';
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('The model did not return a JSON content plan.');
-    send(response, 200, JSON.stringify(JSON.parse(match[0])), 'application/json; charset=utf-8');
+    const plan = JSON.parse(match[0]);
+    if (variationCount === 3 && (!Array.isArray(plan.variations) || plan.variations.length !== 3)) {
+      throw new Error('The model did not return three complete variations. Please try again.');
+    }
+    send(response, 200, JSON.stringify(plan), 'application/json; charset=utf-8');
   } catch (error) {
     send(response, 500, JSON.stringify({ error: error.message || 'Unable to generate content.' }), 'application/json; charset=utf-8');
   }
