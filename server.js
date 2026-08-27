@@ -4,6 +4,22 @@ const path = require('path');
 
 const port = Number(process.env.PORT || 5174);
 const root = __dirname;
+const localKeyFile = process.env.CV_MACHINE_ENV_FILE || 'C:\\Users\\difen\\CV_machine\\.env';
+
+// The key remains in the separate CV-machine environment file; it is never written
+// into this project, sent to the browser, or logged.
+function loadCvMachineKey() {
+  if (process.env.OPENAI_API_KEY || !fs.existsSync(localKeyFile)) return;
+  const entry = fs.readFileSync(localKeyFile, 'utf8')
+    .split(/\r?\n/)
+    .find((line) => /^\s*OPENAI_API_KEY\s*=/.test(line));
+  if (!entry) return;
+  let value = entry.replace(/^\s*OPENAI_API_KEY\s*=\s*/, '').trim();
+  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) value = value.slice(1, -1);
+  if (value) process.env.OPENAI_API_KEY = value;
+}
+
+loadCvMachineKey();
 
 function send(response, status, body, type = 'text/plain; charset=utf-8') {
   response.writeHead(status, { 'Content-Type': type, 'Cache-Control': 'no-store' });
