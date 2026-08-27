@@ -6,7 +6,7 @@
     },
     {
       "source": "/content-studio",
-      "destination": "/content_studio.html"
+      "destination": "/content_studio_app.html"
     }
   ]
 }
