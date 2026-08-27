@@ -339,6 +339,23 @@
   .marketing-card ul { margin: 7px 0 0 18px; padding: 0; font-size: 12px; line-height: 1.48; }
   .marketing-card li + li { margin-top: 5px; }
   .marketing-note { margin-top: 12px; font-size: 12px; line-height: 1.48; }
+  .content-studio { max-width: 1100px; }
+  .studio-grid { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr); gap: 14px; }
+  .studio-panel { padding: 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel-2); }
+  .studio-panel h3 { margin: 0 0 9px; font-size: 14px; }
+  .studio-panel label { display: block; margin: 9px 0 4px; font-size: 12px; font-weight: 800; }
+  .studio-panel select, .studio-panel textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); padding: 8px; color: var(--ink); }
+  .studio-panel textarea { min-height: 78px; resize: vertical; }
+  .studio-platforms { display:flex; flex-wrap:wrap; gap:7px; margin:8px 0; }
+  .studio-platforms label { margin:0; padding:5px 7px; border:1px solid var(--border); border-radius:6px; background:var(--panel); font-weight:600; }
+  .studio-platforms input { margin-right:4px; }
+  .studio-output { min-height: 320px; }
+  .studio-output .empty-inspector { margin: 0; }
+  .studio-output h4 { margin: 12px 0 5px; font-size: 13px; color: var(--line-strong); }
+  .studio-output ol { margin: 5px 0 0 20px; padding: 0; font-size: 12px; line-height: 1.42; }
+  .studio-badge { display:inline-block; margin:0 5px 6px 0; padding:3px 6px; border-radius:999px; background:var(--ok-soft); color:var(--ok); font-size:11px; font-weight:800; }
+  .studio-queue { margin-top: 12px; padding: 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel); font-size:12px; }
+  .studio-queue strong { color:var(--line-strong); }
   .room-photo-stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 8px 0; }
   .room-photo-stack .product-photo-inline { margin: 0; }
   @media (max-width: 420px) { .room-photo-stack { grid-template-columns: 1fr; } }
@@ -348,7 +365,7 @@
   .placement-row strong { color: var(--ink); }
   .placement-row em { color: #245444; font-style: normal; font-weight: 650; }
   @media (max-width: 700px) { .placement-row { grid-template-columns: 1fr; gap: 3px; } }
-  @media (max-width: 700px) { .reference-modal { padding: 10px; } .reference-dialog { padding: 16px; } .reference-layout, .marketing-grid { grid-template-columns: 1fr; } .reference-gallery { flex-direction: row; max-height: none; overflow-x: auto; } .reference-thumb { min-width: 126px; } }
+  @media (max-width: 700px) { .reference-modal { padding: 10px; } .reference-dialog { padding: 16px; } .reference-layout, .marketing-grid, .studio-grid { grid-template-columns: 1fr; } .reference-gallery { flex-direction: row; max-height: none; overflow-x: auto; } .reference-thumb { min-width: 126px; } }
   @media (max-width: 760px) {
     html, body { height: auto; min-height: 100%; overflow-x: hidden; }
     .app { height: auto; min-height: 100dvh; }
@@ -754,6 +771,7 @@
       <button class="toggle-btn" id="nurseToggle" aria-pressed="false" title="Drag a nurse figure to check a 36 inch staff work path">Nurse path</button>
       <button class="toggle-btn" id="referencesBtn" title="Open clinical reference photos and planning guidance">References</button>
       <button class="toggle-btn" id="marketingBtn" title="Open the clinic marketing and promotion strategy">Marketing</button>
+      <button class="toggle-btn" id="contentStudioBtn" title="Create reviewed social-media promotion drafts">Content Studio</button>
       <button class="icon-btn" id="undoArrange" title="Undo auto-fit arrangement" aria-label="Undo auto-fit arrangement" disabled>&#8630;</button>
       <button class="icon-btn" id="zoomOut" title="Zoom out" aria-label="Zoom out">&#8722;</button>
       <button class="icon-btn" id="zoomFit" title="Fit to plan" aria-label="Fit to plan">&#8862;</button>
@@ -826,6 +844,21 @@
       <div class="placement-row"><strong>Bathroom &amp; Kitchen</strong><em>Minimal / no promotion</em><span>Bathroom: only hygiene, accessibility, and emergency/contact notices using cleanable, securely mounted material. Kitchen: staff notices only. Do not use either room for patient promotions or product marketing.</span></div>
     </section>
     <section class="clinic-guidance"><strong>Privacy, compliance &amp; brand safeguards</strong><ul><li>Use only approved systems and vendors for any patient data. Do not put PHI into public forms, ad platforms, pixels, chat widgets, or marketing tools unless your privacy and security review permits it.</li><li>Do not use patient photos, testimonials, or identifiable stories without the appropriate written authorization. Marketing rules can vary by communication and payment arrangement.</li><li>Have a privacy official or health-care counsel review campaigns, representative-visit policy, consent language, claims, accessibility, and vendor agreements before launch. See <a href="https://www.hhs.gov/hipaa/for-professionals/faq/authorizations/index.html" target="_blank" rel="noopener">HHS HIPAA authorization guidance</a>.</li></ul></section>
+  </section>
+</div>
+<div class="reference-modal" id="contentStudioModal" role="dialog" aria-modal="true" aria-label="Content Studio">
+  <section class="reference-dialog content-studio">
+    <button type="button" class="reference-close" id="contentStudioClose" aria-label="Close Content Studio">&times;</button>
+    <p class="panel-title">Content Studio · approval-first MVP</p>
+    <p class="marketing-note">Creates an evidence-aware draft, video storyboard, carousel outline, and publishing queue. It does not publish automatically until connected business accounts and a clinician-approval workflow are configured.</p>
+    <div class="studio-grid"><section class="studio-panel"><h3>1. Brief</h3>
+      <label for="studioTopic">Topic</label><select id="studioTopic"><option value="b12">How to interpret a vitamin B12 result</option><option value="fatigue">Fatigue and rheumatology: when to ask for help</option><option value="stiffness">Morning stiffness: what to track before a visit</option><option value="infusion">Preparing for an infusion visit</option><option value="custom">Custom education topic</option></select>
+      <label for="studioCustomTopic">Custom angle or source note</label><textarea id="studioCustomTopic" placeholder="Optional: audience, source link, campaign goal, or clinical review note"></textarea>
+      <label>Platforms</label><div class="studio-platforms"><label><input type="checkbox" value="Instagram" checked>Instagram</label><label><input type="checkbox" value="Facebook" checked>Facebook</label><label><input type="checkbox" value="TikTok">TikTok</label><label><input type="checkbox" value="YouTube">YouTube</label><label><input type="checkbox" value="LinkedIn">LinkedIn</label><label><input type="checkbox" value="Google Business">Google</label></div>
+      <button type="button" class="toggle-btn" id="studioGenerate">Generate reviewed draft</button>
+      <p class="empty-inspector">No PHI, patient stories, or product-treatment claims. Clinical approval is required before queueing.</p>
+    </section><section class="studio-panel studio-output" id="contentStudioOutput"><h3>2. Draft preview</h3><p class="empty-inspector">Choose a topic, then generate a cross-platform draft.</p></section></div>
+    <div class="studio-queue" id="contentStudioQueue"><strong>Publishing queue</strong><p class="empty-inspector">No approved posts queued.</p></div>
   </section>
 </div>
 
@@ -1247,6 +1280,7 @@
   var photoModalImage = document.getElementById("photoModalImage");
   var referenceModal = document.getElementById("referenceModal");
   var marketingModal = document.getElementById("marketingModal");
+  var contentStudioModal = document.getElementById("contentStudioModal");
   var referenceGallery = document.getElementById("referenceGallery");
   var referencePreview = document.getElementById("referencePreview");
   var emptyHint = document.getElementById("emptyHint");
@@ -1308,6 +1342,39 @@
   document.getElementById("marketingBtn").addEventListener("click", openMarketing);
   document.getElementById("marketingClose").addEventListener("click", closeMarketing);
   marketingModal.addEventListener("click", function (e) { if (e.target === marketingModal) closeMarketing(); });
+
+  var CONTENT_QUEUE_KEY = "suite203-content-studio-queue-v1";
+  var studioDraft = null;
+  function readContentQueue() { try { return JSON.parse(localStorage.getItem(CONTENT_QUEUE_KEY) || "[]"); } catch (err) { return []; } }
+  function writeContentQueue(queue) { try { localStorage.setItem(CONTENT_QUEUE_KEY, JSON.stringify(queue)); } catch (err) {} }
+  function renderContentQueue() {
+    var queue = readContentQueue(), el = document.getElementById("contentStudioQueue");
+    if (!el) return;
+    el.innerHTML = '<strong>Publishing queue</strong>' + (queue.length ? '<ol>' + queue.map(function (entry) { return '<li><b>' + escapeHtml(entry.title) + '</b> · ' + escapeHtml(entry.platforms.join(", ")) + ' · <span class="studio-badge">CLINICIAN APPROVED</span> · Ready for connected-account publishing</li>'; }).join("") + '</ol>' : '<p class="empty-inspector">No approved posts queued.</p>');
+  }
+  function buildStudioDraft(topic, note, platforms) {
+    var data = {
+      b12: { title: "A B12 result needs context", hook: "A ‘normal’ B12 number is not a diagnosis.", key: "Use the reference range on the report that performed the test. For some borderline results, a clinician may consider symptoms and follow-up testing such as MMA.", slides: ["Start with the reference range on your lab report.", "A single value does not explain every symptom.", "Fatigue, tingling, or balance changes have many possible causes.", "Your clinician may consider medications, diet, blood count, kidney function, and follow-up testing.", "Do not self-diagnose from a social-media cutoff."], source: "Labcorp 001503 reference range and NIH Vitamin B12 guidance" },
+      fatigue: { title: "Fatigue deserves context", hook: "Fatigue is common—but it is not something you have to ignore.", key: "Rheumatology visits consider symptom pattern, sleep, mood, medications, inflammation, anemia, thyroid disease, nutrition, and other causes. Track what changes and discuss it with your care team.", slides: ["When did the fatigue begin?", "What makes it better or worse?", "Are there fever, weight change, shortness of breath, numbness, or sleep changes?", "Bring a medication and supplement list.", "Ask your clinician which evaluation is appropriate for you."], source: "General patient-education template—clinician review required" },
+      stiffness: { title: "Track morning stiffness before your visit", hook: "The pattern of stiffness can help your clinician ask better questions.", key: "Record timing, duration, joints involved, swelling, function, and changes over time. A tracker supports—not replaces—clinical evaluation.", slides: ["Which joints feel stiff?", "How long does stiffness last?", "Is swelling visible?", "What activities are harder?", "Bring your notes to your visit."], source: "General patient-education template—clinician review required" },
+      infusion: { title: "Preparing for an infusion visit", hook: "A little preparation can make infusion day smoother.", key: "Follow the clinic’s specific instructions. Confirm transportation, medication instructions, new symptoms, hydration/food guidance, and who to call if you are unwell before the appointment.", slides: ["Review your clinic’s instructions.", "Bring your current medication list.", "Tell the team about new illness, fever, or infection symptoms.", "Plan transportation and comfort items if permitted.", "Ask questions before treatment begins."], source: "Clinic workflow template—clinical review required" }
+    };
+    var item = data[topic] || { title: note || "Rheumatology education", hook: "A clinician-reviewed education message for our community.", key: "Use plain language, cite reliable sources, and avoid individualized diagnosis or treatment claims.", slides: ["What patients should know", "Why context matters", "Questions to discuss", "When to contact the clinic", "Educational only"], source: "Custom topic—sources must be added before approval" };
+    return { title: item.title, hook: item.hook, key: item.key, slides: item.slides, source: item.source, platforms: platforms, note: note };
+  }
+  function renderStudioDraft() {
+    var output = document.getElementById("contentStudioOutput");
+    if (!output || !studioDraft) return;
+    output.innerHTML = '<h3>2. Draft preview</h3><span class="studio-badge">CLAIM CHECK: REVIEW REQUIRED</span><span class="studio-badge">NO PHI</span><h4>Vertical video · 30–45 sec</h4><p><b>Hook:</b> ' + escapeHtml(studioDraft.hook) + '</p><p><b>Core message:</b> ' + escapeHtml(studioDraft.key) + '</p><p><b>Close:</b> Educational only. Discuss your own symptoms and results with a qualified clinician.</p><h4>Carousel · 5 slides</h4><ol>' + studioDraft.slides.map(function (slide) { return '<li>' + escapeHtml(slide) + '</li>'; }).join("") + '</ol><h4>Cross-platform caption</h4><p><b>' + escapeHtml(studioDraft.title) + '.</b> ' + escapeHtml(studioDraft.key) + ' Educational only; this is not individual medical advice.</p><p class="product-specs"><b>Research record:</b> ' + escapeHtml(studioDraft.source) + (studioDraft.note ? ' · Creator note: ' + escapeHtml(studioDraft.note) : '') + '</p><div class="insp-actions"><button type="button" class="ghost-btn" id="studioApprove">Clinician approve & queue</button><button type="button" class="ghost-btn" id="studioExport">Download draft</button></div><p class="empty-inspector">Selected targets: ' + escapeHtml(studioDraft.platforms.join(", ") || "None") + '. Publishing connection status: not configured.</p>';
+    document.getElementById("studioApprove").addEventListener("click", function () { var queue = readContentQueue(); queue.unshift({ title: studioDraft.title, platforms: studioDraft.platforms, createdAt: new Date().toISOString() }); writeContentQueue(queue); renderContentQueue(); });
+    document.getElementById("studioExport").addEventListener("click", function () { var blob = new Blob([JSON.stringify(studioDraft, null, 2)], { type: "application/json" }); var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "clinic-content-draft.json"; link.click(); URL.revokeObjectURL(link.href); });
+  }
+  function openContentStudio() { renderContentQueue(); contentStudioModal.classList.add("open"); }
+  function closeContentStudio() { contentStudioModal.classList.remove("open"); }
+  document.getElementById("contentStudioBtn").addEventListener("click", openContentStudio);
+  document.getElementById("contentStudioClose").addEventListener("click", closeContentStudio);
+  contentStudioModal.addEventListener("click", function (e) { if (e.target === contentStudioModal) closeContentStudio(); });
+  document.getElementById("studioGenerate").addEventListener("click", function () { var topic = document.getElementById("studioTopic").value, note = document.getElementById("studioCustomTopic").value.trim(); var platforms = Array.prototype.slice.call(contentStudioModal.querySelectorAll(".studio-platforms input:checked")).map(function (input) { return input.value; }); studioDraft = buildStudioDraft(topic, note, platforms); renderStudioDraft(); });
   document.getElementById("referenceUpload").addEventListener("change", function (e) {
     Array.prototype.forEach.call(e.target.files || [], function (file) {
       if (!file.type || file.type.indexOf("image/") !== 0) return;
