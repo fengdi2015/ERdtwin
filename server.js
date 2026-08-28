@@ -62,7 +62,11 @@ async function generateContent(request, response) {
     });
     const body = await apiResponse.json();
     if (!apiResponse.ok) throw new Error(body.error?.message || 'OpenAI request failed');
-    const text = body.output_text || '';
+    const text = body.output_text || (body.output || [])
+      .flatMap((item) => item.content || [])
+      .filter((part) => part.type === 'output_text')
+      .map((part) => part.text || '')
+      .join('');
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('The model did not return a JSON content plan.');
     const plan = JSON.parse(match[0]);
