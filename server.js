@@ -49,12 +49,18 @@ async function generateContent(request, response) {
     const note = String(payload.note || 'Educational content; clinician review required.');
     const platforms = Array.isArray(payload.platforms) ? payload.platforms.join(', ') : '';
     const design = ['calm', 'bold', 'minimal'].includes(payload.design) ? payload.design : 'calm';
+    const mode = ['content', 'design'].includes(payload.mode) ? payload.mode : 'combined';
     const variationCount = payload.variationCount === 3 ? 3 : 1;
     const designGuide = { calm: 'calm clinical: teal, cream, reassuring and approachable', bold: 'bold education: navy, coral, energetic but still professional', minimal: 'minimal expert: white, graphite, editorial and restrained' }[design];
-    const shape = variationCount === 3
+    const shape = mode === 'design'
+      ? 'Return valid JSON only with template (one of calm, bold, minimal), direction, palette (exactly 3 plain-language color descriptions), typography, imagery, slide_treatment, and accessibility. Do not write slide copy or medical claims.'
+      : variationCount === 3
       ? 'Return valid JSON only as {"variations":[...]} with exactly 3 clearly different options. Each option must contain title, hook, core, slides (exactly 5 strings), source, caption, video_beats (exactly 3 strings), and design_note.'
-      : 'Return valid JSON only with title, hook, core, slides (exactly 5 strings), source, caption, video_beats (exactly 3 strings), and design_note.';
-    const prompt = `Create a concise, medically cautious social-media content plan for a rheumatology clinic. Topic: ${topic}. Campaign note/source: ${note}. Platforms: ${platforms}. The fixed, accessible carousel template is ${designGuide}. Suggest a short design_note that guides emphasis or imagery direction for this template; do not change its color system or layout. Do not diagnose, promise outcomes, recommend treatment, use patient data, or state one lab cutoff is universal. Say educational content needs clinician review. ${shape}`;
+      : mode === 'content'
+        ? 'Return valid JSON only with title, hook, core, slides (exactly 5 strings), source, caption, and video_beats (exactly 3 strings). Do not include colors, HTML, CSS, or a design brief.'
+        : 'Return valid JSON only with title, hook, core, slides (exactly 5 strings), source, caption, video_beats (exactly 3 strings), and design_note.';
+    const task = mode === 'design' ? 'Create only a visual design brief for the fixed carousel.' : 'Create a concise, medically cautious social-media content plan for a rheumatology clinic.';
+    const prompt = `${task} Topic: ${topic}. Campaign note/source: ${note}. Platforms: ${platforms}. The fixed, accessible carousel template is ${designGuide}. Do not diagnose, promise outcomes, recommend treatment, use patient data, or state one lab cutoff is universal. Say educational content needs clinician review when creating content. ${shape}`;
     const apiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
