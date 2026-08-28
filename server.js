@@ -5,6 +5,7 @@ const path = require('path');
 const port = Number(process.env.PORT || 5174);
 const root = __dirname;
 const localKeyFile = process.env.CV_MACHINE_ENV_FILE || 'C:\\Users\\difen\\CV_machine\\.env';
+const contentModel = process.env.CONTENT_MODEL || 'gpt-5-mini';
 
 // The key remains in the separate CV-machine environment file; it is never written
 // into this project, sent to the browser, or logged.
@@ -57,7 +58,7 @@ async function generateContent(request, response) {
     const apiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-      body: JSON.stringify({ model: 'gpt-5', input: prompt, reasoning: { effort: 'low' }, max_output_tokens: variationCount === 3 ? 6000 : 4000, text: { format: { type: 'json_object' } } })
+      body: JSON.stringify({ model: contentModel, input: prompt, reasoning: { effort: 'low' }, max_output_tokens: variationCount === 3 ? 3000 : 1800, text: { format: { type: 'json_object' } } })
     });
     const body = await apiResponse.json();
     if (!apiResponse.ok) throw new Error(body.error?.message || 'OpenAI request failed');
