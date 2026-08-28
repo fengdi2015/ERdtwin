@@ -57,7 +57,7 @@ async function generateContent(request, response) {
     const apiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-      body: JSON.stringify({ model: 'gpt-5', input: prompt, max_output_tokens: variationCount === 3 ? 3000 : 1200, text: { format: { type: 'json_object' } } })
+      body: JSON.stringify({ model: 'gpt-5', input: prompt, reasoning: { effort: 'low' }, max_output_tokens: variationCount === 3 ? 6000 : 4000, text: { format: { type: 'json_object' } } })
     });
     const body = await apiResponse.json();
     if (!apiResponse.ok) throw new Error(body.error?.message || 'OpenAI request failed');
